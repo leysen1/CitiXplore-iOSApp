@@ -86,7 +86,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         self.mapView.setRegion(region, animated: false)
             
         // annotation
-        let annotate = Annotate(title: "King David Kalakaua", locationName: "Waikiki Gateway Park", discipline: "Sculpture", coordinate: CLLocationCoordinate2D(latitude: 51.4881398, longitude: -0.1866036))
+        let annotate = Annotate(title: "King David Kalakaua", locationName: "Waikiki Gateway Park", discipline: "Sculpture", coordinate: CLLocationCoordinate2D(latitude: 51.4881398, longitude: -0.1866036), color: MKPinAnnotationColor.purple)
         mapView.addAnnotation(annotate)
 
             
@@ -123,6 +123,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 view = dequeuedView
             } else {
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                view.pinColor = annotation.color
                 view.canShowCallout = true
                 view.calloutOffset = CGPoint(x: -5, y: 5)
                 view.rightCalloutAccessoryView = UIButton.init(type: .detailDisclosure) as UIView
@@ -152,12 +153,14 @@ class Annotate: NSObject, MKAnnotation {
     let locationName: String
     let discipline: String
     let coordinate: CLLocationCoordinate2D
+    var color: MKPinAnnotationColor
     
-    init(title: String, locationName: String, discipline: String, coordinate: CLLocationCoordinate2D) {
+    init(title: String, locationName: String, discipline: String, coordinate: CLLocationCoordinate2D, color: MKPinAnnotationColor) {
         self.title = title
         self.locationName = locationName
         self.discipline = discipline
         self.coordinate = coordinate
+        self.color = color
         
         super.init()
     }
