@@ -133,7 +133,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         return nil
     }
   
-
+//fdsf
     @IBAction func logoutButton(_ sender: AnyObject) {
         
         locationManager.stopUpdatingLocation()
