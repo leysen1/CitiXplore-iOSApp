@@ -11,15 +11,10 @@ import AVKit
 import AVFoundation
 import Parse
 
-// while timer is playing - track completed is false, if timer goes to 90% of track time, change completed to true and save (completed audio)
+
 // if cell is completed, show cell as light green? 
 
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
-    
-    // create an avaudioplayer array etc
-    // fix the play button in cell for audio array
-    // when clicking on a POI, it centers the POI on the map view and only shows that one.
-    // We won't need the accessory button
     
     // circle of life video should be a "sorry there is no audio available at this time"
     
@@ -30,6 +25,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var coordinatesArray = [CLLocationCoordinate2D]()
     
     var imageDataArray = [PFFile]()
+    
+    var tappedPlaceForMap: String?
     
     @IBOutlet var tableView: UITableView!
     
@@ -90,6 +87,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         addressArray.removeAll()
         distanceArray.removeAll()
         coordinatesArray.removeAll()
+        imageDataArray.removeAll()
         
         // get POIs of the chosen area
         let query = PFQuery(className: "POI")
@@ -196,7 +194,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
     }
-
+        cell.mapButton.tag = indexPath.row
+        cell.mapButton.addTarget(self, action: #selector(goToMap), for: .touchUpInside)
+        
+        
+        
         // return
         return cell
 
@@ -229,6 +231,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             // no audio found
         }
+    }
+    
+    @IBAction func goToMap(sender: UIButton!) {
+        tappedPlaceForMap = nameArray[sender.tag]
+        print(tappedPlaceForMap)
+        performSegue(withIdentifier: "mapSegue", sender: self)
     }
     
  
@@ -270,6 +278,18 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         performSegue(withIdentifier: "mapSegue", sender: self)
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "mapSegue") {
+            if tappedPlaceForMap != "" {
+                let MapVC = segue.destination as! MapViewController
+                MapVC.tappedPlaceForMapMV = tappedPlaceForMap
+            }
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        tappedPlaceForMap?.removeAll()
+    }
     
        /*
     // MARK: - Navigation

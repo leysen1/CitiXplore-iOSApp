@@ -15,7 +15,8 @@ class POIsTableViewCell: UITableViewCell {
     @IBOutlet var locationDistance: UILabel!
     @IBOutlet var locationImage: UIImageView!
 
-    
+    @IBOutlet var mapButton: UIButton!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
