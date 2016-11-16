@@ -12,17 +12,29 @@ import AVFoundation
 import Parse
 
 
-// if cell is completed, show cell as light green? 
+// search bar
 
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
     // circle of life video should be a "sorry there is no audio available at this time"
     
-    
+    let username = (PFUser.current()?.username!)!
     var nameArray = [String]()
     var addressArray = [String]()
     var distanceArray = [String]()
     var coordinatesArray = [CLLocationCoordinate2D]()
+    var completedArray = [String]()
+    let searchController = UISearchController(searchResultsController: nil)
+    var filteredNameArray = [String]()
+    
+    func filterContentForSearchText(searchText: String, scope: String = "All") {
+        filteredNameArray = nameArray.filter({ (skill) -> Bool in
+            return skill.lowercased().contains(searchText.lowercased())
+            
+        })
+        
+        tableView.reloadData()
+    }
     
     var imageDataArray = [PFFile]()
     
@@ -75,6 +87,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        definesPresentationContext = true
+        tableView.tableHeaderView = searchController.searchBar
+        
     }
 
     
@@ -100,11 +117,22 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             } else {
                 self.coordinatesArray.removeAll()
                 if let points = objects {
+                    var testCompleted: [String]?
                     for point in points {
                         self.nameArray.append(point["name"] as! String)
                         self.addressArray.append(point["address"] as! String)
-                        
-                        // get POI audio
+                       
+                        testCompleted = (point["completed"] as? [String])
+                        if testCompleted != nil {
+                            if (testCompleted?.contains(self.username))! {
+                                self.completedArray.append("yes")
+                            } else {
+                                self.completedArray.append("no")
+                            }
+                        } else {
+                            self.completedArray.append("no")
+                        }
+                            // get POI audio
                         if let audioClip = point["audio"] as? PFFile {
                             audioClip.getDataInBackground(block: { (data, error) in
                                 if error != nil {
@@ -154,6 +182,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         }
                     self.tableView.reloadData()
                     self.tableView.tableFooterView = UIView()
+                    print("completed array \(self.completedArray)")
 
                 }
 
@@ -169,35 +198,107 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // add in search count
+        
+        if searchController.isActive && searchController.searchBar.text != "" {
+            return filteredNameArray.count
+        }
+
         return nameArray.count
     }
 
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! POIsTableViewCell
         
-        // name and address
-        if nameArray != [] {
-            cell.locationName.text = nameArray[indexPath.row] }
-        if addressArray != [] {
-            cell.locationAddress.text = addressArray[indexPath.row] }
-        if distanceArray != [] {
-            cell.locationDistance.text = "You are \(distanceArray[indexPath.row])km away" }
         
-        // picture
-        if imageDataArray != [] {
-        imageDataArray[indexPath.row].getDataInBackground { (data, error) in
+        if searchController.isActive && searchController.searchBar.text != "" {
+            let indexValue = nameArray.index(of: filteredNameArray[indexPath.row])
+            // name and address
+            if nameArray != [] {
+                cell.locationName.text = filteredNameArray[indexPath.row] }
+            if addressArray != [] {
+                cell.locationAddress.text = addressArray[indexValue!] }
+            if distanceArray != [] {
+                cell.locationDistance.text = "You are \(distanceArray[indexValue!])km away" }
             
-            if let imageData = data {
-                if let downloadedImage = UIImage(data: imageData) {
-                    cell.locationImage.image = downloadedImage
+            // picture
+            if imageDataArray != [] {
+                imageDataArray[indexValue!].getDataInBackground { (data, error) in
+                    
+                    if let imageData = data {
+                        if let downloadedImage = UIImage(data: imageData) {
+                            cell.locationImage.image = downloadedImage
+                        }
+                    }
                 }
             }
+            
+            if completedArray[indexValue!] == "yes" {
+                
+                cell.backgroundColor = UIColor.clear
+                cell.locationName.textColor = UIColor.lightGray
+                cell.locationAddress.textColor = UIColor.lightGray
+                cell.locationDistance.textColor = UIColor.lightGray
+                cell.locationImage.alpha = 0.5
+                cell.tickImage.image = UIImage(named: "tick.png")
+            } else {
+                cell.backgroundColor = UIColor.groupTableViewBackground
+                cell.locationName.textColor = UIColor.black
+                cell.locationAddress.textColor = UIColor.black
+                cell.locationDistance.textColor = UIColor.black
+                cell.locationImage.alpha = 1
+                cell.tickImage.image = UIImage()
+            }
+            
+            cell.mapButton.tag = indexValue!
+            cell.mapButton.addTarget(self, action: #selector(goToMap), for: .touchUpInside)
+            
+        } else {
+            // no filter
+            
+            // name and address
+            if nameArray != [] {
+                cell.locationName.text = nameArray[indexPath.row] }
+            if addressArray != [] {
+                cell.locationAddress.text = addressArray[indexPath.row] }
+            if distanceArray != [] {
+                cell.locationDistance.text = "You are \(distanceArray[indexPath.row])km away" }
+            
+            // picture
+            if imageDataArray != [] {
+                imageDataArray[indexPath.row].getDataInBackground { (data, error) in
+                    
+                    if let imageData = data {
+                        if let downloadedImage = UIImage(data: imageData) {
+                            cell.locationImage.image = downloadedImage
+                        }
+                    }
+                }
+            }
+
+            if completedArray[indexPath.row] == "yes" {
+                
+                cell.backgroundColor = UIColor.clear
+                cell.locationName.textColor = UIColor.lightGray
+                cell.locationAddress.textColor = UIColor.lightGray
+                cell.locationDistance.textColor = UIColor.lightGray
+                cell.locationImage.alpha = 0.5
+                cell.tickImage.image = UIImage(named: "tick.png")
+            } else {
+                cell.backgroundColor = UIColor.groupTableViewBackground
+                cell.locationName.textColor = UIColor.black
+                cell.locationAddress.textColor = UIColor.black
+                cell.locationDistance.textColor = UIColor.black
+                cell.locationImage.alpha = 1
+                cell.tickImage.image = UIImage()
+            }
+            
+            cell.mapButton.tag = indexPath.row
+            cell.mapButton.addTarget(self, action: #selector(goToMap), for: .touchUpInside)
         }
-    }
-        cell.mapButton.tag = indexPath.row
-        cell.mapButton.addTarget(self, action: #selector(goToMap), for: .touchUpInside)
+
         
-        
+
         
         // return
         return cell
@@ -284,21 +385,18 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 let MapVC = segue.destination as! MapViewController
                 MapVC.tappedPlaceForMapMV = tappedPlaceForMap
             }
+            
         }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         tappedPlaceForMap?.removeAll()
     }
-    
-       /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+}
+
+extension POIsViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContentForSearchText(searchText: searchController.searchBar.text!)
     }
-    */
-
 }

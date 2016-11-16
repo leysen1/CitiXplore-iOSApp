@@ -9,15 +9,11 @@
 import UIKit
 import Parse
 import MapKit
-import AVKit
-import AVFoundation
-
 
 class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     
     var locationManager = CLLocationManager()
-    var userLocation = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-    //var userLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 51.4881398, longitude: -0.1866036)
+    var userLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 51.4881398, longitude: -0.1866036)
     
     let username = (PFUser.current()?.username!)!
     var userAnnotation = MKPointAnnotation()
@@ -39,18 +35,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
 
     @IBOutlet var mapView: MKMapView!
 
-    @IBAction func areaView(_ sender: AnyObject) {
-        navigationController?.dismiss(animated: true, completion: {
-            
-        })
-    }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let locationCoord = manager.location?.coordinate {
             
 
-            userLocation = CLLocationCoordinate2D(latitude: 51.4885039, longitude: -0.1880413)
-            //userLocation = CLLocationCoordinate2D(latitude: locationCoord.latitude, longitude: locationCoord.longitude)
+            // userLocation = CLLocationCoordinate2D(latitude: 51.4885039, longitude: -0.1880413)
+            userLocation = CLLocationCoordinate2D(latitude: locationCoord.latitude, longitude: locationCoord.longitude)
 
             checkNearPOI()
             
@@ -163,6 +154,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         print("tapped \(tappedPlaceForMapMV)")
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        tappedPlaceForMapMV?.removeAll()
+    }
+    
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? Annotate {
@@ -211,21 +206,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
     }
 
-    @IBAction func logoutButton(_ sender: AnyObject) {
-        
-        locationManager.stopUpdatingLocation()
-        PFUser.logOut()
-        print("logged out")
-        dismiss(animated: true, completion: nil)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        tappedPlaceForMapMV?.removeAll()
-    }
  
 }
-
-
 
 // annotations
 class Annotate: NSObject, MKAnnotation {

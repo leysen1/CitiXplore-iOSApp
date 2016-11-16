@@ -11,7 +11,7 @@ import Parse
 
 var activePlace = -1
 var londonArray = [String]()
-
+// searh bar
 
 class AreaTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -91,15 +91,25 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AreaCell", for: indexPath) as! AreaTableViewCell
-        
         cell.areaLabel.text = londonArray[indexPath.row]
         if let allInArea = perAreaPOIs[londonArray[indexPath.row]] {
             if let completedInArea = completed[londonArray[indexPath.row]] {
                 cell.completedRatio.text = (String(completedInArea) + "/" + String(allInArea))
+                if allInArea == completedInArea {
+                    print("all done")
+                    cell.backgroundColor = UIColor.groupTableViewBackground
+                } else {
+                    cell.backgroundColor = UIColor.clear
+                }
+
             } else {
                 cell.completedRatio.text = ("0/" + String(allInArea))
             }
+
+
         }
+        
+        
 
         return cell
         
@@ -115,6 +125,25 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     @IBAction func mapView(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
+
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "toPOIs") {
+            let backItem = UIBarButtonItem()
+            backItem.title = "Back"
+            navigationItem.backBarButtonItem = backItem
+            
+        }
+    }
+    
+    
+    
+    @IBAction func logout(_ sender: AnyObject) {
+        PFUser.logOut()
+        print("logged out")
         dismiss(animated: true, completion: nil)
 
         
