@@ -38,7 +38,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var imageDataArray = [PFFile]()
     
-    var tappedPlaceForMap: String?
+    var tappedPlaceForMap = String()
     
     @IBOutlet var tableView: UITableView!
     
@@ -316,7 +316,16 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             } else {
                 trackPlaying.stop()
             }
-            trackPlaying = audioArray[indexPath.row]
+            
+            if searchController.isActive && searchController.searchBar.text != "" {
+                let indexValue = nameArray.index(of: filteredNameArray[indexPath.row])
+                trackPlaying = audioArray[indexValue!]
+                audioLocationName.text = nameArray[indexValue!]
+            } else {
+                trackPlaying = audioArray[indexPath.row]
+                audioLocationName.text = nameArray[indexPath.row]
+            }
+            
             time = trackPlaying.duration
             trackPlaying.volume = 0.9
             trackPlaying.play()
@@ -325,7 +334,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             scrubber.maximumValue = Float(trackPlaying.duration)
             scrubber.value = 0
             playMode = true
-            audioLocationName.text = nameArray[indexPath.row]
             let minutes = Int(time/60)
             self.audioTimeLeft.text = "\(String(minutes)):\(String(Int((time) - Double(minutes*60))))"
             
@@ -333,6 +341,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             // no audio found
         }
     }
+    
+    
+    
     
     @IBAction func goToMap(sender: UIButton!) {
         tappedPlaceForMap = nameArray[sender.tag]
@@ -390,7 +401,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        tappedPlaceForMap?.removeAll()
+        tappedPlaceForMap.removeAll()
     }
 
 }
