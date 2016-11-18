@@ -116,7 +116,7 @@ class ViewController: UIViewController {
             loginMode = true
             loginOrSignupButtonLabel.setTitle("Log In", for: [])
             changeSignupOrLoginButtonLabel.setTitle("Sign Up", for: [])
-            changeModeLabel.text = "Newbie?"
+            changeModeLabel.text = "Don't have an account?"
             
         }
     }
@@ -126,36 +126,21 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        
-        // Save location POIs here:
-        /*
-         let newPOI = PFObject(className: "POI")
-         newPOI["name"] = "Royal Albert Hall"
-         newPOI["coordinates"] = PFGeoPoint(latitude: 51.5004168, longitude: -0.178973)
-         
-         let audioPath = Bundle.main.path(forResource: "Blowing in the Wind", ofType: "mp3")
-         //NSURL *soundURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"mysoundname" ofType:@"wav"]]
-         let audioURL = URL(fileURLWithPath: Bundle.main.path(pathForResource: "Blowing in the Wind", ofType: "mp3"))
-         
-         
-         do {
-         newPOI["audio"] = try PFFile(name: "Blowing in the Wind", data: audioPath!)
-         } catch {
-         print("Could not upload audio file")
-         }
-         newPOI.saveInBackground { (success, error) in
-         if error != nil {
-         print("Could not save")
-         } else {
-         print("saved")
-         }
-         }
-         */
+        // rid keyboard
+        let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
+        view.addGestureRecognizer(dismissKeyboard)
         
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    func tap(gesture: UITapGestureRecognizer) {
+        
+        UIView.animate(withDuration: 0, delay: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
+            self.view.layoutIfNeeded()
+            }, completion: { (completed) in
+                self.usernameInput.resignFirstResponder()
+                self.passwordInput.resignFirstResponder()
+        })
     }
+    
 }

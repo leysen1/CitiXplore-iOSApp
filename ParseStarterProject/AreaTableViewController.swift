@@ -9,15 +9,14 @@
 import UIKit
 import Parse
 
-var activePlace = -1
-var londonArray = [String]()
-// searh bar
 
 class AreaTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var perAreaPOIs = [String: Int]()
     var allAreas = [String]()
     var completed = [String: Int]()
+    var londonArray = [String]()
+    var chosenArea = String()
 
     @IBOutlet var tableView: UITableView!
     
@@ -39,17 +38,17 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
                     for POI in POIs {
                         let area = POI["area"] as! String
                         self.allAreas.append(area)
-                        if londonArray.contains(area) {
+                        if self.londonArray.contains(area) {
                             // do nothing
                         } else {
-                             londonArray.append(area)
+                             self.londonArray.append(area)
                         }
             }
                     for item in self.allAreas {
                         self.perAreaPOIs[item] = (self.perAreaPOIs[item] ?? 0) + 1 }
                     print("perAreaPOIs")
                     print(self.perAreaPOIs)
-                    print(londonArray)
+                    print(self.londonArray)
 
                 }
         }
@@ -116,12 +115,12 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "toPOIs", sender: nil)
         
-        activePlace = indexPath.row
-        print("located here")
-        print(activePlace)
-
+        
+        if londonArray.count > 0 {
+            chosenArea = londonArray[indexPath.row]
+            performSegue(withIdentifier: "toPOIs", sender: self)
+        }
     }
     
     @IBAction func mapView(_ sender: AnyObject) {
@@ -132,10 +131,12 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "toPOIs") {
+            
             let backItem = UIBarButtonItem()
             backItem.title = "Back"
             navigationItem.backBarButtonItem = backItem
-            
+            let POIVC = segue.destination as! POIsViewController
+            POIVC.chosenAreaPOI = self.chosenArea
         }
     }
     

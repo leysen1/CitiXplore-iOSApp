@@ -12,7 +12,7 @@ import AVFoundation
 import Parse
 
 
-// search bar
+// create alert message if data doesn't load
 
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
@@ -26,6 +26,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var completedArray = [String]()
     let searchController = UISearchController(searchResultsController: nil)
     var filteredNameArray = [String]()
+    var chosenAreaPOI = String()
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredNameArray = nameArray.filter({ (skill) -> Bool in
@@ -92,10 +93,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
         
-    }
-
-    
-    override func viewDidAppear(_ animated: Bool) {
         
         self.playButtonImage.isEnabled = false
         self.scrubber.isEnabled = false
@@ -105,23 +102,23 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         distanceArray.removeAll()
         coordinatesArray.removeAll()
         imageDataArray.removeAll()
+        coordinatesArray.removeAll()
+        audioArray.removeAll()
         
         // get POIs of the chosen area
         let query = PFQuery(className: "POI")
-        query.whereKey("area", equalTo: londonArray[Int(activePlace)])
-        
+        query.whereKey("area", equalTo: chosenAreaPOI)
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print(error)
                 print("no objects found")
             } else {
-                self.coordinatesArray.removeAll()
                 if let points = objects {
                     var testCompleted: [String]?
                     for point in points {
                         self.nameArray.append(point["name"] as! String)
                         self.addressArray.append(point["address"] as! String)
-                       
+                        
                         testCompleted = (point["completed"] as? [String])
                         if testCompleted != nil {
                             if (testCompleted?.contains(self.username))! {
@@ -132,7 +129,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         } else {
                             self.completedArray.append("no")
                         }
-                            // get POI audio
+                        // get POI audio
                         if let audioClip = point["audio"] as? PFFile {
                             audioClip.getDataInBackground(block: { (data, error) in
                                 if error != nil {
@@ -147,8 +144,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 }
                             })
                         } else {
-                            // no audio found 
-                             let audioPath = Bundle.main.path(forResource: "Circle Of Life", ofType: "mp3")
+                            // no audio found
+                            let audioPath = Bundle.main.path(forResource: "Circle Of Life", ofType: "mp3")
                             do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
                                 self.audioArray.append(audioFiller)
                             } catch {
@@ -157,37 +154,46 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             
                         }
                         
-                            // get the POI image
+                        // get the POI image
                         if let photo = point as? PFObject {
-                            if photo["audio"] != nil {
+                            if photo["picture"] != nil {
                                 self.imageDataArray.append(photo["picture"] as! PFFile)
                             } else {
                                 // not images found
+                                let photoFile = PFFile(data: UIImageJPEGRepresentation(UIImage(named: "cityview.jpg")!, 1.0)!)
+                                self.imageDataArray.append(photoFile!)
                             }
                         }
                         
-                            // get the POI coordinates
-                            if let POILocation = point["coordinates"] as? PFGeoPoint {
-                                let POICLLocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
-                                let userCLLocation = CLLocation(latitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.latitude)!, longitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.longitude)!)
-                                let distance = userCLLocation.distance(from: POICLLocation) / 1000
-                                let roundedDistance = round(distance * 100) / 100
-                                self.distanceArray.append(String(roundedDistance))
-                                self.coordinatesArray.append(CLLocationCoordinate2D(latitude: POILocation.latitude, longitude: POILocation.longitude))
-                                self.tableView.reloadData()
-                            } else {
-                                print("Could not get POI Location")
-                            }
-                            
+                        // get the POI coordinates
+                        if let POILocation = point["coordinates"] as? PFGeoPoint {
+                            let POICLLocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
+                            let userCLLocation = CLLocation(latitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.latitude)!, longitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.longitude)!)
+                            let distance = userCLLocation.distance(from: POICLLocation) / 1000
+                            let roundedDistance = round(distance * 100) / 100
+                            self.distanceArray.append(String(roundedDistance))
+                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: POILocation.latitude, longitude: POILocation.longitude))
+                            self.tableView.reloadData()
+                        } else {
+                            print("Could not get POI Location")
+                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: 0, longitude: 0))
                         }
+                        
+                    }
                     self.tableView.reloadData()
                     self.tableView.tableFooterView = UIView()
                     print("completed array \(self.completedArray)")
-
+                    
                 }
-
+                
             }
         }
+        
+
+    }
+
+    
+    override func viewDidAppear(_ animated: Bool) {
         
         
     }

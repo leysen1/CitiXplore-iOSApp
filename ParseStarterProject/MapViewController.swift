@@ -93,13 +93,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         }
  
                     }
-
-                    print("here")
-                    print(self.annotationTitle)
-                    print(self.annotationAddress)
-                    print(self.annotationLocation)
-                    print(self.MKPinColorArray)
-                    
                 }
             })
         })
@@ -129,7 +122,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         // annotation
         serialQueue.sync(execute: {
             
-            if tappedPlaceForMapMV != nil {
+            if tappedPlaceForMapMV != nil && tappedPlaceForMapMV != "" {
                 // we went through a specific POI cell, only show one POI
                 let item = self.tappedPlaceForMapMV!
                 let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
