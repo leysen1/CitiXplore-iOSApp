@@ -14,6 +14,8 @@ import Parse
 
 // create alert message if data doesn't load
 
+// simplify for now and get rid of the map cell button. 
+
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
     // circle of life video should be a "sorry there is no audio available at this time"
