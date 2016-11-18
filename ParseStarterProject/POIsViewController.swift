@@ -26,7 +26,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var completedArray = [String]()
     let searchController = UISearchController(searchResultsController: nil)
     var filteredNameArray = [String]()
-    var chosenAreaPOI = String()
+    var chosenAreaPOI = ""
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredNameArray = nameArray.filter({ (skill) -> Bool in
@@ -194,7 +194,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     
     override func viewDidAppear(_ animated: Bool) {
+        tappedPlaceForMap = ""
         
+        if nameArray.count < 1 {
+            tableView.reloadData()
+        }
         
     }
 
@@ -352,9 +356,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
     @IBAction func goToMap(sender: UIButton!) {
-        tappedPlaceForMap = nameArray[sender.tag]
-        print(tappedPlaceForMap)
-        performSegue(withIdentifier: "mapSegue", sender: self)
+        if tappedPlaceForMap == "" && nameArray.count > 0 {
+            tappedPlaceForMap = nameArray[sender.tag]
+            print("tapped place \(tappedPlaceForMap)")
+            performSegue(withIdentifier: "mapSegue", sender: self)
+        } else {
+            print("not ready to segue to map")
+        }
     }
     
  
@@ -391,25 +399,24 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if playMode {
             self.trackPlaying.stop()
+            performSegue(withIdentifier: "mapSegue", sender: self)
+        } else {
+            performSegue(withIdentifier: "mapSegue", sender: self)
         }
         
-        performSegue(withIdentifier: "mapSegue", sender: self)
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "mapSegue") {
+            let MapVC = segue.destination as! MapViewController
             if tappedPlaceForMap != "" {
-                let MapVC = segue.destination as! MapViewController
                 MapVC.tappedPlaceForMapMV = tappedPlaceForMap
+            } else {
+                MapVC.tappedPlaceForMapMV = ""
             }
-            
         }
     }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        tappedPlaceForMap.removeAll()
-    }
-
 }
 
 extension POIsViewController: UISearchResultsUpdating {

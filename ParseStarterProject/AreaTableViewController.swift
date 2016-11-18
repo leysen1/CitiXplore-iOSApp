@@ -22,7 +22,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         let query = PFQuery(className: "POI")
         query.whereKey("city", equalTo: "London")
@@ -80,6 +80,12 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if allAreas.count < 1 {
+            tableView.reloadData()
+        }
     }
     
     

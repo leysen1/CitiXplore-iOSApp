@@ -151,7 +151,7 @@
                         <outlet property="loginOrSignupButtonLabel" destination="tSD-Af-Z03" id="pYD-2E-PcS"/>
                         <outlet property="passwordInput" destination="1wS-Xo-Hmi" id="B2I-aN-0HN"/>
                         <outlet property="usernameInput" destination="NCb-A4-p0a" id="O8e-SI-9KM"/>
-                        <segue destination="OSI-KX-AB4" kind="show" identifier="areaSegue" id="23K-Zg-rxP"/>
+                        <segue destination="OSI-KX-AB4" kind="show" identifier="toMapView" id="vMT-Cm-s6n"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -240,12 +240,13 @@
         <scene sceneID="JQG-Av-r3d">
             <objects>
                 <navigationController title="Areas" id="OSI-KX-AB4" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="chx-RF-zTZ"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="dhA-vX-fRM">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="nsd-bW-gsz" kind="relationship" relationship="rootViewController" id="ilz-Ev-tfZ"/>
+                        <segue destination="7bX-zz-G6p" kind="relationship" relationship="rootViewController" id="xEv-C6-1r7"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DKG-YI-MhN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -264,52 +265,40 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5O3-vn-Zq3">
-                                <frame key="frameInset" minY="28" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <items>
-                                    <navigationItem title="Find local stops" id="a5m-1d-MoM">
-                                        <barButtonItem key="rightBarButtonItem" image="profilesmall.png" id="Xfy-T5-iRw">
-                                            <connections>
-                                                <segue destination="Jz7-Vm-p4B" kind="show" id="zCv-wR-gpp"/>
-                                            </connections>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nm8-pm-ngs">
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="Hyq-zd-LI3"/>
+                                    <constraint firstAttribute="height" constant="44" id="IJe-z3-6OK"/>
                                 </constraints>
                                 <items>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="n9b-TJ-COM"/>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="7cp-YV-oTy"/>
+                                    <barButtonItem title="Area" id="jEX-9C-Yl8">
+                                        <connections>
+                                            <segue destination="nsd-bW-gsz" kind="show" id="jew-pN-M8g"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GfP-9h-5ZN"/>
+                            <mapView multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GfP-9h-5ZN"/>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Rpp-uX-FIO" firstAttribute="top" secondItem="Nm8-pm-ngs" secondAttribute="bottom" id="3vA-ji-N0w"/>
-                            <constraint firstItem="Rpp-uX-FIO" firstAttribute="top" secondItem="Nm8-pm-ngs" secondAttribute="bottom" id="Euq-Cm-d2I"/>
-                            <constraint firstItem="Nm8-pm-ngs" firstAttribute="top" secondItem="GfP-9h-5ZN" secondAttribute="bottom" id="MXX-BU-IVJ"/>
-                            <constraint firstAttribute="trailing" secondItem="Nm8-pm-ngs" secondAttribute="trailing" id="MuT-AJ-soH"/>
-                            <constraint firstAttribute="trailing" secondItem="GfP-9h-5ZN" secondAttribute="trailing" id="S8W-Ij-xe5"/>
-                            <constraint firstAttribute="trailing" secondItem="Nm8-pm-ngs" secondAttribute="trailing" id="VKV-Bq-mUf"/>
-                            <constraint firstItem="Nm8-pm-ngs" firstAttribute="leading" secondItem="4E4-aE-281" secondAttribute="leading" id="bSJ-Rh-k54"/>
-                            <constraint firstItem="Nm8-pm-ngs" firstAttribute="top" secondItem="GfP-9h-5ZN" secondAttribute="bottom" id="bco-91-iVh"/>
-                            <constraint firstItem="GfP-9h-5ZN" firstAttribute="top" secondItem="bTS-o8-qci" secondAttribute="bottom" id="lpR-yO-lk2"/>
-                            <constraint firstItem="GfP-9h-5ZN" firstAttribute="leading" secondItem="4E4-aE-281" secondAttribute="leading" id="qQl-G3-YRO"/>
-                            <constraint firstItem="Nm8-pm-ngs" firstAttribute="leading" secondItem="4E4-aE-281" secondAttribute="leading" id="u2f-1U-TQi"/>
+                            <constraint firstItem="Rpp-uX-FIO" firstAttribute="top" secondItem="Nm8-pm-ngs" secondAttribute="bottom" id="0iY-PE-DCP"/>
+                            <constraint firstItem="GfP-9h-5ZN" firstAttribute="top" secondItem="4E4-aE-281" secondAttribute="top" constant="64" id="3hX-v1-j8g"/>
+                            <constraint firstAttribute="trailing" secondItem="Nm8-pm-ngs" secondAttribute="trailing" id="IzA-2K-xUX"/>
+                            <constraint firstItem="GfP-9h-5ZN" firstAttribute="leading" secondItem="4E4-aE-281" secondAttribute="leading" id="RZc-HX-GPN"/>
+                            <constraint firstItem="Rpp-uX-FIO" firstAttribute="top" secondItem="GfP-9h-5ZN" secondAttribute="bottom" constant="44" id="cra-Dx-WkZ"/>
+                            <constraint firstAttribute="trailing" secondItem="GfP-9h-5ZN" secondAttribute="trailing" id="mnY-hN-X3j"/>
+                            <constraint firstItem="Nm8-pm-ngs" firstAttribute="leading" secondItem="4E4-aE-281" secondAttribute="leading" id="ztv-dY-M77"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="2cU-QJ-uoL"/>
                     <connections>
                         <outlet property="mapView" destination="GfP-9h-5ZN" id="bmZ-1Q-frg"/>
-                        <segue destination="nsd-bW-gsz" kind="show" identifier="areaSegue" id="2fQ-yo-7Jl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pCl-Vg-Zm4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1776.8" y="303.59820089955025"/>
+            <point key="canvasLocation" x="848.79999999999995" y="-152.47376311844079"/>
         </scene>
         <!--Areas-->
         <scene sceneID="K9l-y0-hlP">
@@ -334,12 +323,6 @@
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="WPf-SW-vqF"/>
-                                    <barButtonItem title="Map" id="FG3-dM-aEn">
-                                        <connections>
-                                            <action selector="mapView:" destination="nsd-bW-gsz" id="eRg-bL-xLX"/>
-                                            <segue destination="7bX-zz-G6p" kind="show" id="sNp-CF-gcm"/>
-                                        </connections>
-                                    </barButtonItem>
                                 </items>
                             </toolbar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="51" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="xZa-fa-g40">
@@ -421,7 +404,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z90-rp-NeB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="808.79999999999995" y="-152.47376311844079"/>
+            <point key="canvasLocation" x="1826" y="-152"/>
         </scene>
         <!--POIs-->
         <scene sceneID="0u6-z0-2rK">
@@ -626,18 +609,16 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jNQ-ve-yPv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1776.8" y="-520.38980509745136"/>
+            <point key="canvasLocation" x="2881" y="-152"/>
         </scene>
     </scenes>
     <resources>
         <image name="green pin.png" width="256" height="256"/>
         <image name="play.jpg" width="626" height="626"/>
-        <image name="profilesmall.png" width="30" height="30"/>
         <image name="stpancreas.jpg" width="1920" height="1255"/>
         <image name="tick.png" width="1279" height="1280"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="CHJ-hO-XMd"/>
-        <segue reference="ilz-Ev-tfZ"/>
     </inferredMetricsTieBreakers>
 </document>

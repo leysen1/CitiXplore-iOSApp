@@ -60,7 +60,7 @@ class ViewController: UIViewController {
                     
                 } else {
                     print("Logged in")
-                    self.performSegue(withIdentifier: "areaSegue", sender: nil)
+                    self.performSegue(withIdentifier: "toMapView", sender: self)
                     
                     
                 }
@@ -93,7 +93,7 @@ class ViewController: UIViewController {
                     
                 } else {
                     print("user signed up")
-                    self.shouldPerformSegue(withIdentifier: "areaSegue", sender: self)
+                    self.performSegue(withIdentifier: "toMapView", sender: self)
                     // self.performSegue(withIdentifier: "mapSegue", sender: self)
                     
                 }

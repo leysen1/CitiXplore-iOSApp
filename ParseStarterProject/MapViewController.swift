@@ -22,8 +22,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var annotationLocation = [CLLocationCoordinate2D]()
     var MKPinColorArray = [MKPinAnnotationColor]()
     let serialQueue = DispatchQueue(label: "label")
+    
+    var activityIndicator = UIActivityIndicatorView()
 
-    var tappedPlaceForMapMV: String?
+    var tappedPlaceForMapMV = ""
     
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
@@ -51,12 +53,23 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
         override func viewDidLoad() {
         super.viewDidLoad()
+
             
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
             locationManager.requestWhenInUseAuthorization()
             locationManager.startUpdatingLocation()
 
+            //Spinner
+            activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+            activityIndicator.center = self.view.center
+            activityIndicator.hidesWhenStopped = true
+            activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+            activityIndicator.startAnimating()
+            view.addSubview(activityIndicator)
+            UIApplication.shared.beginIgnoringInteractionEvents()
+
+            
             serialQueue.sync(execute: {
             // save user location
             PFUser.current()?["location"] = PFGeoPoint(latitude: userLocation.latitude, longitude: userLocation.longitude)
@@ -73,6 +86,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             // find all POIs
             let query = PFQuery(className: "POI")
             query.findObjectsInBackground(block: { (objects, error) in
+                if error != nil {
+                    print("could not get objects")
+                } else {
                 if let poiLocations = objects {
                     var completedArray: [String]?
                     for poiLocation in poiLocations {
@@ -80,7 +96,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         self.annotationTitle.append((poiLocation["name"] as? String)!)
                         self.annotationAddress.append((poiLocation["address"] as? String)!)
                         self.annotationLocation.append(CLLocationCoordinate2D(latitude: (poiLocation["coordinates"] as AnyObject).latitude, longitude: (poiLocation["coordinates"] as AnyObject).longitude))
-                        completedArray = (poiLocation["completed"] as? [String])
+                        completedArray = poiLocation["completed"] as? [String]
                         if completedArray != nil {
                             if (completedArray?.contains(self.username))! {
                                 self.MKPinColorArray.append(MKPinAnnotationColor.green)
@@ -93,16 +109,21 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         }
  
                     }
+                    
+                    self.activityIndicator.stopAnimating()
+                    UIApplication.shared.endIgnoringInteractionEvents()
                 }
+                }
+                
             })
         })
             
         let delayInSeconds = 1.0
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
             // set map view
-            if self.tappedPlaceForMapMV != nil {
+            if self.tappedPlaceForMapMV != "" {
                 // centre on specific POI
-                let item = self.tappedPlaceForMapMV!
+                let item = self.tappedPlaceForMapMV
                 let POILocation = CLLocationCoordinate2D(latitude: self.annotationLocation[self.annotationTitle.index(of: item)!].latitude, longitude: self.annotationLocation[self.annotationTitle.index(of: item)!].longitude)
                 let region = MKCoordinateRegion(center: POILocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
                 self.mapView.setRegion(region, animated: false)
@@ -114,7 +135,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             }
 
             }
- 
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -122,11 +142,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         // annotation
         serialQueue.sync(execute: {
             
-            if tappedPlaceForMapMV != nil && tappedPlaceForMapMV != "" {
+            if tappedPlaceForMapMV != "" {
                 // we went through a specific POI cell, only show one POI
-                let item = self.tappedPlaceForMapMV!
+                let item = self.tappedPlaceForMapMV
                 let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
                 mapView.addAnnotation(annotate)
+                print("tapped \(tappedPlaceForMapMV)")
             } else {
                 // show all POIs
                 for item in annotationTitle {
@@ -144,11 +165,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             mapView.showsUserLocation = true
         })
         
-        print("tapped \(tappedPlaceForMapMV)")
+        
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
-        tappedPlaceForMapMV?.removeAll()
+        tappedPlaceForMapMV = ""
     }
     
 
