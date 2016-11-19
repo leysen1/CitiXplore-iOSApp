@@ -14,7 +14,7 @@ import Parse
 
 // create alert message if data doesn't load
 
-// simplify for now and get rid of the map cell button. 
+// simplify for now and get rid of the map cell button.
 
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
@@ -30,6 +30,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var filteredNameArray = [String]()
     var chosenAreaPOI = ""
     
+    // audio Variables
+    var audioArray = [AVAudioPlayer]()
+    var trackPlaying = AVAudioPlayer()
+    var playMode = false
+    let serialQueue = DispatchQueue(label: "label")
+    
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredNameArray = nameArray.filter({ (skill) -> Bool in
             return skill.lowercased().contains(searchText.lowercased())
@@ -41,16 +47,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var imageDataArray = [PFFile]()
     
-    var tappedPlaceForMap = String()
-    
     @IBOutlet var tableView: UITableView!
-    
-    
-    // audio Variables
-    var audioArray = [AVAudioPlayer]()
-    var trackPlaying = AVAudioPlayer()
-    var playMode = false
-
 
  
     @IBOutlet var scrubber: UISlider!
@@ -99,14 +96,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.playButtonImage.isEnabled = false
         self.scrubber.isEnabled = false
         
-        nameArray.removeAll()
-        addressArray.removeAll()
-        distanceArray.removeAll()
-        coordinatesArray.removeAll()
-        imageDataArray.removeAll()
-        coordinatesArray.removeAll()
-        audioArray.removeAll()
         
+        serialQueue.sync(execute: {
         // get POIs of the chosen area
         let query = PFQuery(className: "POI")
         query.whereKey("area", equalTo: chosenAreaPOI)
@@ -116,21 +107,20 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 print("no objects found")
             } else {
                 if let points = objects {
+                    
+                    self.nameArray.removeAll()
+                    self.addressArray.removeAll()
+                    self.distanceArray.removeAll()
+                    self.coordinatesArray.removeAll()
+                    self.imageDataArray.removeAll()
+                    self.coordinatesArray.removeAll()
+                    self.audioArray.removeAll()
+                    
                     var testCompleted: [String]?
                     for point in points {
                         self.nameArray.append(point["name"] as! String)
                         self.addressArray.append(point["address"] as! String)
-                        
-                        testCompleted = (point["completed"] as? [String])
-                        if testCompleted != nil {
-                            if (testCompleted?.contains(self.username))! {
-                                self.completedArray.append("yes")
-                            } else {
-                                self.completedArray.append("no")
-                            }
-                        } else {
-                            self.completedArray.append("no")
-                        }
+                        /*
                         // get POI audio
                         if let audioClip = point["audio"] as? PFFile {
                             audioClip.getDataInBackground(block: { (data, error) in
@@ -155,13 +145,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             }
                             
                         }
-                        
+    */
                         // get the POI image
                         if let photo = point as? PFObject {
                             if photo["picture"] != nil {
                                 self.imageDataArray.append(photo["picture"] as! PFFile)
                             } else {
-                                // not images found
+                                // no images found
                                 let photoFile = PFFile(data: UIImageJPEGRepresentation(UIImage(named: "cityview.jpg")!, 1.0)!)
                                 self.imageDataArray.append(photoFile!)
                             }
@@ -181,22 +171,33 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             self.coordinatesArray.append(CLLocationCoordinate2D(latitude: 0, longitude: 0))
                         }
                         
+                        
+                        testCompleted = (point["completed"] as? [String])
+                        if testCompleted != nil {
+                            if (testCompleted?.contains(self.username))! {
+                                self.completedArray.append("yes")
+                            } else {
+                                self.completedArray.append("no")
+                            }
+                        } else {
+                            self.completedArray.append("no")
+                        }
+                        
+                        
+                        
                     }
                     self.tableView.reloadData()
                     self.tableView.tableFooterView = UIView()
                     print("completed array \(self.completedArray)")
                     
                 }
-                
             }
-        }
-        
-
+        }    
+        })
     }
 
     
     override func viewDidAppear(_ animated: Bool) {
-        tappedPlaceForMap = ""
         
         if nameArray.count < 1 {
             tableView.reloadData()
@@ -262,9 +263,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 cell.tickImage.image = UIImage()
             }
             
-            cell.mapButton.tag = indexValue!
-            cell.mapButton.addTarget(self, action: #selector(goToMap), for: .touchUpInside)
-            
         } else {
             // no filter
             
@@ -304,9 +302,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage()
             }
-            
-            cell.mapButton.tag = indexPath.row
-            cell.mapButton.addTarget(self, action: #selector(goToMap), for: .touchUpInside)
         }
 
         
@@ -320,7 +315,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if audioArray.count > 0 && nameArray.count > 0 {
+        var tempPlayer = AVAudioPlayer()
+        
+        if nameArray.count > 0 {
             if self.playButtonImage.isEnabled == false {
                 self.playButtonImage.isEnabled = true
                 self.scrubber.isEnabled = true
@@ -328,26 +325,55 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             } else {
                 trackPlaying.stop()
             }
-            
+            let query = PFQuery(className: "POI")
             if searchController.isActive && searchController.searchBar.text != "" {
-                let indexValue = nameArray.index(of: filteredNameArray[indexPath.row])
-                trackPlaying = audioArray[indexValue!]
-                audioLocationName.text = nameArray[indexValue!]
+                query.whereKey("name", equalTo: filteredNameArray[indexPath.row])
+                audioLocationName.text = filteredNameArray[indexPath.row]
             } else {
-                trackPlaying = audioArray[indexPath.row]
+                query.whereKey("name", equalTo: nameArray[indexPath.row])
                 audioLocationName.text = nameArray[indexPath.row]
             }
-            
-            time = trackPlaying.duration
-            trackPlaying.volume = 0.9
-            trackPlaying.play()
-            playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
-            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
-            scrubber.maximumValue = Float(trackPlaying.duration)
-            scrubber.value = 0
-            playMode = true
-            let minutes = Int(time/60)
-            self.audioTimeLeft.text = "\(String(minutes)):\(String(Int((time) - Double(minutes*60))))"
+                query.findObjectsInBackground(block: { (objects, error) in
+                    if error != nil {
+                        print(error)
+                    } else {
+                        if let objects = objects {
+                            tempPlayer = AVAudioPlayer()
+                            for object in objects {
+                                
+                                if let audioClip = object["audio"] as? PFFile {
+                                    audioClip.getDataInBackground(block: { (data, error) in
+                                        if error != nil {
+                                            print(error)
+                                        } else {
+                                            do { tempPlayer = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
+                                                self.trackPlaying = tempPlayer
+                                                if tempPlayer != AVAudioPlayer() {
+                                                    self.playNewSong()
+                                                }
+                                                
+                                            } catch {  print(error)
+                                            }
+                                        }
+                                    })
+                                } else {
+                                        // no audio found
+                                    let audioPath = Bundle.main.path(forResource: "Circle Of Life", ofType: "mp3")
+                                    do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
+                                        self.trackPlaying = audioFiller
+                                        if tempPlayer != AVAudioPlayer() {
+                                            self.playNewSong()
+                                        }
+                                    } catch {
+                                        // error
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    }
+                })
+
             
         } else {
             // no audio found
@@ -355,18 +381,18 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     
-    
-    
-    @IBAction func goToMap(sender: UIButton!) {
-        if tappedPlaceForMap == "" && nameArray.count > 0 {
-            tappedPlaceForMap = nameArray[sender.tag]
-            print("tapped place \(tappedPlaceForMap)")
-            performSegue(withIdentifier: "mapSegue", sender: self)
-        } else {
-            print("not ready to segue to map")
-        }
+    func playNewSong() {
+            self.time = self.trackPlaying.duration
+            self.trackPlaying.volume = 0.9
+            self.trackPlaying.play()
+            self.playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
+            self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
+            self.scrubber.maximumValue = Float(self.trackPlaying.duration)
+            self.scrubber.value = 0
+            self.playMode = true
+            let minutes = Int(self.time/60)
+            self.audioTimeLeft.text = "\(String(minutes)):\(String(Int((self.time) - Double(minutes*60))))"
     }
-    
  
     func updateSlider() {
         scrubber.value = Float(trackPlaying.currentTime)
@@ -397,28 +423,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     }
     
-    @IBAction func mapView(_ sender: AnyObject) {
-        
-        if playMode {
-            self.trackPlaying.stop()
-            performSegue(withIdentifier: "mapSegue", sender: self)
-        } else {
-            performSegue(withIdentifier: "mapSegue", sender: self)
-        }
-        
-        
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "mapSegue") {
-            let MapVC = segue.destination as! MapViewController
-            if tappedPlaceForMap != "" {
-                MapVC.tappedPlaceForMapMV = tappedPlaceForMap
-            } else {
-                MapVC.tappedPlaceForMapMV = ""
-            }
-        }
-    }
 }
 
 extension POIsViewController: UISearchResultsUpdating {

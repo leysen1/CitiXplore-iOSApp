@@ -25,7 +25,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     var activityIndicator = UIActivityIndicatorView()
 
-    var tappedPlaceForMapMV = ""
     
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
@@ -120,19 +119,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             
         let delayInSeconds = 1.0
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
-            // set map view
-            if self.tappedPlaceForMapMV != "" {
-                // centre on specific POI
-                let item = self.tappedPlaceForMapMV
-                let POILocation = CLLocationCoordinate2D(latitude: self.annotationLocation[self.annotationTitle.index(of: item)!].latitude, longitude: self.annotationLocation[self.annotationTitle.index(of: item)!].longitude)
-                let region = MKCoordinateRegion(center: POILocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
-                self.mapView.setRegion(region, animated: false)
-                
-            } else {
+ 
                 // centre on user
                 let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
                 self.mapView.setRegion(region, animated: false)
-            }
 
             }
     }
@@ -141,20 +131,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         
         // annotation
         serialQueue.sync(execute: {
-            
-            if tappedPlaceForMapMV != "" {
-                // we went through a specific POI cell, only show one POI
-                let item = self.tappedPlaceForMapMV
-                let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
-                mapView.addAnnotation(annotate)
-                print("tapped \(tappedPlaceForMapMV)")
-            } else {
-                // show all POIs
+
                 for item in annotationTitle {
                     let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
                     print("annotate \(annotate)")
                     mapView.addAnnotation(annotate)
-                }
             }
 
         })
@@ -167,11 +148,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         
         
     }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        tappedPlaceForMapMV = ""
-    }
-    
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? Annotate {

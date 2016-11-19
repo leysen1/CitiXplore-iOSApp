@@ -129,12 +129,6 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    @IBAction func mapView(_ sender: AnyObject) {
-        dismiss(animated: true, completion: nil)
-
-        
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "toPOIs") {
             
@@ -149,6 +143,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     @IBAction func logout(_ sender: AnyObject) {
+        Parse.cancelPreviousPerformRequests(withTarget: self)
         PFUser.logOut()
         print("logged out")
         dismiss(animated: true, completion: nil)

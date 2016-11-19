@@ -455,14 +455,6 @@
                                                         <bool key="isElement" value="YES"/>
                                                     </accessibility>
                                                 </imageView>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qst-ac-AUu">
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="30" id="2kS-41-5TX"/>
-                                                        <constraint firstAttribute="width" constant="66" id="VdM-77-NII"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <state key="normal" title="Map"/>
-                                                </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jKh-fI-RtI">
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="1" id="7WB-x3-zLX"/>
@@ -480,18 +472,15 @@
                                                 </imageView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="bottomMargin" secondItem="Qst-ac-AUu" secondAttribute="bottom" constant="2.5" id="0i3-KM-Ldr"/>
                                                 <constraint firstAttribute="bottom" secondItem="0Tm-ix-REF" secondAttribute="bottom" constant="5.5" id="8Ga-mw-PQ4"/>
                                                 <constraint firstItem="0Tm-ix-REF" firstAttribute="leading" secondItem="jKh-fI-RtI" secondAttribute="trailing" constant="3" id="FlY-Ac-FiT"/>
                                                 <constraint firstItem="WOz-Eu-Wb7" firstAttribute="top" secondItem="7a0-LP-ZcT" secondAttribute="topMargin" id="PJY-Ua-Bq4"/>
-                                                <constraint firstItem="jKh-fI-RtI" firstAttribute="leading" secondItem="Qst-ac-AUu" secondAttribute="trailing" constant="4" id="TiI-Rj-pvm"/>
                                                 <constraint firstItem="0Tm-ix-REF" firstAttribute="top" secondItem="7a0-LP-ZcT" secondAttribute="top" constant="8" id="XbF-DH-Aic"/>
                                                 <constraint firstAttribute="bottom" secondItem="jKh-fI-RtI" secondAttribute="bottom" constant="5.5" id="Xtv-ij-O3t"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="8T9-o1-uBr" secondAttribute="bottom" constant="6.5" id="YKH-yg-iET"/>
                                                 <constraint firstItem="dKs-6K-d0e" firstAttribute="top" secondItem="7a0-LP-ZcT" secondAttribute="topMargin" constant="19" id="bYY-og-CTe"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="jKh-fI-RtI" secondAttribute="trailing" constant="99" id="ftX-cb-x7h"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="dKs-6K-d0e" secondAttribute="trailing" constant="33" id="ftv-kG-P4q"/>
-                                                <constraint firstItem="Qst-ac-AUu" firstAttribute="leading" secondItem="8T9-o1-uBr" secondAttribute="trailing" constant="8" id="gZt-ql-ibQ"/>
                                                 <constraint firstItem="jKh-fI-RtI" firstAttribute="leading" secondItem="WOz-Eu-Wb7" secondAttribute="trailing" constant="4" id="hRN-06-yEx"/>
                                                 <constraint firstItem="jKh-fI-RtI" firstAttribute="top" secondItem="7a0-LP-ZcT" secondAttribute="top" id="jSY-he-ACW"/>
                                                 <constraint firstItem="8T9-o1-uBr" firstAttribute="leading" secondItem="7a0-LP-ZcT" secondAttribute="leadingMargin" id="o8u-86-xLB"/>
@@ -510,7 +499,6 @@
                                             <outlet property="locationDistance" destination="8T9-o1-uBr" id="Xu9-KE-VUl"/>
                                             <outlet property="locationImage" destination="0Tm-ix-REF" id="5Zu-RS-wg7"/>
                                             <outlet property="locationName" destination="WOz-Eu-Wb7" id="x1D-Oz-nGq"/>
-                                            <outlet property="mapButton" destination="Qst-ac-AUu" id="y5h-5H-0Kd"/>
                                             <outlet property="tickImage" destination="dKs-6K-d0e" id="Atr-GP-b2J"/>
                                         </connections>
                                     </tableViewCell>
@@ -526,11 +514,6 @@
                                 </constraints>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="rkQ-gg-r9g"/>
-                                    <barButtonItem title="Map" id="smA-ea-skn">
-                                        <connections>
-                                            <action selector="mapView:" destination="QLM-oO-b9r" id="ff0-Go-qia"/>
-                                        </connections>
-                                    </barButtonItem>
                                 </items>
                             </toolbar>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="lIr-3U-gq7">
