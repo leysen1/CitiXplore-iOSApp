@@ -265,6 +265,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <mapView multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GfP-9h-5ZN"/>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nm8-pm-ngs">
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="IJe-z3-6OK"/>
@@ -278,15 +279,14 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
-                            <mapView multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GfP-9h-5ZN"/>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="Rpp-uX-FIO" firstAttribute="top" secondItem="Nm8-pm-ngs" secondAttribute="bottom" id="0iY-PE-DCP"/>
-                            <constraint firstItem="GfP-9h-5ZN" firstAttribute="top" secondItem="4E4-aE-281" secondAttribute="top" constant="64" id="3hX-v1-j8g"/>
+                            <constraint firstItem="Rpp-uX-FIO" firstAttribute="top" secondItem="GfP-9h-5ZN" secondAttribute="bottom" id="1cX-bM-m4R"/>
                             <constraint firstAttribute="trailing" secondItem="Nm8-pm-ngs" secondAttribute="trailing" id="IzA-2K-xUX"/>
+                            <constraint firstItem="GfP-9h-5ZN" firstAttribute="top" secondItem="4E4-aE-281" secondAttribute="topMargin" id="Qtw-yt-frS"/>
                             <constraint firstItem="GfP-9h-5ZN" firstAttribute="leading" secondItem="4E4-aE-281" secondAttribute="leading" id="RZc-HX-GPN"/>
-                            <constraint firstItem="Rpp-uX-FIO" firstAttribute="top" secondItem="GfP-9h-5ZN" secondAttribute="bottom" constant="44" id="cra-Dx-WkZ"/>
                             <constraint firstAttribute="trailing" secondItem="GfP-9h-5ZN" secondAttribute="trailing" id="mnY-hN-X3j"/>
                             <constraint firstItem="Nm8-pm-ngs" firstAttribute="leading" secondItem="4E4-aE-281" secondAttribute="leading" id="ztv-dY-M77"/>
                         </constraints>

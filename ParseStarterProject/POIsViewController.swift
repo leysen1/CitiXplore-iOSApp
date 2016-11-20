@@ -17,17 +17,19 @@ import Parse
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
     // circle of life video should be a "sorry there is no audio available at this time"
-    
-    let username = (PFUser.current()?.username!)!
+
+
     var nameArray = [String]()
     var addressArray = [String]()
     var distanceArray = [String]()
     var coordinatesArray = [CLLocationCoordinate2D]()
-    var completedArray = [Int]()
-    var completedArrayString = [String]()
+    var completedArray = [String]()
+    var imageDataArray = [PFFile]()
+    var sortingWithDistanceArray = [Double]()
     let searchController = UISearchController(searchResultsController: nil)
     var filteredNameArray = [String]()
     var chosenAreaPOI = ""
+    var activityIndicator = UIActivityIndicatorView()
     
     // audio Variables
     var audioArray = [AVAudioPlayer]()
@@ -44,7 +46,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.reloadData()
     }
     
-    var imageDataArray = [PFFile]()
     
     @IBOutlet var tableView: UITableView!
 
@@ -82,157 +83,182 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
 
-        searchController.searchResultsUpdater = self
-        searchController.dimsBackgroundDuringPresentation = false
-        definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
+            searchController.searchResultsUpdater = self
+            searchController.dimsBackgroundDuringPresentation = false
+            definesPresentationContext = true
+            tableView.tableHeaderView = searchController.searchBar
+            
+            
+            self.playButtonImage.isEnabled = false
+            self.scrubber.isEnabled = false
         
-        
-        self.playButtonImage.isEnabled = false
-        self.scrubber.isEnabled = false
-        
-        
-        serialQueue.sync(execute: {
-        // get POIs of the chosen area
-        let query = PFQuery(className: "POI")
-        query.whereKey("area", equalTo: chosenAreaPOI)
-        query.findObjectsInBackground { (objects, error) in
-            if error != nil {
-                print(error)
-                print("no objects found")
-            } else {
-                if let points = objects {
-                    
-                    self.nameArray.removeAll()
-                    self.addressArray.removeAll()
-                    self.distanceArray.removeAll()
-                    self.coordinatesArray.removeAll()
-                    self.imageDataArray.removeAll()
-                    self.coordinatesArray.removeAll()
-                    self.audioArray.removeAll()
-                    
-                    var testCompleted: [String]?
+      
 
-                    var distanceIntArray = [Double]()
-                    var completedYesi = 1
-                    var completedNoi = 1000
-                    
-                    for point in points {
-                        
-                        // get the POI coordinates
-                        if let POILocation = point["coordinates"] as? PFGeoPoint {
-                            let POICLLocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
-                            let userCLLocation = CLLocation(latitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.latitude)!, longitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.longitude)!)
-                            let distance = userCLLocation.distance(from: POICLLocation) / 1000
-                            let roundedDistance = round(distance * 100) / 100
-                            distanceIntArray.append(Double(roundedDistance))
-                            self.distanceArray.append(String(roundedDistance))
-                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: POILocation.latitude, longitude: POILocation.longitude))
-                            self.tableView.reloadData()
-                        } else {
-                            print("Could not get POI Location")
-                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: 0, longitude: 0))
+        serialQueue.async {
+
+            // get POI names in order of distance
+            let queryName = PFQuery(className: "POI")
+            queryName.whereKey("area", equalTo: self.chosenAreaPOI)
+            queryName.findObjectsInBackground { (objects, error) in
+                if error != nil {
+                    print(error)
+                    print("no objects found")
+                } else {
+                    if let objects = objects {
+                        self.serialQueue.sync {
+                            
+                        self.nameArray.removeAll()
+                        self.coordinatesArray.removeAll()
+                        self.distanceArray.removeAll()
                         }
-                        
-                        self.nameArray.append(point["name"] as! String)
-                        self.addressArray.append(point["address"] as! String)
-  
-                        // get the POI image
-                        if let photo = point as? PFObject {
-                            if photo["picture"] != nil {
-                                self.imageDataArray.append(photo["picture"] as! PFFile)
+                        self.serialQueue.sync {
+                        for object in objects {
+                            
+                            if let nameTemp = object["name"] as? String {
+                                self.nameArray.append(nameTemp)
+                            }
+                            
+                            // get the POI distances from user location
+                            if let POILocation = object["coordinates"] as? PFGeoPoint {
+                                
+                                let POICLLocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
+                                
+                                if let userLocTemp = PFUser.current()?["location"] as? PFGeoPoint {
+                                    
+                                    let userCLLocation = CLLocation(latitude: userLocTemp.latitude, longitude: userLocTemp.longitude)
+                                    
+                                    let distance = Double(userCLLocation.distance(from: POICLLocation) / 1000)
+                                    
+                                    self.distanceArray.append(String(distance))
+                                    
+                                    self.coordinatesArray.append(CLLocationCoordinate2D(latitude: POILocation.latitude, longitude: POILocation.longitude))
+                                    
+                                    self.sortingWithDistanceArray.append(distance)
+                                }
+                                
                             } else {
-                                // no images found
-                                let photoFile = PFFile(data: UIImageJPEGRepresentation(UIImage(named: "cityview.jpg")!, 1.0)!)
-                                self.imageDataArray.append(photoFile!)
+                                print("Could not get POI Location")
                             }
                         }
-                        
-       
-                        
-                        testCompleted = (point["completed"] as? [String])
-                        if testCompleted != nil {
-                            if (testCompleted?.contains(self.username))! {
-                                self.completedArray.append(completedYesi)
-                                self.completedArrayString.append(String(completedYesi))
-                                completedYesi += 1
-                            } else {
-                                self.completedArray.append(completedNoi)
-                                self.completedArrayString.append(String(completedNoi))
-                                completedNoi += 1
-                            }
-                        } else {
-                            self.completedArray.append(completedNoi)
-                            self.completedArrayString.append(String(completedNoi))
-                            completedNoi += 1
                         }
                         
+                        self.serialQueue.sync {
+                        // create dictionary out of name array and distance
+                        var dictName: [String: Double] = [:]
+                        var dictDist: [String: Double] = [:]
+                        
+                        for (name, number) in self.nameArray.enumerated()
+                        {
+                            dictName[number] = self.sortingWithDistanceArray[name]
+                        }
+                        for (distance, number) in self.distanceArray.enumerated()
+                        {
+                            dictDist[number] = self.sortingWithDistanceArray[distance]
+                        }
+                        
+                        let sortedName = (dictName as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
+                        let sortedDist = (dictDist as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
                         
                         
+                        self.nameArray = sortedName as! [String]
+                        self.distanceArray = sortedDist as! [String]
+                        
+                        print("distance \(self.distanceArray)")
+                        
+                        var tempDistanceArray = [String]()
+                        for item in self.distanceArray {
+                            let number: Double = round(Double(item)! * 100) / 100
+                            tempDistanceArray.append(String(number))
+                        }
+                        self.distanceArray = tempDistanceArray
+                        
+                        print("name array \(self.nameArray)")
+                        print("distance \(self.distanceArray)")
+                        }
                     }
-                    self.tableView.reloadData()
-                    self.tableView.tableFooterView = UIView()
-                    print("completed array \(self.completedArray)")
-                    print("distanceIntArray \(distanceIntArray)")
-                    
-                    // combine into dict and sort
-                    var dictName: [String: Double] = [:]
-                    var dictAddress: [String: Double] = [:]
-                    var dictDistance: [String: Double] = [:]
-                    var dictCompleted: [String: Double] = [:]
-                    
-                    for (name, number) in self.nameArray.enumerated()
-                    {
-                        dictName[number] = distanceIntArray[name]
-                    }
-                    for (address, number) in self.addressArray.enumerated()
-                    {
-                        dictAddress[number] = distanceIntArray[address]
-                    }
-                    for (distance, number) in self.distanceArray.enumerated()
-                    {
-                        dictDistance[number] = distanceIntArray[distance]
-                    }
-                    for (completed, number) in self.completedArrayString.enumerated()
-                    {
-                        dictCompleted[number] = distanceIntArray[completed]
-                    }
-                    
-                    let sortedName = (dictName as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
-                    self.nameArray = sortedName as! [String]
-
-                    
-                    let sortedCompleted = (dictCompleted as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
-                    self.completedArrayString = sortedCompleted as! [String]
-
-                    
-                    let sortedAddress = (dictAddress as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
-                    self.addressArray = sortedAddress as! [String]
-
-                    let sortedDistance = (dictDistance as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
-                    self.distanceArray = sortedDistance as! [String]
-
-                    
-  
-                    print("sortedKeys \(self.nameArray)")
-                    print("sortedAddres \(self.addressArray)")
-                    print("completed \(self.completedArray)")
-                    print("distance \(self.distanceArray)")
                 }
+                
             }
-        }    
-        })
+        }
+        
+      
+        serialQueue.sync {
+                // get the other arrays in order
+                let queryRest = PFQuery(className: "POI")
+                queryRest.whereKey("area", equalTo: self.chosenAreaPOI)
+                queryRest.findObjectsInBackground { (objects, error) in
+                    if let objects = objects {
+                        
+                        self.serialQueue.sync {
+                        self.addressArray.removeAll()
+                        self.completedArray.removeAll()
+                        self.imageDataArray.removeAll()
+                        
+                        let imageFiller = UIImage(named: "profilesmall.png")
+                        let imageFillerData = UIImageJPEGRepresentation(imageFiller!, 1.0)
+                        
+                        for _ in self.nameArray {
+                            self.addressArray.append("address")
+                            self.completedArray.append("completed")
+                            self.imageDataArray.append(PFFile(data: imageFillerData!)!)
+                        }
+                        
+                        
+                        print("address2 \(self.addressArray)")
+                        }
+                        self.serialQueue.sync {
+                        for object in objects {
+                            
+                            if let tempName = object["name"] as? String {
+                                
+                                if let tempAddress = object["address"] as? String {
+                                    
+                                    self.addressArray[self.nameArray.index(of: tempName)!] = tempAddress
+                                    
+                                    if let tempCompleted = object["completed"] as? [String] {
+                                        if let username = (PFUser.current()?.username!) {
+                                            if tempCompleted.contains(username) {
+                                                self.completedArray[self.nameArray.index(of: tempName)!] = "yes"
+                                            } else {
+                                                self.completedArray[self.nameArray.index(of: tempName)!] = "no"
+                                            }
+                                        }
+                                        
+                                    } else {
+                                        self.completedArray[self.nameArray.index(of: tempName)!] = "no"
+                                    }
+                                    
+                                    if let photo = object["picture"] as? PFFile {
+                                        self.imageDataArray[self.nameArray.index(of: tempName)!] = photo
+                                    }
+                                }
+                            }
+                        }
+                        }
+                        self.serialQueue.sync {
+                        self.tableView.reloadData()
+                        self.tableView.tableFooterView = UIView()
+                        
+                        print("address \(self.addressArray)")
+                        print("completed \(self.completedArray)")
+                        }
+                    }
+                }
+        }
     }
 
-    
+
+
     override func viewDidAppear(_ animated: Bool) {
-        
-        if nameArray.count < 1 {
-            tableView.reloadData()
+        DispatchQueue.main.async {
+
+        if self.nameArray.count < 1 {
+            self.tableView.reloadData()
+        }
         }
         
     }
@@ -278,7 +304,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
             }
             
-            if completedArray[indexValue!] < 1000 {
+            if completedArray[indexValue!] == "yes" {
                 
                 cell.backgroundColor = UIColor.clear
                 cell.locationName.textColor = UIColor.lightGray
@@ -318,7 +344,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
             }
 
-            if completedArray[indexPath.row] < 1000 {
+            if completedArray[indexPath.row] == "yes" {
                 
                 cell.backgroundColor = UIColor.clear
                 cell.locationName.textColor = UIColor.lightGray
@@ -335,28 +361,25 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 cell.tickImage.image = UIImage()
             }
         }
-
-        
-
-        
         // return
         return cell
-
     }
-    
-    
+      
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         var tempPlayer = AVAudioPlayer()
         
         if nameArray.count > 0 {
-            if self.playButtonImage.isEnabled == false {
-                self.playButtonImage.isEnabled = true
-                self.scrubber.isEnabled = true
-                
-            } else {
-                trackPlaying.stop()
-            }
+            
+            //Spinner
+            activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+            activityIndicator.center = self.view.center
+            activityIndicator.hidesWhenStopped = true
+            activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray   
+            activityIndicator.startAnimating()
+            UIApplication.shared.beginIgnoringInteractionEvents()
+            view.addSubview(activityIndicator)
+  
             let query = PFQuery(className: "POI")
             if searchController.isActive && searchController.searchBar.text != "" {
                 query.whereKey("name", equalTo: filteredNameArray[indexPath.row])
@@ -387,6 +410,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                             } catch {  print(error)
                                             }
                                         }
+                                        self.activityIndicator.stopAnimating()
+                                        UIApplication.shared.endIgnoringInteractionEvents()
                                     })
                                 } else {
                                         // no audio found
@@ -399,12 +424,21 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                     } catch {
                                         // error
                                     }
-                                    
+                                    self.activityIndicator.stopAnimating()
+                                    UIApplication.shared.endIgnoringInteractionEvents()
                                 }
                             }
                         }
                     }
                 })
+            
+            if self.playButtonImage.isEnabled == false {
+                self.playButtonImage.isEnabled = true
+                self.scrubber.isEnabled = true
+                
+            } else {
+                trackPlaying.stop()
+            }
 
             
         } else {

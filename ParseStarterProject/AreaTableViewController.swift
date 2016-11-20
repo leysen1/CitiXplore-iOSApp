@@ -49,6 +49,9 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
                     print("perAreaPOIs")
                     print(self.perAreaPOIs)
                     print(self.londonArray)
+                    
+                    self.tableView.reloadData()
+                    self.tableView.tableFooterView = UIView()
 
                 }
         }
@@ -131,7 +134,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "toPOIs") {
-            
+            print("segue to POI")
             let backItem = UIBarButtonItem()
             backItem.title = "Back"
             navigationItem.backBarButtonItem = backItem
