@@ -86,20 +86,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
-            searchController.searchResultsUpdater = self
-            searchController.dimsBackgroundDuringPresentation = false
-            definesPresentationContext = true
-            tableView.tableHeaderView = searchController.searchBar
-            
-            
-            self.playButtonImage.isEnabled = false
-            self.scrubber.isEnabled = false
-        
-      
-
-        serialQueue.async {
-
+         self.serialQueue.sync {
             // get POI names in order of distance
             let queryName = PFQuery(className: "POI")
             queryName.whereKey("area", equalTo: self.chosenAreaPOI)
@@ -109,13 +96,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     print("no objects found")
                 } else {
                     if let objects = objects {
-                        self.serialQueue.sync {
-                            
+
                         self.nameArray.removeAll()
                         self.coordinatesArray.removeAll()
                         self.distanceArray.removeAll()
-                        }
-                        self.serialQueue.sync {
+                        
+             
                         for object in objects {
                             
                             if let nameTemp = object["name"] as? String {
@@ -144,9 +130,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 print("Could not get POI Location")
                             }
                         }
-                        }
                         
-                        self.serialQueue.sync {
+               
                         // create dictionary out of name array and distance
                         var dictName: [String: Double] = [:]
                         var dictDist: [String: Double] = [:]
@@ -178,22 +163,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         
                         print("name array \(self.nameArray)")
                         print("distance \(self.distanceArray)")
-                        }
-                    }
-                }
-                
-            }
-        }
-        
-      
-        serialQueue.sync {
-                // get the other arrays in order
-                let queryRest = PFQuery(className: "POI")
-                queryRest.whereKey("area", equalTo: self.chosenAreaPOI)
-                queryRest.findObjectsInBackground { (objects, error) in
-                    if let objects = objects {
                         
-                        self.serialQueue.sync {
                         self.addressArray.removeAll()
                         self.completedArray.removeAll()
                         self.imageDataArray.removeAll()
@@ -207,14 +177,52 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             self.imageDataArray.append(PFFile(data: imageFillerData!)!)
                         }
                         
+                    }
+                    }
+                }
+                
+            }
+        let delayInSeconds = 1.0
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
+            self.getData()
+        }
+
+        self.playButtonImage.isEnabled = false
+        self.scrubber.isEnabled = false
+        
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        definesPresentationContext = true
+        tableView.tableHeaderView = searchController.searchBar
+        
+
+
+   }
+
+
+    override func viewDidAppear(_ animated: Bool) {
+        
+        if self.nameArray.count < 1 {
+            self.tableView.reloadData()
+        }
+
+    }
+    
+    func getData() {
+       
+            // get the other arrays in order
+            let queryRest = PFQuery(className: "POI")
+            queryRest.whereKey("area", equalTo: self.chosenAreaPOI)
+            queryRest.findObjectsInBackground { (objects, error) in
+                if let objects = objects {
+
+                    print("address2 \(self.addressArray)")
+                    
+                    for object in objects {
                         
-                        print("address2 \(self.addressArray)")
-                        }
-                        self.serialQueue.sync {
-                        for object in objects {
+                        if let tempName = object["name"] as? String {
                             
-                            if let tempName = object["name"] as? String {
-                                
+                            if self.addressArray.count > 1 {
                                 if let tempAddress = object["address"] as? String {
                                     
                                     self.addressArray[self.nameArray.index(of: tempName)!] = tempAddress
@@ -238,29 +246,19 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 }
                             }
                         }
-                        }
-                        self.serialQueue.sync {
-                        self.tableView.reloadData()
-                        self.tableView.tableFooterView = UIView()
                         
-                        print("address \(self.addressArray)")
-                        print("completed \(self.completedArray)")
-                        }
                     }
+                    
+                    
+                    self.tableView.reloadData()
+                    self.tableView.tableFooterView = UIView()
+                    
+                    print("address \(self.addressArray)")
+                    print("completed \(self.completedArray)")
+                    
                 }
-        }
-    }
+            }
 
-
-
-    override func viewDidAppear(_ animated: Bool) {
-        DispatchQueue.main.async {
-
-        if self.nameArray.count < 1 {
-            self.tableView.reloadData()
-        }
-        }
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -486,6 +484,15 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         if playMode {
             self.trackPlaying.stop()
         }
+        
+        nameArray.removeAll()
+        coordinatesArray.removeAll()
+        distanceArray.removeAll()
+        addressArray.removeAll()
+        completedArray.removeAll()
+        imageDataArray.removeAll()
+        sortingWithDistanceArray.removeAll()
+        filteredNameArray.removeAll()
         
     }
     

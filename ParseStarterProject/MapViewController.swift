@@ -59,6 +59,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             locationManager.requestWhenInUseAuthorization()
             locationManager.startUpdatingLocation()
 
+            self.title = "Map"
+            
             //Spinner
             activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
             activityIndicator.center = self.view.center
@@ -137,6 +139,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     print("annotate \(annotate)")
                     mapView.addAnnotation(annotate)
             }
+             mapView.reloadInputViews()
 
         })
         
@@ -144,6 +147,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
 
             mapView.delegate = self
             mapView.showsUserLocation = true
+           
         })
         
         
