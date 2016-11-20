@@ -14,8 +14,6 @@ import Parse
 
 // create alert message if data doesn't load
 
-// simplify for now and get rid of the map cell button.
-
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
     // circle of life video should be a "sorry there is no audio available at this time"
@@ -25,7 +23,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var addressArray = [String]()
     var distanceArray = [String]()
     var coordinatesArray = [CLLocationCoordinate2D]()
-    var completedArray = [String]()
+    var completedArray = [Int]()
+    var completedArrayString = [String]()
     let searchController = UISearchController(searchResultsController: nil)
     var filteredNameArray = [String]()
     var chosenAreaPOI = ""
@@ -117,35 +116,31 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     self.audioArray.removeAll()
                     
                     var testCompleted: [String]?
+
+                    var distanceIntArray = [Double]()
+                    var completedYesi = 1
+                    var completedNoi = 1000
+                    
                     for point in points {
+                        
+                        // get the POI coordinates
+                        if let POILocation = point["coordinates"] as? PFGeoPoint {
+                            let POICLLocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
+                            let userCLLocation = CLLocation(latitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.latitude)!, longitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.longitude)!)
+                            let distance = userCLLocation.distance(from: POICLLocation) / 1000
+                            let roundedDistance = round(distance * 100) / 100
+                            distanceIntArray.append(Double(roundedDistance))
+                            self.distanceArray.append(String(roundedDistance))
+                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: POILocation.latitude, longitude: POILocation.longitude))
+                            self.tableView.reloadData()
+                        } else {
+                            print("Could not get POI Location")
+                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: 0, longitude: 0))
+                        }
+                        
                         self.nameArray.append(point["name"] as! String)
                         self.addressArray.append(point["address"] as! String)
-                        /*
-                        // get POI audio
-                        if let audioClip = point["audio"] as? PFFile {
-                            audioClip.getDataInBackground(block: { (data, error) in
-                                if error != nil {
-                                    print(error)
-                                    print("No audio found")
-                                } else {
-                                    var tempPlayer = AVAudioPlayer()
-                                    do { tempPlayer = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
-                                        self.audioArray.append(tempPlayer)
-                                    } catch {  print(error)
-                                    }
-                                }
-                            })
-                        } else {
-                            // no audio found
-                            let audioPath = Bundle.main.path(forResource: "Circle Of Life", ofType: "mp3")
-                            do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
-                                self.audioArray.append(audioFiller)
-                            } catch {
-                                // error
-                            }
-                            
-                        }
-    */
+  
                         // get the POI image
                         if let photo = point as? PFObject {
                             if photo["picture"] != nil {
@@ -157,30 +152,23 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             }
                         }
                         
-                        // get the POI coordinates
-                        if let POILocation = point["coordinates"] as? PFGeoPoint {
-                            let POICLLocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
-                            let userCLLocation = CLLocation(latitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.latitude)!, longitude: ((PFUser.current()?["location"] as? PFGeoPoint)?.longitude)!)
-                            let distance = userCLLocation.distance(from: POICLLocation) / 1000
-                            let roundedDistance = round(distance * 100) / 100
-                            self.distanceArray.append(String(roundedDistance))
-                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: POILocation.latitude, longitude: POILocation.longitude))
-                            self.tableView.reloadData()
-                        } else {
-                            print("Could not get POI Location")
-                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: 0, longitude: 0))
-                        }
-                        
+       
                         
                         testCompleted = (point["completed"] as? [String])
                         if testCompleted != nil {
                             if (testCompleted?.contains(self.username))! {
-                                self.completedArray.append("yes")
+                                self.completedArray.append(completedYesi)
+                                self.completedArrayString.append(String(completedYesi))
+                                completedYesi += 1
                             } else {
-                                self.completedArray.append("no")
+                                self.completedArray.append(completedNoi)
+                                self.completedArrayString.append(String(completedNoi))
+                                completedNoi += 1
                             }
                         } else {
-                            self.completedArray.append("no")
+                            self.completedArray.append(completedNoi)
+                            self.completedArrayString.append(String(completedNoi))
+                            completedNoi += 1
                         }
                         
                         
@@ -189,7 +177,51 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     self.tableView.reloadData()
                     self.tableView.tableFooterView = UIView()
                     print("completed array \(self.completedArray)")
+                    print("distanceIntArray \(distanceIntArray)")
                     
+                    // combine into dict and sort
+                    var dictName: [String: Double] = [:]
+                    var dictAddress: [String: Double] = [:]
+                    var dictDistance: [String: Double] = [:]
+                    var dictCompleted: [String: Double] = [:]
+                    
+                    for (name, number) in self.nameArray.enumerated()
+                    {
+                        dictName[number] = distanceIntArray[name]
+                    }
+                    for (address, number) in self.addressArray.enumerated()
+                    {
+                        dictAddress[number] = distanceIntArray[address]
+                    }
+                    for (distance, number) in self.distanceArray.enumerated()
+                    {
+                        dictDistance[number] = distanceIntArray[distance]
+                    }
+                    for (completed, number) in self.completedArrayString.enumerated()
+                    {
+                        dictCompleted[number] = distanceIntArray[completed]
+                    }
+                    
+                    let sortedName = (dictName as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
+                    self.nameArray = sortedName as! [String]
+
+                    
+                    let sortedCompleted = (dictCompleted as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
+                    self.completedArrayString = sortedCompleted as! [String]
+
+                    
+                    let sortedAddress = (dictAddress as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
+                    self.addressArray = sortedAddress as! [String]
+
+                    let sortedDistance = (dictDistance as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
+                    self.distanceArray = sortedDistance as! [String]
+
+                    
+  
+                    print("sortedKeys \(self.nameArray)")
+                    print("sortedAddres \(self.addressArray)")
+                    print("completed \(self.completedArray)")
+                    print("distance \(self.distanceArray)")
                 }
             }
         }    
@@ -246,7 +278,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
             }
             
-            if completedArray[indexValue!] == "yes" {
+            if completedArray[indexValue!] < 1000 {
                 
                 cell.backgroundColor = UIColor.clear
                 cell.locationName.textColor = UIColor.lightGray
@@ -286,7 +318,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
             }
 
-            if completedArray[indexPath.row] == "yes" {
+            if completedArray[indexPath.row] < 1000 {
                 
                 cell.backgroundColor = UIColor.clear
                 cell.locationName.textColor = UIColor.lightGray
