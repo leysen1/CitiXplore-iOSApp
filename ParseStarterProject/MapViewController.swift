@@ -21,10 +21,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var annotationAddress = [String]()
     var annotationLocation = [CLLocationCoordinate2D]()
     var MKPinColorArray = [MKPinAnnotationColor]()
+    var chosenPOI = String()
     let serialQueue = DispatchQueue(label: "label")
     
     var activityIndicator = UIActivityIndicatorView()
-
+    
     
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
@@ -147,7 +148,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
 
             mapView.delegate = self
             mapView.showsUserLocation = true
-           
+            mapView.reloadInputViews()
         })
         
         
@@ -200,9 +201,43 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
     }
     
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        print("tapped")
+        
+        if let annotation = view.annotation as? Annotate {
+            print("Your annotation title: \(annotation.title)")
+            if let title = annotation.title {
+                chosenPOI = title
+                performSegue(withIdentifier: "toSinglePOI", sender: self)
+            }
+            
+        }
+        
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
         locationManager.stopUpdatingLocation()
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "toSinglePOI") {
+            let singlePOI = segue.destination as! SinglePOIViewController
+            singlePOI.name = chosenPOI
+        }
+        
+        
+    }
+    
+    @IBAction func logout(_ sender: AnyObject) {
+        
+        Parse.cancelPreviousPerformRequests(withTarget: self)
+        PFUser.logOut()
+        print("logged out")
+        dismiss(animated: true, completion: nil)
+        
+
+    }
+    
  
 }
 

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		5124CCD71DDC038D007007C6 /* tick.png in Resources */ = {isa = PBXBuildFile; fileRef = 5124CCD61DDC038D007007C6 /* tick.png */; };
+		518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */; };
+		518B18221DE2D44800FAD4EE /* SinglePOITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */; };
 		518EF61B1DDCB34900D7B75F /* stpancreas.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 518EF61A1DDCB34900D7B75F /* stpancreas.jpg */; };
 		518EF61D1DDCBFD200D7B75F /* cityview.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 518EF61C1DDCBFD200D7B75F /* cityview.jpg */; };
 		51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */; };
@@ -35,6 +37,8 @@
 
 /* Begin PBXFileReference section */
 		5124CCD61DDC038D007007C6 /* tick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tick.png; sourceTree = "<group>"; };
+		518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOIViewController.swift; sourceTree = "<group>"; };
+		518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOITableViewCell.swift; sourceTree = "<group>"; };
 		518EF61A1DDCB34900D7B75F /* stpancreas.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stpancreas.jpg; sourceTree = "<group>"; };
 		518EF61C1DDCBFD200D7B75F /* cityview.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cityview.jpg; sourceTree = "<group>"; };
 		51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewCell.swift; sourceTree = "<group>"; };
@@ -114,6 +118,8 @@
 				81BA814A1A49DA1800E65899 /* AppDelegate.swift */,
 				81BA814C1A49DA1800E65899 /* ViewController.swift */,
 				814C3AC61B69877600E307BB /* Main.storyboard */,
+				518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */,
+				518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */,
 				51EA18571DC3AD30007591CC /* AreaTableViewController.swift */,
 				51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */,
 				51EA185E1DC3AD30007591CC /* POIsViewController.swift */,
@@ -241,7 +247,9 @@
 				51EA186A1DC3AD30007591CC /* POIsViewController.swift in Sources */,
 				51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */,
 				51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */,
+				518B18221DE2D44800FAD4EE /* SinglePOITableViewCell.swift in Sources */,
 				51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */,
+				518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */,
 				81BA814B1A49DA1800E65899 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -44,11 +44,13 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
                              self.londonArray.append(area)
                         }
             }
+                    self.londonArray.sort()
                     for item in self.allAreas {
                         self.perAreaPOIs[item] = (self.perAreaPOIs[item] ?? 0) + 1 }
                     print("perAreaPOIs")
                     print(self.perAreaPOIs)
                     print(self.londonArray)
+                    print("all areas \(self.allAreas)")
                     
                     self.tableView.reloadData()
                     self.tableView.tableFooterView = UIView()
