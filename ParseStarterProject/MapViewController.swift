@@ -12,8 +12,9 @@ import MapKit
 
 class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     
+    // set up variable
     var locationManager = CLLocationManager()
-    var userLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 51.4881398, longitude: -0.1866036)
+    var userLocation: CLLocationCoordinate2D = CLLocationCoordinate2D()
     
     let username = (PFUser.current()?.username!)!
     var userAnnotation = MKPointAnnotation()
@@ -23,58 +24,75 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var MKPinColorArray = [MKPinAnnotationColor]()
     var chosenPOI = String()
     let serialQueue = DispatchQueue(label: "label")
+    @IBOutlet var mapView: MKMapView!
     
     var activityIndicator = UIActivityIndicatorView()
-    
-    
+
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
+            self.findPOIs()
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                self.addAnnotationToMap()
+                print("reloading Annotations")
+            }
         }))
         self.present(alert, animated: true, completion: nil)
     }
-    
 
-    @IBOutlet var mapView: MKMapView!
-
+    var timer = Timer()
     
+    
+    // functions
+    
+    func updateTimer() {
+        // updates location every 10 seconds
+        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(callUpdateLocation), userInfo: nil, repeats: true)
+    }
+    
+    func callUpdateLocation() {
+        locationManager.startUpdatingLocation()
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            self.saveUserLocation()
+            self.locationManager.stopUpdatingLocation()
+        }
+        
+        if annotationTitle.count > 0 {
+            // do nothing
+        } else {
+            findPOIs()
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                self.addAnnotationToMap()
+                print("attempted to reload Annotations")
+            }
+        }
+        
+        mapView.reloadInputViews()
+        print("updated")
+        
+    }
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let locationCoord = manager.location?.coordinate {
             
-
-            // userLocation = CLLocationCoordinate2D(latitude: 51.4885039, longitude: -0.1880413)
             userLocation = CLLocationCoordinate2D(latitude: locationCoord.latitude, longitude: locationCoord.longitude)
 
-            checkNearPOI()
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                self.checkNearPOI()
+                print("checked for nearby POIs")
+            }
             
         }
     }
- 
+
     
-        override func viewDidLoad() {
-        super.viewDidLoad()
-
+    func saveUserLocation() {
+        
+        // save user location
+        if let tempUserLocation = PFGeoPoint(latitude: userLocation.latitude, longitude: userLocation.longitude) as? PFGeoPoint {
             
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.requestWhenInUseAuthorization()
-            locationManager.startUpdatingLocation()
-
-            self.title = "Map"
-            
-            //Spinner
-            activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-            activityIndicator.center = self.view.center
-            activityIndicator.hidesWhenStopped = true
-            activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
-            activityIndicator.startAnimating()
-            view.addSubview(activityIndicator)
-            UIApplication.shared.beginIgnoringInteractionEvents()
-
-            
-            serialQueue.sync(execute: {
-            // save user location
-            PFUser.current()?["location"] = PFGeoPoint(latitude: userLocation.latitude, longitude: userLocation.longitude)
+            PFUser.current()?["location"] = tempUserLocation
             PFUser.current()?.saveInBackground(block: { (success, error) in
                 if error != nil {
                     print(error)
@@ -82,16 +100,24 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     print("saved user location")
                 }
             })
-                })
-            
-            serialQueue.sync(execute: {
-            // find all POIs
-            let query = PFQuery(className: "POI")
-            query.findObjectsInBackground(block: { (objects, error) in
-                if error != nil {
-                    print("could not get objects")
-                } else {
+
+        }
+        
+    }
+    
+    func findPOIs() {
+        // find all POIs
+
+        let query = PFQuery(className: "POI")
+        query.findObjectsInBackground(block: { (objects, error) in
+            if error != nil {
+                print("could not get objects")
+            } else {
                 if let poiLocations = objects {
+                    self.annotationTitle.removeAll()
+                    self.annotationAddress.removeAll()
+                    self.annotationLocation.removeAll()
+                    self.MKPinColorArray.removeAll()
                     var completedArray: [String]?
                     for poiLocation in poiLocations {
                         completedArray?.removeAll()
@@ -109,48 +135,105 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         } else {
                             self.MKPinColorArray.append(MKPinAnnotationColor.red)
                         }
- 
+                        
                     }
                     
                     self.activityIndicator.stopAnimating()
                     UIApplication.shared.endIgnoringInteractionEvents()
                 }
-                }
-                
-            })
-        })
-            
-        let delayInSeconds = 1.0
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
- 
-                // centre on user
-                let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
-                self.mapView.setRegion(region, animated: false)
-
             }
+            
+        })
     }
+    
+    func addAnnotationToMap() {
+        if annotationTitle.count > 0 {
+            for item in annotationTitle {
+                let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
+                print("annotate \(annotate)")
+                mapView.addAnnotation(annotate)
+                mapView.reloadInputViews()
+            }
+        }
+    }
+    
+    func checkNearPOI() {
+        
+        // if current location is near POI, then check off list
+        
+        let query = PFQuery(className: "POI")
+        if let username = PFUser.current()?.username {
+            query.whereKey("completed", notContainedIn: [username])
+            query.whereKey("coordinates", nearGeoPoint: PFGeoPoint(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude), withinKilometers: 0.05)
+            query.findObjectsInBackground { (objects, error) in
+                if error != nil {
+                    print(error)
+                } else {
+                    if let objects = objects {
+                        for object in objects {
+                            print("object here \(object)")
+                            object.addUniqueObject(username, forKey: "completed")
+                            object.saveInBackground()
+                            print("object saved")
+                            if let tempName = object["name"] as? String {
+                                if let tempArea = object["area"] as? String {
+                                    self.createAlert(title: "\(tempName), \(tempArea) Completed", message: "Make you sure listen to the audio!")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        } else {
+            print("could not reach Parse")
+        }
+        
+    }
+
+    // load view
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.title = "Map"
+
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+        
+        saveUserLocation()
+
+        serialQueue.sync(execute: {
+            findPOIs()
+        })
+
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            // centre on user
+            let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+            self.mapView.setRegion(region, animated: false)
+            
+        }
+    }
+    
+    
     
     override func viewDidAppear(_ animated: Bool) {
         
+        mapView.delegate = self
+        mapView.showsUserLocation = true
+        
+        saveUserLocation()
+        
+        updateTimer()
+
         // annotation
-        serialQueue.sync(execute: {
-
-                for item in annotationTitle {
-                    let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
-                    print("annotate \(annotate)")
-                    mapView.addAnnotation(annotate)
-            }
-             mapView.reloadInputViews()
-
-        })
-        
-        serialQueue.sync(execute: {
-
-            mapView.delegate = self
-            mapView.showsUserLocation = true
-            mapView.reloadInputViews()
-        })
-        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+           self.addAnnotationToMap()
+            print("map view \(self.mapView.annotations)")
+        }
         
     }
 
@@ -175,31 +258,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         return nil
     }
     
-    func checkNearPOI() {
-        
-        // if current location is near POI, then check off list
-        
-        let query = PFQuery(className: "POI")
-        query.whereKey("completed", notContainedIn: [(PFUser.current()?.username!)!])
-        query.whereKey("coordinates", nearGeoPoint: PFGeoPoint(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude), withinKilometers: 0.05)
-        query.findObjectsInBackground { (objects, error) in
-            if error != nil {
-                print(error)
-            } else {
-                if let objects = objects {
-                    var checkedItems = [String]()
-                    for object in objects {
-                        print("object here \(object)")
-                        checkedItems.append(object["name"] as! String)
-                        object.addUniqueObject((PFUser.current()?.username!)!, forKey: "completed")
-                        object.saveInBackground()
-                        print("object saved")
-                        self.createAlert(title: "\(object["name"] as! String), \(object["area"] as! String) Completed", message: "Make you sure listen to the audio!")
-                    }  
-                }
-            }
-        }
-    }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         print("tapped")
@@ -217,6 +275,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     override func viewDidDisappear(_ animated: Bool) {
         locationManager.stopUpdatingLocation()
+        timer.invalidate()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

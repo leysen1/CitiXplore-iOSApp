@@ -18,7 +18,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     // circle of life video should be a "sorry there is no audio available at this time"
 
-
     var nameArray = [String]()
     var addressArray = [String]()
     var distanceArray = [String]()
@@ -86,7 +85,36 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         
-         self.serialQueue.sync {
+        getPOINames()
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            self.getData()
+        }
+
+        self.playButtonImage.isEnabled = false
+        self.scrubber.isEnabled = false
+        
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        definesPresentationContext = true
+        tableView.tableHeaderView = searchController.searchBar
+        
+
+
+   }
+
+
+    override func viewDidAppear(_ animated: Bool) {
+        
+        if self.nameArray.count < 1 {
+            self.tableView.reloadData()
+        }
+        
+        
+
+    }
+    
+    func getPOINames() {
             // get POI names in order of distance
             let queryName = PFQuery(className: "POI")
             queryName.whereKey("area", equalTo: self.chosenAreaPOI)
@@ -96,18 +124,16 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     print("no objects found")
                 } else {
                     if let objects = objects {
-
+                        
                         self.nameArray.removeAll()
                         self.coordinatesArray.removeAll()
                         self.distanceArray.removeAll()
                         
-             
                         for object in objects {
                             
                             if let nameTemp = object["name"] as? String {
                                 self.nameArray.append(nameTemp)
                             }
-                            
                             // get the POI distances from user location
                             if let POILocation = object["coordinates"] as? PFGeoPoint {
                                 
@@ -130,8 +156,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 print("Could not get POI Location")
                             }
                         }
-                        
-               
+                    
                         // create dictionary out of name array and distance
                         var dictName: [String: Double] = [:]
                         var dictDist: [String: Double] = [:]
@@ -177,35 +202,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             self.imageDataArray.append(PFFile(data: imageFillerData!)!)
                         }
                         
-                    }
+                        
+                        
                     }
                 }
-                
             }
-        let delayInSeconds = 1.0
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
-            self.getData()
-        }
-
-        self.playButtonImage.isEnabled = false
-        self.scrubber.isEnabled = false
-        
-        searchController.searchResultsUpdater = self
-        searchController.dimsBackgroundDuringPresentation = false
-        definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
-        
-
-
-   }
-
-
-    override func viewDidAppear(_ animated: Bool) {
-        
-        if self.nameArray.count < 1 {
-            self.tableView.reloadData()
-        }
-
     }
     
     func getData() {
@@ -248,8 +249,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         }
                         
                     }
-                    
-                    
                     self.tableView.reloadData()
                     self.tableView.tableFooterView = UIView()
                     
@@ -368,6 +367,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         var tempPlayer = AVAudioPlayer()
         
         if nameArray.count > 0 {
+            if self.playMode == true {
+                self.trackPlaying.stop()
+                self.playButtonImage.isEnabled = false
+                self.scrubber.isEnabled = false
+                self.playMode = false
+                self.playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
+            }
             
             //Spinner
             activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
@@ -403,6 +409,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                                 self.trackPlaying = tempPlayer
                                                 if tempPlayer != AVAudioPlayer() {
                                                     self.playNewSong()
+                                                    if self.playButtonImage.isEnabled == false {
+                                                        self.playButtonImage.isEnabled = true
+                                                        self.scrubber.isEnabled = true
+                                                        
+                                                    } else {
+                                                        self.trackPlaying.stop()
+                                                    }
                                                 }
                                                 
                                             } catch {  print(error)
@@ -418,6 +431,14 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                         self.trackPlaying = audioFiller
                                         if tempPlayer != AVAudioPlayer() {
                                             self.playNewSong()
+                                            if self.playButtonImage.isEnabled == false {
+                                                self.playButtonImage.isEnabled = true
+                                                self.scrubber.isEnabled = true
+                                                
+                                            } else {
+                                                self.trackPlaying.stop()
+                                            }
+
                                         }
                                     } catch {
                                         // error
@@ -430,13 +451,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     }
                 })
             
-            if self.playButtonImage.isEnabled == false {
-                self.playButtonImage.isEnabled = true
-                self.scrubber.isEnabled = true
-                
-            } else {
-                trackPlaying.stop()
-            }
 
             
         } else {
