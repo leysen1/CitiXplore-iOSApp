@@ -197,6 +197,12 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.tickImage.image = UIImage()
         }
         
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
+        cell.locationImage.addGestureRecognizer(tapGesture)
+        cell.locationImage.isUserInteractionEnabled = true
+        
+        
+        
          return cell
         
     }
@@ -270,6 +276,30 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
             // no audio found
         }
     }
+    
+    func imageTapped(gesture: UIGestureRecognizer) {
+        
+        let overlay = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height))
+        let fullImageView = UIImageView(image: (gesture.view as! UIImageView).image) // This includes your image in table view cell
+        fullImageView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
+        fullImageView.contentMode = .scaleAspectFit
+        
+        let doneBtn = UIButton(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)) // set up according to your requirements
+        doneBtn.addTarget(self, action: #selector(pressed), for: .touchUpInside)
+        
+        overlay.addSubview(fullImageView)
+        overlay.addSubview(doneBtn)
+        
+        self.view.addSubview(overlay)
+    }
+    
+    func pressed(sender: UIButton!) {
+        
+        sender.superview?.removeFromSuperview()
+    }
+    
+
+    
 
     override func viewWillDisappear(_ animated: Bool) {
         

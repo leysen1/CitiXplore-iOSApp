@@ -9,6 +9,7 @@
 import UIKit
 import Parse
 import MapKit
+import AudioToolbox
 
 class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     
@@ -47,7 +48,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     func updateTimer() {
         // updates location every 10 seconds
-        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(callUpdateLocation), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(callUpdateLocation), userInfo: nil, repeats: true)
     }
     
     func callUpdateLocation() {
@@ -191,6 +192,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                             if let tempName = object["name"] as? String {
                                 if let tempArea = object["area"] as? String {
                                     self.createAlert(title: "\(tempName), \(tempArea) Completed", message: "Make you sure listen to the audio!")
+                                    AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
                                 }
                             }
                         }
@@ -285,6 +287,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
         
     }
+    
+    @IBAction func aboutPopup(_ sender: AnyObject) {
+        
+        let popupAbout = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "aboutPopupID") as! AboutViewController
+        self.addChildViewController(popupAbout)
+        popupAbout.view.frame = self.view.frame
+        self.view.addSubview(popupAbout.view)
+        popupAbout.didMove(toParentViewController: self)
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
     
     override func viewDidDisappear(_ animated: Bool) {
         locationManager.stopUpdatingLocation()

@@ -11,12 +11,7 @@ import UIKit
 import Parse
 
 class ViewController: UIViewController {
-    
-    @IBOutlet var imagetwo: UIImageView!
-    
-    
-    
-    
+
     @IBOutlet var usernameInput: UITextField!
     @IBOutlet var passwordInput: UITextField!
     @IBOutlet var changeModeLabel: UILabel!
@@ -98,6 +93,8 @@ class ViewController: UIViewController {
                 } else {
                     print("user signed up")
                     self.performSegue(withIdentifier: "toMapView", sender: self)
+                    
+                    
                     // self.performSegue(withIdentifier: "mapSegue", sender: self)
                     
                 }
