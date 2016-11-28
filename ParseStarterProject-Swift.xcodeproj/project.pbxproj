@@ -10,6 +10,7 @@
 		5124CCD71DDC038D007007C6 /* tick.png in Resources */ = {isa = PBXBuildFile; fileRef = 5124CCD61DDC038D007007C6 /* tick.png */; };
 		513571101DEC34CA0004C706 /* NA.png in Resources */ = {isa = PBXBuildFile; fileRef = 5135710F1DEC34CA0004C706 /* NA.png */; };
 		513571121DEC3B730004C706 /* KandC.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 513571111DEC3B730004C706 /* KandC.jpg */; };
+		513571141DEC40960004C706 /* FullImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513571131DEC40960004C706 /* FullImageViewController.swift */; };
 		518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */; };
 		518B18221DE2D44800FAD4EE /* SinglePOITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */; };
 		518EF61B1DDCB34900D7B75F /* stpancreas.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 518EF61A1DDCB34900D7B75F /* stpancreas.jpg */; };
@@ -40,6 +41,7 @@
 		5124CCD61DDC038D007007C6 /* tick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tick.png; sourceTree = "<group>"; };
 		5135710F1DEC34CA0004C706 /* NA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NA.png; sourceTree = "<group>"; };
 		513571111DEC3B730004C706 /* KandC.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = KandC.jpg; sourceTree = "<group>"; };
+		513571131DEC40960004C706 /* FullImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullImageViewController.swift; sourceTree = "<group>"; };
 		518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOIViewController.swift; sourceTree = "<group>"; };
 		518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOITableViewCell.swift; sourceTree = "<group>"; };
 		518EF61A1DDCB34900D7B75F /* stpancreas.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stpancreas.jpg; sourceTree = "<group>"; };
@@ -118,15 +120,16 @@
 			isa = PBXGroup;
 			children = (
 				81BA814A1A49DA1800E65899 /* AppDelegate.swift */,
-				81BA814C1A49DA1800E65899 /* ViewController.swift */,
 				814C3AC61B69877600E307BB /* Main.storyboard */,
+				81BA814C1A49DA1800E65899 /* ViewController.swift */,
+				51EA185A1DC3AD30007591CC /* MapViewController.swift */,
 				518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */,
 				518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */,
 				51EA18571DC3AD30007591CC /* AreaTableViewController.swift */,
 				51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */,
 				51EA185E1DC3AD30007591CC /* POIsViewController.swift */,
 				51EA185D1DC3AD30007591CC /* POIsTableViewCell.swift */,
-				51EA185A1DC3AD30007591CC /* MapViewController.swift */,
+				513571131DEC40960004C706 /* FullImageViewController.swift */,
 				51EA18601DC3AD30007591CC /* ProfileViewController.swift */,
 				51EA18581DC3AD30007591CC /* Circle Of Life.mp3 */,
 				5124CCD61DDC038D007007C6 /* tick.png */,
@@ -248,6 +251,7 @@
 				51EA18691DC3AD30007591CC /* POIsTableViewCell.swift in Sources */,
 				51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */,
 				81BA814D1A49DA1800E65899 /* ViewController.swift in Sources */,
+				513571141DEC40960004C706 /* FullImageViewController.swift in Sources */,
 				51EA186A1DC3AD30007591CC /* POIsViewController.swift in Sources */,
 				51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */,
 				51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */,
