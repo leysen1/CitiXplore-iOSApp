@@ -143,7 +143,7 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
                         if let tempPhoto = object["picture"] as? PFFile {
                             self.imageData.append(tempPhoto)
                         } else {
-                            if let imageFiller = UIImage(named: "profilesmall.png") {
+                            if let imageFiller = UIImage(named: "NA.png") {
                                 if let imageFillerData = UIImageJPEGRepresentation(imageFiller, 1.0) {
                                     self.imageData.append(PFFile(data: imageFillerData)!)
                                 }

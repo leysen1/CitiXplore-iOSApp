@@ -265,7 +265,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GfP-9h-5ZN"/>
+                            <mapView multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GfP-9h-5ZN">
+                                <frame key="frameInset" width="1000" height="1000"/>
+                            </mapView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nm8-pm-ngs">
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="IJe-z3-6OK"/>
@@ -331,29 +333,22 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="WPf-SW-vqF"/>
                                 </items>
                             </toolbar>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="51" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="xZa-fa-g40">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="176" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="xZa-fa-g40">
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AreaCell" rowHeight="51" id="NM2-ND-hR9" customClass="AreaTableViewCell" customModule="ParseStarterProject_Swift" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="375" height="51"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AreaCell" rowHeight="176" id="NM2-ND-hR9" customClass="AreaTableViewCell" customModule="ParseStarterProject_Swift" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="176"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="NM2-ND-hR9" id="jP1-ga-rTB">
-                                            <frame key="frameInset" width="375" height="50.5"/>
+                                            <frame key="frameInset" width="375" height="175"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="eg Chelsea" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qak-iY-byP">
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="37" id="GiF-i4-54d"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.59999999999999998" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="KandC.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="nJ2-Sv-Adm"/>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vp6-Wf-FuT">
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="29" id="UqJ-kA-vNk"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="17"/>
+                                                    <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="20"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -366,20 +361,33 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="eg Chelsea" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qak-iY-byP">
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="126" id="GiF-i4-54d"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="30"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="gkj-gy-Zl8" firstAttribute="top" secondItem="jP1-ga-rTB" secondAttribute="top" id="0US-YP-183"/>
-                                                <constraint firstItem="qak-iY-byP" firstAttribute="top" secondItem="jP1-ga-rTB" secondAttribute="top" constant="8" id="Fse-Vu-sUp"/>
-                                                <constraint firstItem="qak-iY-byP" firstAttribute="leading" secondItem="jP1-ga-rTB" secondAttribute="leading" constant="22" id="Ikw-iz-SmT"/>
-                                                <constraint firstItem="vp6-Wf-FuT" firstAttribute="top" secondItem="jP1-ga-rTB" secondAttribute="topMargin" constant="4" id="MUD-HU-Bet"/>
+                                                <constraint firstItem="nJ2-Sv-Adm" firstAttribute="leading" secondItem="jP1-ga-rTB" secondAttribute="leading" id="6lG-a8-ePf"/>
+                                                <constraint firstItem="nJ2-Sv-Adm" firstAttribute="top" secondItem="jP1-ga-rTB" secondAttribute="top" id="CL3-zW-Mpe"/>
+                                                <constraint firstItem="qak-iY-byP" firstAttribute="top" secondItem="jP1-ga-rTB" secondAttribute="top" constant="24" id="Fse-Vu-sUp"/>
+                                                <constraint firstItem="qak-iY-byP" firstAttribute="leading" secondItem="jP1-ga-rTB" secondAttribute="leading" constant="28" id="Ikw-iz-SmT"/>
+                                                <constraint firstItem="vp6-Wf-FuT" firstAttribute="top" secondItem="jP1-ga-rTB" secondAttribute="topMargin" constant="65" id="MUD-HU-Bet"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="gkj-gy-Zl8" secondAttribute="trailing" constant="78" id="Pyr-bh-ut2"/>
-                                                <constraint firstItem="gkj-gy-Zl8" firstAttribute="leading" secondItem="qak-iY-byP" secondAttribute="trailing" constant="14" id="dDX-Qk-hST"/>
+                                                <constraint firstAttribute="bottom" secondItem="nJ2-Sv-Adm" secondAttribute="bottom" id="UuK-TQ-O4i"/>
+                                                <constraint firstItem="gkj-gy-Zl8" firstAttribute="leading" secondItem="qak-iY-byP" secondAttribute="trailing" constant="8" id="dDX-Qk-hST"/>
+                                                <constraint firstAttribute="trailing" secondItem="nJ2-Sv-Adm" secondAttribute="trailing" id="hLi-FL-05Z"/>
                                                 <constraint firstItem="vp6-Wf-FuT" firstAttribute="leading" secondItem="gkj-gy-Zl8" secondAttribute="trailing" constant="15" id="oZp-NJ-CsS"/>
                                                 <constraint firstItem="vp6-Wf-FuT" firstAttribute="trailing" secondItem="jP1-ga-rTB" secondAttribute="trailingMargin" id="t8j-Kt-y4n"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="areaLabel" destination="qak-iY-byP" id="ZTJ-0f-E66"/>
+                                            <outlet property="backImageView" destination="nJ2-Sv-Adm" id="aTN-uh-y7e"/>
                                             <outlet property="completedRatio" destination="vp6-Wf-FuT" id="KfI-T4-6RH"/>
                                         </connections>
                                     </tableViewCell>
@@ -389,15 +397,26 @@
                                     <outlet property="delegate" destination="nsd-bW-gsz" id="8c8-1f-17R"/>
                                 </connections>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Click to see a break down of the points of interest in the borough!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y8b-n1-4o6">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="86" id="n93-Mn-boU"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="o5j-Ch-DtK" secondAttribute="trailing" id="04i-oO-Sqz"/>
+                            <constraint firstAttribute="trailing" secondItem="y8b-n1-4o6" secondAttribute="trailing" id="2eg-bw-B3t"/>
+                            <constraint firstItem="y8b-n1-4o6" firstAttribute="leading" secondItem="9h7-Wq-D3a" secondAttribute="leading" id="70E-ic-DFE"/>
                             <constraint firstItem="xZa-fa-g40" firstAttribute="leading" secondItem="9h7-Wq-D3a" secondAttribute="leading" id="Bo2-iQ-R7q"/>
                             <constraint firstAttribute="trailing" secondItem="xZa-fa-g40" secondAttribute="trailing" id="NV0-yK-Paf"/>
+                            <constraint firstItem="y8b-n1-4o6" firstAttribute="top" secondItem="pAM-p8-dGV" secondAttribute="bottom" id="OIb-ji-hY3"/>
                             <constraint firstItem="o5j-Ch-DtK" firstAttribute="top" secondItem="xZa-fa-g40" secondAttribute="bottom" id="bRu-dL-gIb"/>
+                            <constraint firstItem="xZa-fa-g40" firstAttribute="top" secondItem="y8b-n1-4o6" secondAttribute="bottom" constant="8" id="hGi-Hx-3eU"/>
                             <constraint firstItem="jdH-MH-9Hc" firstAttribute="top" secondItem="o5j-Ch-DtK" secondAttribute="bottom" id="hsm-fM-ISo"/>
-                            <constraint firstItem="xZa-fa-g40" firstAttribute="top" secondItem="pAM-p8-dGV" secondAttribute="bottom" id="oTv-dk-fgC"/>
                             <constraint firstItem="o5j-Ch-DtK" firstAttribute="leading" secondItem="9h7-Wq-D3a" secondAttribute="leading" id="vaF-fH-oiR"/>
                         </constraints>
                     </view>
@@ -410,7 +429,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z90-rp-NeB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1826" y="-152"/>
+            <point key="canvasLocation" x="1824.8" y="-152.47376311844079"/>
         </scene>
         <!--POIs-->
         <scene sceneID="0u6-z0-2rK">
@@ -622,10 +641,10 @@
                                 <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="83" id="LS1-SL-9Tb" customClass="SinglePOITableViewCell" customModule="ParseStarterProject_Swift" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="375" height="83"/>
+                                        <rect key="frame" x="0.0" y="28" width="1000" height="83"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LS1-SL-9Tb" id="d57-zF-GOG">
-                                            <frame key="frameInset" width="375" height="82"/>
+                                            <frame key="frameInset" width="1000" height="82.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Location name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="Anc-eh-vD7">
@@ -790,6 +809,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="KandC.jpg" width="1280" height="853"/>
         <image name="green pin.png" width="256" height="256"/>
         <image name="play.jpg" width="626" height="626"/>
         <image name="stpancreas.jpg" width="1920" height="1255"/>

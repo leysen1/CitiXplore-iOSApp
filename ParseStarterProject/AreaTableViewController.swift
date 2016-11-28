@@ -118,6 +118,9 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
 
 
         }
+        if londonArray[indexPath.row] == "Kensington and Chelsea" {
+            cell.backImageView.image = UIImage(named: "KandC.jpg")
+        }
         
         
 

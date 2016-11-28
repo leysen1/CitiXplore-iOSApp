@@ -12,7 +12,7 @@ class AreaTableViewCell: UITableViewCell {
 
     @IBOutlet var areaLabel: UILabel!
     @IBOutlet var completedRatio: UILabel!
-    
+    @IBOutlet var backImageView: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

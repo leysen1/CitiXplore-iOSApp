@@ -121,16 +121,29 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     var completedArray: [String]?
                     for poiLocation in poiLocations {
                         completedArray?.removeAll()
-                        self.annotationTitle.append((poiLocation["name"] as? String)!)
-                        self.annotationAddress.append((poiLocation["address"] as? String)!)
-                        self.annotationLocation.append(CLLocationCoordinate2D(latitude: (poiLocation["coordinates"] as AnyObject).latitude, longitude: (poiLocation["coordinates"] as AnyObject).longitude))
+                        if let tempTitle = poiLocation["name"] as? String {
+                            self.annotationTitle.append(tempTitle)
+                        } else {
+                            self.annotationTitle.append(" ")
+                        }
+                        if let tempAddress = poiLocation["address"] as? String {
+                            self.annotationAddress.append(tempAddress)
+                        } else {
+                            self.annotationAddress.append(" ")
+                        }
+                        
+                        if let tempLocation = poiLocation["coordinates"] as? PFGeoPoint {
+                            self.annotationLocation.append(CLLocationCoordinate2D(latitude: tempLocation.latitude, longitude: tempLocation.longitude))
+                        } else {
+                            self.annotationLocation.append(CLLocationCoordinate2D(latitude: 0, longitude: 0))
+                        }
                         completedArray = poiLocation["completed"] as? [String]
                         if completedArray != nil {
-                            if (completedArray?.contains(self.username))! {
-                                self.MKPinColorArray.append(MKPinAnnotationColor.green)
-                            }
-                            else {
-                                self.MKPinColorArray.append(MKPinAnnotationColor.red)
+                        if (completedArray?.contains(self.username))! {
+                            self.MKPinColorArray.append(MKPinAnnotationColor.green)
+                        }
+                        else {
+                            self.MKPinColorArray.append(MKPinAnnotationColor.red)
                             }
                         } else {
                             self.MKPinColorArray.append(MKPinAnnotationColor.red)

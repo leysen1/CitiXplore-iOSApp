@@ -12,6 +12,10 @@ import Parse
 
 class ViewController: UIViewController {
     
+    @IBOutlet var imagetwo: UIImageView!
+    
+    
+    
     
     @IBOutlet var usernameInput: UITextField!
     @IBOutlet var passwordInput: UITextField!
@@ -65,7 +69,7 @@ class ViewController: UIViewController {
                     
                 }
             })
-            
+
         } else if loginMode == false {
             // sign up user
             

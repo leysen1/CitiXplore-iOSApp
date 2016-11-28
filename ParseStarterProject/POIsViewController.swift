@@ -193,7 +193,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         self.completedArray.removeAll()
                         self.imageDataArray.removeAll()
                         
-                        let imageFiller = UIImage(named: "profilesmall.png")
+                        let imageFiller = UIImage(named: "NA.png")
                         let imageFillerData = UIImageJPEGRepresentation(imageFiller!, 1.0)
                         
                         for _ in self.nameArray {
@@ -302,19 +302,18 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
             if completedArray[indexValue!] == "yes" {
-                
-                cell.backgroundColor = UIColor.clear
-                cell.locationName.textColor = UIColor.lightGray
-                cell.locationAddress.textColor = UIColor.lightGray
-                cell.locationDistance.textColor = UIColor.lightGray
-                cell.locationImage.alpha = 0.5
-                cell.tickImage.image = UIImage(named: "tick.png")
-            } else {
                 cell.backgroundColor = UIColor.groupTableViewBackground
                 cell.locationName.textColor = UIColor.black
                 cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
                 cell.locationImage.alpha = 1
+                cell.tickImage.image = UIImage(named: "tick.png")
+            } else {
+                cell.backgroundColor = UIColor.clear
+                cell.locationName.textColor = UIColor.lightGray
+                cell.locationAddress.textColor = UIColor.lightGray
+                cell.locationDistance.textColor = UIColor.lightGray
+                cell.locationImage.alpha = 0.5
                 cell.tickImage.image = UIImage()
             }
             
@@ -342,19 +341,18 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
 
             if completedArray[indexPath.row] == "yes" {
-                
-                cell.backgroundColor = UIColor.clear
-                cell.locationName.textColor = UIColor.lightGray
-                cell.locationAddress.textColor = UIColor.lightGray
-                cell.locationDistance.textColor = UIColor.lightGray
-                cell.locationImage.alpha = 0.5
-                cell.tickImage.image = UIImage(named: "tick.png")
-            } else {
                 cell.backgroundColor = UIColor.groupTableViewBackground
                 cell.locationName.textColor = UIColor.black
                 cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
                 cell.locationImage.alpha = 1
+                cell.tickImage.image = UIImage(named: "tick.png")
+            } else {
+                cell.backgroundColor = UIColor.clear
+                cell.locationName.textColor = UIColor.lightGray
+                cell.locationAddress.textColor = UIColor.lightGray
+                cell.locationDistance.textColor = UIColor.lightGray
+                cell.locationImage.alpha = 0.5
                 cell.tickImage.image = UIImage()
             }
         }
