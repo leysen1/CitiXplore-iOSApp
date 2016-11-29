@@ -26,6 +26,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var chosenPOI = String()
     let serialQueue = DispatchQueue(label: "label")
     @IBOutlet var mapView: MKMapView!
+    @IBOutlet var arrowImage: UIImageView!
     
     var activityIndicator = UIActivityIndicatorView()
 
@@ -231,6 +232,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             self.mapView.setRegion(region, animated: false)
             
         }
+        
+
     }
     
     
@@ -250,7 +253,23 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             print("map view \(self.mapView.annotations)")
         }
         
+        // arrow if signup
+        animateArrow()
+ 
     }
+ 
+    func animateArrow() {
+            if helpClicked == false {
+                arrowImage.image = UIImage(named: "arrow.png")
+                arrowImage.alpha = 0
+                UIView.animate(withDuration: 0.5, delay: 0, options: [.curveEaseIn, .repeat, .autoreverse], animations: {
+                    self.arrowImage.alpha = 1.0
+                    })
+            } else {
+                arrowImage.alpha = 0
+            }
+    }
+   
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? Annotate {
@@ -289,6 +308,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
     
     @IBAction func aboutPopup(_ sender: AnyObject) {
+        
+        if helpClicked == false {
+            helpClicked = true
+            animateArrow()
+            
+        }
         
         let popupAbout = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "aboutPopupID") as! AboutViewController
         self.addChildViewController(popupAbout)

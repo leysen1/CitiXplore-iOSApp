@@ -10,7 +10,9 @@
 import UIKit
 import Parse
 
-class ViewController: UIViewController {
+var helpClicked = true
+
+class ViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet var usernameInput: UITextField!
     @IBOutlet var passwordInput: UITextField!
@@ -59,8 +61,7 @@ class ViewController: UIViewController {
                     
                 } else {
                     print("Logged in")
-                    // self.performSegue(withIdentifier: "toMapView", sender: self)
-                    self.performSegue(withIdentifier: "toTransition", sender: self)
+                    self.performSegue(withIdentifier: "toMapView", sender: self)
                     
                     
                 }
@@ -96,8 +97,6 @@ class ViewController: UIViewController {
                     self.performSegue(withIdentifier: "toMapView", sender: self)
                     
                     
-                    // self.performSegue(withIdentifier: "mapSegue", sender: self)
-                    
                 }
             })
             
@@ -132,8 +131,23 @@ class ViewController: UIViewController {
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)
         
+        usernameInput.delegate = self
+        passwordInput.delegate = self
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        usernameInput.resignFirstResponder()
+        passwordInput.resignFirstResponder()
+        return true
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "toMapView") {
+            if loginMode == false {
+                helpClicked = false
+            }
+        }
+    }
     
     func tap(gesture: UITapGestureRecognizer) {
         

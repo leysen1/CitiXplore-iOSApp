@@ -98,8 +98,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
-        
-
 
    }
 
@@ -113,6 +111,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
 
     }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.searchController.searchBar.endEditing(true)
+        return true
+    }
+
     
     func getPOINames() {
             // get POI names in order of distance

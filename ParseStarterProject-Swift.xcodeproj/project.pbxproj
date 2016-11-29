@@ -12,10 +12,8 @@
 		513571121DEC3B730004C706 /* KandC.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 513571111DEC3B730004C706 /* KandC.jpg */; };
 		518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */; };
 		518B18221DE2D44800FAD4EE /* SinglePOITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */; };
-		518EF61B1DDCB34900D7B75F /* stpancreas.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 518EF61A1DDCB34900D7B75F /* stpancreas.jpg */; };
-		518EF61D1DDCBFD200D7B75F /* cityview.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 518EF61C1DDCBFD200D7B75F /* cityview.jpg */; };
+		51C5F5D51DED8C44004E0B86 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 51C5F5D41DED8C44004E0B86 /* arrow.png */; };
 		51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */; };
-		51E7F0EB1DECFD2B00193DAC /* TransitionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E7F0EA1DECFD2B00193DAC /* TransitionViewController.swift */; };
 		51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */; };
 		51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18571DC3AD30007591CC /* AreaTableViewController.swift */; };
 		51EA18641DC3AD30007591CC /* Circle Of Life.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 51EA18581DC3AD30007591CC /* Circle Of Life.mp3 */; };
@@ -24,7 +22,6 @@
 		51EA18681DC3AD30007591CC /* play.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 51EA185C1DC3AD30007591CC /* play.jpg */; };
 		51EA18691DC3AD30007591CC /* POIsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA185D1DC3AD30007591CC /* POIsTableViewCell.swift */; };
 		51EA186A1DC3AD30007591CC /* POIsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA185E1DC3AD30007591CC /* POIsViewController.swift */; };
-		51EA186B1DC3AD30007591CC /* profilesmall.png in Resources */ = {isa = PBXBuildFile; fileRef = 51EA185F1DC3AD30007591CC /* profilesmall.png */; };
 		51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18601DC3AD30007591CC /* ProfileViewController.swift */; };
 		814C3ACA1B69877600E307BB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 814C3AC61B69877600E307BB /* Main.storyboard */; };
 		814C3ACB1B69877600E307BB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 814C3AC81B69877600E307BB /* Images.xcassets */; };
@@ -44,10 +41,8 @@
 		513571111DEC3B730004C706 /* KandC.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = KandC.jpg; sourceTree = "<group>"; };
 		518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOIViewController.swift; sourceTree = "<group>"; };
 		518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOITableViewCell.swift; sourceTree = "<group>"; };
-		518EF61A1DDCB34900D7B75F /* stpancreas.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stpancreas.jpg; sourceTree = "<group>"; };
-		518EF61C1DDCBFD200D7B75F /* cityview.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cityview.jpg; sourceTree = "<group>"; };
+		51C5F5D41DED8C44004E0B86 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
-		51E7F0EA1DECFD2B00193DAC /* TransitionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitionViewController.swift; sourceTree = "<group>"; };
 		51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewCell.swift; sourceTree = "<group>"; };
 		51EA18571DC3AD30007591CC /* AreaTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewController.swift; sourceTree = "<group>"; };
 		51EA18581DC3AD30007591CC /* Circle Of Life.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Circle Of Life.mp3"; sourceTree = "<group>"; };
@@ -56,7 +51,6 @@
 		51EA185C1DC3AD30007591CC /* play.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = play.jpg; sourceTree = "<group>"; };
 		51EA185D1DC3AD30007591CC /* POIsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POIsTableViewCell.swift; sourceTree = "<group>"; };
 		51EA185E1DC3AD30007591CC /* POIsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POIsViewController.swift; sourceTree = "<group>"; };
-		51EA185F1DC3AD30007591CC /* profilesmall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = profilesmall.png; sourceTree = "<group>"; };
 		51EA18601DC3AD30007591CC /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		814C3AC71B69877600E307BB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		814C3AC81B69877600E307BB /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -124,7 +118,6 @@
 				81BA814A1A49DA1800E65899 /* AppDelegate.swift */,
 				814C3AC61B69877600E307BB /* Main.storyboard */,
 				81BA814C1A49DA1800E65899 /* ViewController.swift */,
-				51E7F0EA1DECFD2B00193DAC /* TransitionViewController.swift */,
 				51EA185A1DC3AD30007591CC /* MapViewController.swift */,
 				518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */,
 				518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */,
@@ -136,13 +129,11 @@
 				51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */,
 				51EA18581DC3AD30007591CC /* Circle Of Life.mp3 */,
 				5124CCD61DDC038D007007C6 /* tick.png */,
-				518EF61A1DDCB34900D7B75F /* stpancreas.jpg */,
 				51EA185B1DC3AD30007591CC /* pause.jpg */,
 				51EA185C1DC3AD30007591CC /* play.jpg */,
-				51EA185F1DC3AD30007591CC /* profilesmall.png */,
-				518EF61C1DDCBFD200D7B75F /* cityview.jpg */,
 				5135710F1DEC34CA0004C706 /* NA.png */,
 				513571111DEC3B730004C706 /* KandC.jpg */,
+				51C5F5D41DED8C44004E0B86 /* arrow.png */,
 			);
 			path = ParseStarterProject;
 			sourceTree = "<group>";
@@ -234,11 +225,9 @@
 				5124CCD71DDC038D007007C6 /* tick.png in Resources */,
 				51EA18681DC3AD30007591CC /* play.jpg in Resources */,
 				513571121DEC3B730004C706 /* KandC.jpg in Resources */,
+				51C5F5D51DED8C44004E0B86 /* arrow.png in Resources */,
 				51EA18641DC3AD30007591CC /* Circle Of Life.mp3 in Resources */,
 				51EA18671DC3AD30007591CC /* pause.jpg in Resources */,
-				518EF61D1DDCBFD200D7B75F /* cityview.jpg in Resources */,
-				51EA186B1DC3AD30007591CC /* profilesmall.png in Resources */,
-				518EF61B1DDCB34900D7B75F /* stpancreas.jpg in Resources */,
 				814C3ACA1B69877600E307BB /* Main.storyboard in Resources */,
 				814C3ACB1B69877600E307BB /* Images.xcassets in Resources */,
 			);
@@ -258,7 +247,6 @@
 				51EA186A1DC3AD30007591CC /* POIsViewController.swift in Sources */,
 				51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */,
 				51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */,
-				51E7F0EB1DECFD2B00193DAC /* TransitionViewController.swift in Sources */,
 				518B18221DE2D44800FAD4EE /* SinglePOITableViewCell.swift in Sources */,
 				51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */,
 				518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */,

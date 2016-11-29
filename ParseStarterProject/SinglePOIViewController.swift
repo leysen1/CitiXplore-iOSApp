@@ -156,7 +156,12 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             }
     }
+
 }
+    
+
+    
+    
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
