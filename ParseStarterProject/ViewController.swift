@@ -59,7 +59,8 @@ class ViewController: UIViewController {
                     
                 } else {
                     print("Logged in")
-                    self.performSegue(withIdentifier: "toMapView", sender: self)
+                    // self.performSegue(withIdentifier: "toMapView", sender: self)
+                    self.performSegue(withIdentifier: "toTransition", sender: self)
                     
                     
                 }

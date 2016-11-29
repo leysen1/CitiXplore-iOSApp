@@ -151,9 +151,9 @@
                             <constraint firstItem="NCb-A4-p0a" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="d2r-AM-UR3"/>
                             <constraint firstItem="7D5-rv-bO3" firstAttribute="top" secondItem="1wS-Xo-Hmi" secondAttribute="bottom" constant="44" id="hNM-rm-6Us"/>
                             <constraint firstItem="NCb-A4-p0a" firstAttribute="top" secondItem="hzm-FM-Uo8" secondAttribute="bottom" constant="38" id="kNh-9g-Yu6"/>
-                            <constraint firstAttribute="trailing" secondItem="hzm-FM-Uo8" secondAttribute="trailing" constant="16" id="liy-gL-auP"/>
+                            <constraint firstAttribute="trailing" secondItem="hzm-FM-Uo8" secondAttribute="trailing" constant="20" id="liy-gL-auP"/>
                             <constraint firstItem="1wS-Xo-Hmi" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="n0O-wz-Hva"/>
-                            <constraint firstItem="hzm-FM-Uo8" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="re4-gj-Inw"/>
+                            <constraint firstItem="hzm-FM-Uo8" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" id="re4-gj-Inw"/>
                         </constraints>
                     </view>
                     <connections>
@@ -163,6 +163,7 @@
                         <outlet property="passwordInput" destination="1wS-Xo-Hmi" id="B2I-aN-0HN"/>
                         <outlet property="usernameInput" destination="NCb-A4-p0a" id="O8e-SI-9KM"/>
                         <segue destination="OSI-KX-AB4" kind="show" identifier="toMapView" id="vMT-Cm-s6n"/>
+                        <segue destination="gEp-gg-TmL" kind="show" identifier="toTransition" id="SiF-Xv-y8C"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -368,6 +369,47 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DKG-YI-MhN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-114" y="-152"/>
+        </scene>
+        <!--Transition View Controller-->
+        <scene sceneID="9Bc-JC-Dwh">
+            <objects>
+                <viewController id="gEp-gg-TmL" customClass="TransitionViewController" customModule="ParseStarterProject_Swift" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="EcV-13-lce"/>
+                        <viewControllerLayoutGuide type="bottom" id="SyD-TR-6lF"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="f4V-Ox-B37">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.10000000149011612" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kNB-kp-Ze1">
+                                <frame key="frameInset" width="414" height="736"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.40000000600000002" green="1" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="CitiXplore" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="40" translatesAutoresizingMaskIntoConstraints="NO" id="h6a-3u-uFg">
+                                <frame key="frameInset" minX="20" minY="82" width="374" height="139"/>
+                                <color key="backgroundColor" red="0.40000000600000002" green="1" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="139" id="efe-i0-8DH"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="62"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <segue destination="OSI-KX-AB4" kind="presentation" identifier="toMap" id="JHl-2E-FYW"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dmz-FC-BXg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="373.91304347826087" y="-897.554347826087"/>
         </scene>
         <!--Map-->
         <scene sceneID="CX5-iy-4lE">
@@ -934,4 +976,7 @@
         <image name="play.jpg" width="626" height="626"/>
         <image name="tick.png" width="1279" height="1280"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="JHl-2E-FYW"/>
+    </inferredMetricsTieBreakers>
 </document>
