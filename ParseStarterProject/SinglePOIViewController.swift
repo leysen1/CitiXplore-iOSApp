@@ -63,8 +63,18 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
         self.scrubber.maximumValue = Float(self.trackPlaying.duration)
         self.scrubber.value = 0
         self.playMode = true
-        let minutes = Int(self.time/60)
-        self.audioTimeLeft.text = "\(String(minutes)):\(String(Int((self.time) - Double(minutes*60))))"
+        
+        let minutes = Int(self.time / 60)
+        var seconds = ""
+        if Int(self.time) - (minutes * 60) < 10 {
+            let tempSec = Int(self.time) - (minutes * 60)
+            seconds = String("0\(tempSec)")
+        } else {
+            seconds = String(Int(self.time) - (minutes * 60))
+        }
+        
+        self.audioTimeLeft.text = "\(minutes):\(seconds)"
+        
     }
     
     func updateSlider() {

@@ -29,6 +29,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var filteredNameArray = [String]()
     var chosenAreaPOI = ""
     var activityIndicator = UIActivityIndicatorView()
+    var userLocation = CLLocationCoordinate2D()
+    var username: String?
     
     // audio Variables
     var audioArray = [AVAudioPlayer]()
@@ -143,9 +145,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 
                                 let POICLLocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
                                 
-                                if let userLocTemp = PFUser.current()?["location"] as? PFGeoPoint {
+                                if self.userLocation.latitude > 0 {
                                     
-                                    let userCLLocation = CLLocation(latitude: userLocTemp.latitude, longitude: userLocTemp.longitude)
+                                    let userCLLocation = CLLocation(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude)
                                     
                                     let distance = Double(userCLLocation.distance(from: POICLLocation) / 1000)
                                     
@@ -233,8 +235,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                     self.addressArray[self.nameArray.index(of: tempName)!] = tempAddress
                                     
                                     if let tempCompleted = object["completed"] as? [String] {
-                                        if let username = (PFUser.current()?.username!) {
-                                            if tempCompleted.contains(username) {
+                                        if self.username != nil {
+                                            if tempCompleted.contains(self.username!) {
                                                 self.completedArray[self.nameArray.index(of: tempName)!] = "yes"
                                             } else {
                                                 self.completedArray[self.nameArray.index(of: tempName)!] = "no"
@@ -498,8 +500,17 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.scrubber.maximumValue = Float(self.trackPlaying.duration)
             self.scrubber.value = 0
             self.playMode = true
-            let minutes = Int(self.time/60)
-            self.audioTimeLeft.text = "\(String(minutes)):\(String(Int((self.time) - Double(minutes*60))))"
+        
+            let minutes = Int(self.time / 60)
+            var seconds = ""
+            if Int(self.time) - (minutes * 60) < 10 {
+                let tempSec = Int(self.time) - (minutes * 60)
+                seconds = String("0\(tempSec)")
+            } else {
+                seconds = String(Int(self.time) - (minutes * 60))
+            }
+
+            self.audioTimeLeft.text = "\(minutes):\(seconds)"
     }
  
     func updateSlider() {

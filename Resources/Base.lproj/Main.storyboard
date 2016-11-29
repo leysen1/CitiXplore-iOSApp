@@ -337,7 +337,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView opaque="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GfP-9h-5ZN"/>
+                            <mapView opaque="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GfP-9h-5ZN">
+                                <frame key="frameInset" width="1000" height="1000"/>
+                            </mapView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nm8-pm-ngs">
                                 <items>
                                     <barButtonItem title="Log Out" id="84A-Ia-Jbs">
@@ -348,7 +350,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="7cp-YV-oTy"/>
                                     <barButtonItem title="Explore" id="jEX-9C-Yl8">
                                         <connections>
-                                            <segue destination="nsd-bW-gsz" kind="show" id="jew-pN-M8g"/>
+                                            <segue destination="nsd-bW-gsz" kind="show" identifier="areaSegue" id="jew-pN-M8g"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>

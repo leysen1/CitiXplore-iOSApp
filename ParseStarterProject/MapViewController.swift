@@ -100,6 +100,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     print(error)
                 } else {
                     print("saved user location")
+                    if let items = (self.navigationController?.toolbarItems) {
+                        for item: UIBarButtonItem in items {
+                            item.isEnabled = true
+                        }
+                    }
                 }
             })
 
@@ -211,6 +216,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
 
         self.title = "Map"
 
@@ -233,6 +239,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             
         }
         
+        if let items = (self.navigationController?.toolbarItems) {
+            for item: UIBarButtonItem in items {
+                item.isEnabled = false
+            }
+        }
 
     }
     
@@ -240,6 +251,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     override func viewDidAppear(_ animated: Bool) {
         
+
         mapView.delegate = self
         mapView.showsUserLocation = true
         
@@ -333,6 +345,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         if (segue.identifier == "toSinglePOI") {
             let singlePOI = segue.destination as! SinglePOIViewController
             singlePOI.name = chosenPOI
+            
+        }
+        if (segue.identifier == "areaSegue") {
+            let AreaVC = segue.destination as! AreaTableViewController
+            AreaVC.userLocation = self.userLocation
+            AreaVC.username = self.username
         }
         
         

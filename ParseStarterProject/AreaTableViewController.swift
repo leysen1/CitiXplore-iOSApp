@@ -17,12 +17,13 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     var completed = [String: Int]()
     var londonArray = [String]()
     var chosenArea = String()
+    var userLocation = CLLocationCoordinate2D()
+    var username = String()
 
     @IBOutlet var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         // Do any additional setup after loading the view.
         let query = PFQuery(className: "POI")
         query.whereKey("city", equalTo: "London")
@@ -61,7 +62,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
 
         let query2 = PFQuery(className: "POI")
         query2.whereKey("city", equalTo: "London")
-        query2.whereKey("completed", contains: PFUser.current()?.username!)
+        query2.whereKey("completed", contains: username)
         query2.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print(error)
@@ -132,8 +133,10 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         if londonArray.count > 0 {
-            chosenArea = londonArray[indexPath.row]
-            performSegue(withIdentifier: "toPOIs", sender: self)
+            if userLocation.latitude != 0 {
+                chosenArea = londonArray[indexPath.row]
+                performSegue(withIdentifier: "toPOIs", sender: self)
+            }
         }
     }
     
@@ -145,6 +148,8 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
             navigationItem.backBarButtonItem = backItem
             let POIVC = segue.destination as! POIsViewController
             POIVC.chosenAreaPOI = self.chosenArea
+            POIVC.userLocation = self.userLocation
+            POIVC.username = self.username
         }
     }
     
