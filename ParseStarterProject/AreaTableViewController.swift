@@ -153,16 +153,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    
-    
-    @IBAction func logout(_ sender: AnyObject) {
-        Parse.cancelPreviousPerformRequests(withTarget: self)
-        PFUser.logOut()
-        print("logged out")
-        dismiss(animated: true, completion: nil)
 
-        
-    }
     
 
 

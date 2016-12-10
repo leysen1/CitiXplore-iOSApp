@@ -10,13 +10,13 @@ import UIKit
 import AVKit
 import AVFoundation
 import Parse
+import CoreData
 
 
 // create alert message if data doesn't load
 
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
-    
-    // circle of life video should be a "sorry there is no audio available at this time"
+
 
     var nameArray = [String]()
     var addressArray = [String]()
@@ -87,7 +87,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        getPOINames()
+
+        
+        if #available(iOS 10.0, *) {
+            getPOINames()
+        } else {
+            // Fallback on earlier versions
+        }
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
             self.getData()
@@ -120,23 +126,82 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
 
     
+    @available(iOS 10.0, *)
     func getPOINames() {
+        
+        // 1. create table using saved data
+        // 2. if there are new rows in parse then query and get those
+        // 3. Add new to the table
+        // 4. Sort in distance order
+        
+        
+        self.nameArray.removeAll()
+        self.coordinatesArray.removeAll()
+        self.distanceArray.removeAll()
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        
+        // get saved data
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+        request.predicate = NSPredicate(format: "area = %@", "Kensington and Chelsea")
+        request.returnsObjectsAsFaults = false // to get the values of the data
+        do {
+            let results = try context.fetch(request)
+            
+            if results.count > 0 {
+                for result in results as! [NSManagedObject] {
+                    if let tempName = result.value(forKey: "name") as? String {
+                        nameArray.append(tempName)
+                    }
+                    if let tempAddress = result.value(forKey: "address") as? String {
+                        addressArray.append(tempAddress)
+                    }
+                    if let tempLatitude = result.value(forKey: "latitude") as? Double {
+                        if let tempLongitude = result.value(forKey: "longitude") as? Double {
+                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: tempLatitude, longitude: tempLongitude))
+                        }
+                    }
+                }
+                self.tableView.reloadData()
+            } else {
+                print("No results")
+            }
+        } catch {
+            print("Couldn't fetch results")
+        }
+
+        /*
+         let newPOI = NSEntityDescription.insertNewObject(forEntityName: "POIs", into: context)
+         newUser.setValue("", forKey: "name")
+         newUser.setValue("", forKey: "latitude")
+         newUser.setValue("", forKey: "longitude")
+         
+         // save the context now:
+         
+         do {
+         try context.save()
+         print("saved")
+         
+         } catch {
+         print("There was an error")
+         }
+         
+         */
+        
+        // get new data from parse
+        
             // get POI names in order of distance
             let queryName = PFQuery(className: "POI")
             queryName.whereKey("area", equalTo: self.chosenAreaPOI)
+            queryName.whereKey("name", notContainedIn: self.nameArray)
             queryName.findObjectsInBackground { (objects, error) in
                 if error != nil {
                     print(error)
                     print("no objects found")
                 } else {
                     if let objects = objects {
-                        
-                        self.nameArray.removeAll()
-                        self.coordinatesArray.removeAll()
-                        self.distanceArray.removeAll()
-                        
                         for object in objects {
-                            
                             if let nameTemp = object["name"] as? String {
                                 self.nameArray.append(nameTemp)
                             }
@@ -213,9 +278,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     }
                 }
             }
+ 
     }
     
     func getData() {
+        
+        /// compeleted, address, and image
        
             // get the other arrays in order
             let queryRest = PFQuery(className: "POI")
@@ -437,7 +505,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                     })
                                 } else {
                                         // no audio found
-                                    let audioPath = Bundle.main.path(forResource: "Circle Of Life", ofType: "mp3")
+                                    let audioPath = Bundle.main.path(forResource: "no audio", ofType: "mp3")
                                     do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
                                         self.trackPlaying = audioFiller
                                         if tempPlayer != AVAudioPlayer() {

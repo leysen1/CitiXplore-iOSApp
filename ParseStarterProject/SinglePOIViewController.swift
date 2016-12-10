@@ -182,7 +182,9 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SinglePOITableViewCell
         cell.locationName.text = name
         cell.locationAddress.text = address
-        cell.locationDistance.text = "You are \(distance)km away"
+        if distance != "" {
+            cell.locationDistance.text = "You are \(distance)km away"
+        }
         
         if imageData != [] {
             imageData[0].getDataInBackground { (data, error) in
@@ -215,9 +217,7 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
         cell.locationImage.addGestureRecognizer(tapGesture)
         cell.locationImage.isUserInteractionEnabled = true
-        
-        
-        
+
          return cell
         
     }
@@ -265,7 +265,7 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
                                 })
                             } else {
                                 // no audio found
-                                let audioPath = Bundle.main.path(forResource: "Circle Of Life", ofType: "mp3")
+                                let audioPath = Bundle.main.path(forResource: "no audio", ofType: "mp3")
                                 do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
                                     self.trackPlaying = audioFiller
                                     if tempPlayer != AVAudioPlayer() {

@@ -353,6 +353,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             AreaVC.username = self.username
         }
         
+        if (segue.identifier == "toFavs") {
+            let favVC = segue.destination as! FavouritesViewController
+            favVC.username = self.username
+        }
+        
         
     }
     
