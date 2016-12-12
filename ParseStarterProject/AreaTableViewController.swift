@@ -146,10 +146,15 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
             let backItem = UIBarButtonItem()
             backItem.title = "Back"
             navigationItem.backBarButtonItem = backItem
-            let POIVC = segue.destination as! POIsViewController
-            POIVC.chosenAreaPOI = self.chosenArea
-            POIVC.userLocation = self.userLocation
-            POIVC.username = self.username
+            if #available(iOS 10.0, *) {
+                let POIVC = segue.destination as! POIsViewController
+                POIVC.chosenAreaPOI = self.chosenArea
+                POIVC.userLocation = self.userLocation
+                POIVC.username = self.username
+            } else {
+                // Fallback on earlier versions
+            }
+
         }
     }
     

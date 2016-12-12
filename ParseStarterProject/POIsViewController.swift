@@ -14,9 +14,13 @@ import CoreData
 
 // create alert message if data doesn't load
 
+@available(iOS 10.0, *)
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
+    
+    let moc = DataController().managedObjectContext
 
     var nameArray = [String]()
+    var coreDataNameArray = [String]()
     var addressArray = [String]()
     var distanceArray = [String]()
     var coordinatesArray = [CLLocationCoordinate2D]()
@@ -84,16 +88,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
-        
-       
-        
-        if #available(iOS 10.0, *) {
-            
-            self.getPOINames(number: 30, completion: { (Bool) in
-                print("address \(addressArray)")
-                print("name \(nameArray)")
-                self.getData()
-            })
+
+        coreDataFetch { (Bool) in
+            newParseFetchAndSave { (Bool) in
+                print("compelted")
+            }
         }
         
     }
@@ -101,12 +100,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     override func viewDidAppear(_ animated: Bool) {
         
-        if self.nameArray.count < 1 {
-            self.tableView.reloadData()
-        }
-        
-        
-
+ 
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -114,37 +108,29 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         return true
     }
 
-    
-    @available(iOS 10.0, *)
-    func getPOINames(number : Int, completion: (_ result: Bool)->()) {
-        
-        // 1. create table using saved data
-        // 2. if there are new rows in parse then query and get those
-        // 3. Sort in distance order
-        // 4. Add new to the table
-        
+
+    func coreDataFetch(completion: (_ result: Bool)->()) {
         self.nameArray.removeAll()
+        self.coreDataNameArray.removeAll()
         self.coordinatesArray.removeAll()
         self.distanceArray.removeAll()
-        
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
-        
+        print("removed arrays")
+
         // Name and Coordinates
         // 1. get saved data
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
-        request.predicate = NSPredicate(format: "area = %@", "Kensington and Chelsea")
-        request.returnsObjectsAsFaults = false // to get the values of the data
+        let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+        
         do {
-            let results = try context.fetch(request)
-            
-            if results.count > 0 {
-                for result in results as! [NSManagedObject] {
-                    if let tempName = result.value(forKey: "name") as? String {
+            let fetchedPOIs = try moc.fetch(poiFetch) as! [POIs]
+            if fetchedPOIs.count > 0 {
+                var i = 0
+                for poi in fetchedPOIs {
+                    if let tempName = poi.value(forKey: "name") as? String {
                         nameArray.append(tempName)
+                        coreDataNameArray.append(tempName)
                     }
-                    if let tempLatitude = result.value(forKey: "latitude") as? Double {
-                        if let tempLongitude = result.value(forKey: "longitude") as? Double {
+                    if let tempLatitude = poi.value(forKey: "latitude") as? Double {
+                        if let tempLongitude = poi.value(forKey: "longitude") as? Double {
                             self.coordinatesArray.append(CLLocationCoordinate2D(latitude: tempLatitude, longitude: tempLongitude))
                             if self.userLocation.latitude > 0 {
                                 let tempUserLocation = CLLocation(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude)
@@ -155,17 +141,25 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             }
                         }
                     }
+                    print("name array \(self.nameArray)")
+                    i += 1
+                    if i == fetchedPOIs.count {
+                        completion(true)
+                        print("completed")
+                    }
                 }
-                self.tableView.reloadData()
-                print("nameCore \(self.nameArray)")
             } else {
-                print("No results")
+                completion(true)
             }
         } catch {
-            print("Couldn't fetch results")
+            fatalError("Failed to fetch POI: \(error)")
         }
-        
+    }
+    
+    
+    func newParseFetchAndSave(completion: (_ result: Bool)->()) {
         // 2. get new data from parse and (save to core data)
+        print("Parse Query")
         let queryName = PFQuery(className: "POI")
         queryName.whereKey("area", equalTo: self.chosenAreaPOI)
         queryName.whereKey("name", notContainedIn: self.nameArray)
@@ -175,57 +169,51 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 print("no objects found")
             } else {
                 if let objects = objects {
+                if objects.count > 0 {
+                    print("objects found")
+                    print(objects.count)
+
                     for object in objects {
-                        // save object
-                        let newPOI = NSEntityDescription.insertNewObject(forEntityName: "POIs", into: context)
-                        
+                        let entity = NSEntityDescription.insertNewObject(forEntityName: "POIs", into: self.moc) as! POIs
+                        print("object \(object["name"] as? String)")
                         // get the POI distances from user location
                         if let POILocation = object["coordinates"] as? PFGeoPoint {
                             self.coordinatesArray.append(CLLocationCoordinate2D(latitude: POILocation.latitude, longitude: POILocation.longitude))
-                            newPOI.setValue(POILocation.latitude, forKey: "latitude")
-                            newPOI.setValue(POILocation.longitude, forKey: "longitude")
-                            
+                            entity.setValue(POILocation.latitude, forKey: "latitude")
+                            entity.setValue(POILocation.longitude, forKey: "longitude")
+                            print(self.coordinatesArray)
                             if self.userLocation.latitude > 0 {
                                 let tempUserLocation = CLLocation(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude)
                                 let tempPOILocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
                                 let distance = Double(tempUserLocation.distance(from: tempPOILocation) / 1000)
                                 self.distanceArray.append(String(distance))
                                 self.sortingWithDistanceArray.append(distance)
-                                
-                                print("name \(self.nameArray)")
-                                print("distance \(self.distanceArray)")
+
                             }
                             
                             if let nameTemp = object["name"] as? String {
                                 self.nameArray.append(nameTemp)
-                                newPOI.setValue(self.chosenAreaPOI, forKey: "area")
-                                newPOI.setValue(nameTemp, forKey: "name")
-                                if let addressTemp = object["address"] as? String {
-                                    newPOI.setValue(addressTemp, forKey: "address")
-                                    if let completedTemp = object["completed"] as? String {
-                                        newPOI.setValue(completedTemp, forKey: "completed")
-                                        do {
-                                            try context.save()
-                                            print("saved")
-                                            
-                                        } catch {
-                                            print("There was an error")
-                                        }
-                                    }
-                                }
+                                entity.setValue(nameTemp, forKey: "name")
                             }
-
                         } else {
                             print("Could not get POI Location")
+                        }
+                        
+                        do {
+                            try self.moc.save()
+                            print("saved")
+                        } catch {
+                            fatalError("Failure to save context: \(error)")
                         }
 
                     }
                 }
+                }
             }
         }
-        
-        // 3. sort in distance order
-
+    }
+    
+    func distanceOrder(completion: (_ result: Bool)->()) {
         // create dictionary out of name array and distance
         var dictName: [String: Double] = [:]
         var dictDist: [String: Double] = [:]
@@ -244,16 +232,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.nameArray = sortedName as! [String]
         self.distanceArray = sortedDist as! [String]
-
+        
         var tempDistanceArray = [String]()
         for item in self.distanceArray {
             let number: Double = round(Double(item)! * 100) / 100
             tempDistanceArray.append(String(number))
         }
         self.distanceArray = tempDistanceArray
-        
-        self.tableView.reloadData()
-        
         
         // prepare for other information in getData function
         self.addressArray.removeAll()
@@ -268,29 +253,31 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.completedArray.append("no")
             self.imageDataArray.append(PFFile(data: imageFillerData!)!)
             
-            if number == addressArray.count  {
-                completion(true)
-            } else {
-                completion(false)
-            }
         }
-
-
     }
     
-    @available(iOS 10.0, *)
-    func getData() {
-        
-        // compeleted, address, and image
 
-        // 1. Get completed and address data from core data
-        // 2. Get completed and address data from parse
-        // 3. Get all image data from Parse (small photos)
-        
+    func coreDataFetch2(completion: (_ result: Bool)->()) {
         // Core Data address and completed
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let context = appDelegate.persistentContainer.viewContext
+        let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+        for name in self.coreDataNameArray {
+            poiFetch.predicate = NSPredicate(format: "name = %@", name)
+            if let tempAddress = poiFetch.value(forKey: "address") {
+                if let indexNumber = self.nameArray.index(of: name) {
+                    if self.addressArray.count == self.nameArray.count {
+                        self.addressArray[indexNumber] = (tempAddress as? String)!
+                    }
+                    if let tempCompleted = poiFetch.value(forKey: "completed") {
+                        if self.completedArray.count == self.nameArray.count {
+                            self.completedArray[indexNumber] = (tempCompleted as? String)!
+                        }
+                    }
+                }
+            }
+        }
         
+        
+/*
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
         request.predicate = NSPredicate(format: "area = %@", "Kensington and Chelsea")
         request.returnsObjectsAsFaults = false // to get the values of the data
@@ -319,7 +306,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         } catch {
             print("Couldn't fetch results")
         }
-
+        */
+    }
+    
+    func ParseFetch2() {
         // Parse address, completed and images
         let queryRest = PFQuery(className: "POI")
         queryRest.whereKey("area", equalTo: self.chosenAreaPOI)
@@ -328,36 +318,49 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 
                 for object in objects {
                     if let tempName = object["name"] as? String {
-                        
-                        // add photo to all POIs
-                        if let photo = object["picture"] as? PFFile {
-                            self.imageDataArray[(self.nameArray.index(of: tempName))!] = photo
-                        }
-                        // add address and completed to only new POIs
-                        if self.nameArray.contains(tempName) == false {
-                            if self.addressArray.count > 1 {
-                                if let tempAddress = object["address"] as? String {
-                                    self.addressArray[self.nameArray.index(of: tempName)!] = tempAddress
-                                }
+                        if let indexCheck = self.nameArray.index(of: tempName) {
+                            // add photo to all POIs
+                            if let photo = object["picture"] as? PFFile {
+                                self.imageDataArray[indexCheck] = photo
                             }
-                            if self.completedArray.count > 1 {
-                                if let tempCompleted = object["completed"] as? [String] {
-                                    if self.username != nil {
-                                        if tempCompleted.contains(self.username!) {
-                                            self.completedArray[self.nameArray.index(of: tempName)!] = "yes"
-                                        }
+                        
+                            // add address and completed to only new POIs then Save to Core Data
+                            if self.nameArray.contains(tempName) == false {
+                                
+                                let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+                                poiFetch.predicate = NSPredicate(format: "name = %@", tempName)
+                                
+                                if self.addressArray.count > 1 {
+                                    if let tempAddress = object["address"] as? String {
+                                        self.addressArray[self.nameArray.index(of: tempName)!] = tempAddress
+                                        poiFetch.setValue(tempAddress, forKey: "address")
                                     }
                                 }
+                                if self.completedArray.count > 1 && self.username != nil {
+                                    if let tempCompleted = object["completed"] as? [String] {
+                                            if tempCompleted.contains(self.username!) {
+                                                self.completedArray[self.nameArray.index(of: tempName)!] = "yes"
+                                                poiFetch.setValue("yes", forKey: "completed")
+                                            } else {
+                                                poiFetch.setValue("no", forKey: "completed")
+                                            }
+                                        }
+                                    }
+                                    do {
+                                        try self.moc.save()
+                                    } catch { print("error") }
+                                }
                             }
                         }
+                        self.tableView.reloadData()
                     }
                 self.tableView.reloadData()
+                self.tableView.tableFooterView = UIView()
+                }
             }
-                
-            self.tableView.tableFooterView = UIView()
         }
-    }
-    }
+    
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -367,11 +370,16 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // add in search count
         
-        if searchController.isActive && searchController.searchBar.text != "" {
-            return filteredNameArray.count
-        }
+        if completedArray.count > 0 || imageDataArray.count > 0 {
+            if searchController.isActive && searchController.searchBar.text != "" {
+                return filteredNameArray.count
+            }
 
-        return nameArray.count
+            return nameArray.count
+        } else {
+            return 0
+        }
+        
     }
 
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -645,6 +653,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
 }
 
+@available(iOS 10.0, *)
 extension POIsViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         filterContentForSearchText(searchText: searchController.searchBar.text!)
