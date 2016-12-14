@@ -21,6 +21,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     var nameArray = [String]()
     var coreDataNameArray = [String]()
+    var nameArrayOutdated = [String]()
     var addressArray = [String]()
     var distanceArray = [String]()
     var coordinatesArray = [CLLocationCoordinate2D]()
@@ -35,10 +36,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var username: String?
     
     // audio Variables
-    var audioArray = [AVAudioPlayer]()
     var trackPlaying = AVAudioPlayer()
     var playMode = false
-    let serialQueue = DispatchQueue(label: "label")
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredNameArray = nameArray.filter({ (skill) -> Bool in
@@ -101,6 +100,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     self.coreDataFetch2 { (Bool) in
                         self.ParseFetch2()
                         print("completed array \(self.completedArray)")
+                        // background running
+                        self.getOutdatedPOIs(completion: { (Bool) in
+                            self.deleteOutdatedPOIs()
+                        })
                     }
                 }
             }
@@ -131,6 +134,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             // Error Handling
         }
     }
+    
 
 
     func coreDataFetch(completion: (_ result: Bool)->()) {
@@ -138,6 +142,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.coreDataNameArray.removeAll()
         self.coordinatesArray.removeAll()
         self.distanceArray.removeAll()
+        self.sortingWithDistanceArray.removeAll()
+        self.completedArray.removeAll()
+        self.addressArray.removeAll()
+        self.imageDataArray.removeAll()
+        
         print("removed arrays")
 
         // 1. get saved data - name and coords
@@ -178,6 +187,59 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+    func getOutdatedPOIs(completion: @escaping (_ result: Bool)->()) {
+        nameArrayOutdated = self.nameArray
+        let query = PFQuery(className: "POI")
+        query.whereKey("area", equalTo: self.chosenAreaPOI)
+        query.findObjectsInBackground { (objects, error) in
+            if error != nil {
+                print(error)
+            } else {
+                if let objects = objects {
+                    var i = 0
+                    for object in objects {
+                        if let tempName = object["name"] as? String  {
+                            if self.nameArrayOutdated.contains(tempName) {
+                                if let indexNo = self.nameArrayOutdated.index(of: tempName) {
+                                    self.nameArrayOutdated.remove(at: indexNo)
+                                }
+                            }
+                        }
+                        i += 1
+                        if i == objects.count {
+                            print("outdated array \(self.nameArrayOutdated)")
+                            completion(true)
+                        }
+                    }
+
+                } else {
+                    completion(true)
+                }
+            }
+        }
+    }
+    
+    func deleteOutdatedPOIs() {
+        if nameArrayOutdated.count > 0 {
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+            request.predicate = NSPredicate(format: "name = %@", argumentArray: nameArrayOutdated)
+            request.returnsObjectsAsFaults = false
+            do {
+                let results = try moc.fetch(request)
+                for result in results as! [NSManagedObject] {
+                    self.moc.delete(result)
+                    
+                    do {
+                        try self.moc.save()
+                        print("delete saved")
+                    } catch { print("delete failed")
+                    }
+                }
+            } catch {
+                print(error)
+            }
+        }
+    }
     
     func newParseFetchAndSave(completion: @escaping (_ result: Bool)->()) {
         // 2. get new data from parse and save to core data - names and coords
@@ -207,7 +269,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 self.distanceArray.append(String(distance))
                                 self.sortingWithDistanceArray.append(distance)
                             }
-                            // get names
+                            // get new POI data and save to core
                             if let nameTemp = object["name"] as? String {
                                 self.nameArray.append(nameTemp)
                                 entity.setValue(nameTemp, forKey: "name")
@@ -240,6 +302,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         i += 1
                         if i == objects.count {
                             completion(true)
+                            print("added new objects to core")
                         }
                     }
                 } else {
@@ -255,6 +318,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func distanceOrder(completion: (_ result: Bool)->()) {
         // create dictionary out of name array and distance
+        print("distance array \(self.distanceArray.count)")
+        print("distance array \(self.sortingWithDistanceArray.count)")
+
         var i = 0
         var dictName: [String: Double] = [:]
         var dictDist: [String: Double] = [:]
@@ -273,6 +339,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.distanceArray = sortedDist as! [String]
         
         var tempDistanceArray = [String]()
+        tempDistanceArray.removeAll()
         for item in self.distanceArray {
             let number: Double = round(Double(item)! * 100) / 100
             tempDistanceArray.append(String(number))
@@ -352,7 +419,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     if let tempName = object["name"] as? String {
                         if let indexCheck = self.nameArray.index(of: tempName) {
                             // add photo to all POIs
-                            if let photo = object["picture"] as? PFFile {
+                            if let photo = object["smallPicture"] as? PFFile {
                                 self.imageDataArray[indexCheck] = photo
                                 }
                             }
