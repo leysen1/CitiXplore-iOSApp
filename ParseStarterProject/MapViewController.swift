@@ -11,6 +11,8 @@ import Parse
 import MapKit
 import AudioToolbox
 
+var ratedPOI = String()
+
 class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     
     // set up variable
@@ -33,7 +35,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
-            self.findPOIs()
+            self.findPOIs(completion: { (Bool) in
+            })
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                 self.addAnnotationToMap()
                 print("reloading Annotations")
@@ -55,19 +58,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     func callUpdateLocation() {
         locationManager.startUpdatingLocation()
         
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-            self.saveUserLocation()
+        self.saveUserLocation(completion: { (Bool) in
             self.locationManager.stopUpdatingLocation()
-        }
+        })
         
         if annotationTitle.count > 0 {
             // do nothing
         } else {
-            findPOIs()
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            findPOIs(completion: { (Bool) in
                 self.addAnnotationToMap()
                 print("attempted to reload Annotations")
-            }
+            })
         }
         
         mapView.reloadInputViews()
@@ -89,7 +90,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
 
     
-    func saveUserLocation() {
+    func saveUserLocation(completion: @escaping (_ result: Bool)->()) {
         
         // save user location
         if let tempUserLocation = PFGeoPoint(latitude: userLocation.latitude, longitude: userLocation.longitude) as? PFGeoPoint {
@@ -105,14 +106,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                             item.isEnabled = true
                         }
                     }
+                    completion(true)
                 }
             })
 
+        } else {
+            completion(true)
         }
         
     }
     
-    func findPOIs() {
+    func findPOIs(completion: @escaping (_ result: Bool)->()) {
         // find all POIs
 
         let query = PFQuery(className: "POI")
@@ -126,6 +130,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     self.annotationLocation.removeAll()
                     self.MKPinColorArray.removeAll()
                     var completedArray: [String]?
+                    var i = 0
                     for poiLocation in poiLocations {
                         completedArray?.removeAll()
                         if let tempTitle = poiLocation["name"] as? String {
@@ -156,10 +161,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                             self.MKPinColorArray.append(MKPinAnnotationColor.red)
                         }
                         
+                        i += 1
+                        if i == poiLocations.count {
+                            completion(true)
+                        }
+                        
                     }
                     
                     self.activityIndicator.stopAnimating()
                     UIApplication.shared.endIgnoringInteractionEvents()
+                } else {
+                    completion(true)
                 }
             }
             
@@ -217,7 +229,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
         self.title = "Map"
 
         locationManager.delegate = self
@@ -225,19 +236,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
         
-        saveUserLocation()
-
-        serialQueue.sync(execute: {
-            findPOIs()
-        })
-
-        
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-            // centre on user
+        saveUserLocation { (Bool) in
+            self.findPOIs(completion: { (Bool) in
+            })
             let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
             self.mapView.setRegion(region, animated: false)
-            
         }
+
         
         if let items = (self.navigationController?.toolbarItems) {
             for item: UIBarButtonItem in items {
@@ -255,8 +260,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         mapView.delegate = self
         mapView.showsUserLocation = true
         
-        saveUserLocation()
-        
         updateTimer()
 
         // annotation
@@ -267,6 +270,21 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         
         // arrow if signup
         animateArrow()
+        
+        if ratedPOI != "" {
+            print("rated POI \(ratedPOI)")
+            if let indexNo = self.annotationTitle.index(of: ratedPOI) {
+                let ratedPOILocation = self.annotationLocation[indexNo]
+                let region = MKCoordinateRegion(center: ratedPOILocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+                self.mapView.setRegion(region, animated: false)
+            }
+
+        } else {
+            let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+            self.mapView.setRegion(region, animated: false)
+        }
+        
+        
  
     }
  
@@ -339,6 +357,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewDidDisappear(_ animated: Bool) {
         locationManager.stopUpdatingLocation()
         timer.invalidate()
+        ratedPOI = ""
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

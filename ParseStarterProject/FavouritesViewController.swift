@@ -27,7 +27,9 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet var star5Image: UIButton!
     @IBOutlet var submitButtonLabel: UIButton!
     @IBOutlet var tableView: UITableView!
-
+    @IBOutlet var backImage: UIImageView!
+    @IBOutlet var topRatedLabel: UILabel!
+    @IBOutlet var desLabel: UILabel!
 
     // STARS
     @IBAction func star1(_ sender: AnyObject) {
@@ -101,8 +103,20 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
         star5Image.alpha = 1
         submitButtonLabel.alpha = 1
         submitButtonLabel.isEnabled = true
+        backImage.image = UIImage()
+        desLabel.alpha = 1
+        // hide top rated
+        topRatedLabel.alpha = 0
+        tableView.alpha = 0
         
-        updateArray()
+        updateArray { (Bool) in
+            print("completed updatedArray")
+            if self.nameArray.count == 0 {
+                
+                // self.ratingsComplete()
+            }
+        }
+        
         
         getHighScores { (Bool) in
             self.orderHighScores()
@@ -114,7 +128,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     
     
-    func updateArray() {
+    func updateArray(completion: @escaping (_ result: Bool)->()) {
         
         let query = PFQuery(className: "POI")
         query.whereKey("completed", contains: username)
@@ -125,8 +139,9 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
             } else {
                 if let objects = objects {
                     if objects.count != 0 {
+                        var i = 0
                         for object in objects {
-                            if let imageFile = object["picture"] as? PFFile {
+                            if let imageFile = object["smallPicture"] as? PFFile {
                                 imageFile.getDataInBackground(block: { (data, error) in
                                     if let imageData = data {
                                         self.imageArray.append(UIImage(data: imageData)!)
@@ -147,22 +162,43 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
                             } else {
                                 // no image in object
                                 print("could not get image")
+                                self.ratingsComplete()
+                            }
+                            i += 1
+                            if i == objects.count {
+                                completion(true)
                             }
                         }
                     } else {
-                        self.placeName.text = "You have rated all your sightings!"
-                        self.imageToRate.image = UIImage()
-                        self.star1Image.alpha = 0
-                        self.star2Image.alpha = 0
-                        self.star3Image.alpha = 0
-                        self.star4Image.alpha = 0
-                        self.star5Image.alpha = 0
-                        self.submitButtonLabel.alpha = 0
-                        self.submitButtonLabel.isEnabled = false
+                        self.ratingsComplete()
+                        completion(true)
                     }
+                } else {
+                    completion(true)
+                    self.placeName.text = "Could not connect to the cloud"
                 }
             }
         }
+    }
+    
+    func ratingsComplete() {
+        self.placeName.text = "You have rated all your sightings!"
+        self.imageToRate.image = UIImage()
+        self.star1Image.alpha = 0
+        self.star2Image.alpha = 0
+        self.star3Image.alpha = 0
+        self.star4Image.alpha = 0
+        self.star5Image.alpha = 0
+        self.submitButtonLabel.alpha = 0
+        self.submitButtonLabel.isEnabled = false
+        self.backImage.image = UIImage(named: "KandC.jpg")
+        
+        
+        // show Top Rated
+        self.topRatedLabel.alpha = 1
+        self.tableView.alpha = 1
+        self.desLabel.alpha = 0
+
     }
 
     
@@ -212,32 +248,26 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
     }
 
     func newImage() {
-        nameArray.remove(at: 0)
-        imageArray.remove(at: 0)
-        self.rating = 0
         
         if nameArray.count > 0 {
-            placeName.text = nameArray[0]
-            imageToRate.image = imageArray[0]
-            star1Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
-            star2Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
-            star3Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
-            star4Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
-            star5Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
+            self.rating = 0
+            nameArray.remove(at: 0)
+            imageArray.remove(at: 0)
+            if nameArray.count > 0 {
+                placeName.text = nameArray[0]
+                imageToRate.image = imageArray[0]
+                star1Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
+                star2Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
+                star3Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
+                star4Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
+                star5Image.setBackgroundImage(UIImage(named: "greystar.png"), for: .normal)
             
+            } else {
+                self.ratingsComplete()
+            }
         } else {
-            placeName.text = "You have rated all your sightings!"
-            imageToRate.image = UIImage()
-            star1Image.alpha = 0
-            star2Image.alpha = 0
-            star3Image.alpha = 0
-            star4Image.alpha = 0
-            star5Image.alpha = 0
-            submitButtonLabel.alpha = 0
-            submitButtonLabel.isEnabled = false
-            
+            self.ratingsComplete()
         }
-
     }
     
     func getHighScores(completion: @escaping (_ result: Bool)->()) {
@@ -260,7 +290,8 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
                                 sumOfRatings = item + sumOfRatings
                                 numberOfRatings += 1
                             }
-                            let tempHighScore = Double(sumOfRatings) / Double(numberOfRatings)
+                            let tempHighScore = round((Double(sumOfRatings) / Double(numberOfRatings)) * 100) / 100
+                            
                             self.highscore.append(tempHighScore)
                         }
                         i += 1
@@ -298,31 +329,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
         
         tableView.reloadData()
         
-        /*
- var dictName: [String: Double] = [:]
- var dictDist: [String: Double] = [:]
- 
- for (name, number) in self.nameArray.enumerated() {
- dictName[number] = self.sortingWithDistanceArray[name]
- }
- for (distance, number) in self.distanceArray.enumerated() {
- dictDist[number] = self.sortingWithDistanceArray[distance]
- }
- 
- let sortedName = (dictName as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
- let sortedDist = (dictDist as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
- 
- self.nameArray = sortedName as! [String]
- self.distanceArray = sortedDist as! [String]
- 
-*/
     }
-
-    @IBAction func button(_ sender: AnyObject) {
-        print("highscore \(self.highscore)")
-        print("highscorename \(self.highscoreNames)")
-    }
-
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -343,8 +350,12 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
-    
-
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        ratedPOI = highscoreNames[indexPath.row]
+        self.navigationController?.popToRootViewController(animated: true)
+        
+    }
     
 
   }
