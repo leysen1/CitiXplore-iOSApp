@@ -19,7 +19,7 @@
 		518B18221DE2D44800FAD4EE /* SinglePOITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */; };
 		5191B4CE1DEDC66100047717 /* FavouritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */; };
 		5191B4D01DEDC98C00047717 /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = 5191B4CF1DEDC98C00047717 /* star.png */; };
-		5191B4D21DEDCA8C00047717 /* greystar.png in Resources */ = {isa = PBXBuildFile; fileRef = 5191B4D11DEDCA8C00047717 /* greystar.png */; };
+		519BEE121E05378C00D77B81 /* greystar.png in Resources */ = {isa = PBXBuildFile; fileRef = 519BEE111E05378C00D77B81 /* greystar.png */; };
 		51C5F5D51DED8C44004E0B86 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 51C5F5D41DED8C44004E0B86 /* arrow.png */; };
 		51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */; };
 		51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */; };
@@ -56,7 +56,7 @@
 		518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOITableViewCell.swift; sourceTree = "<group>"; };
 		5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavouritesViewController.swift; sourceTree = "<group>"; };
 		5191B4CF1DEDC98C00047717 /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star.png; sourceTree = "<group>"; };
-		5191B4D11DEDCA8C00047717 /* greystar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = greystar.png; path = ../greystar.png; sourceTree = "<group>"; };
+		519BEE111E05378C00D77B81 /* greystar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greystar.png; sourceTree = "<group>"; };
 		51C5F5D41DED8C44004E0B86 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewCell.swift; sourceTree = "<group>"; };
@@ -152,7 +152,7 @@
 				5135710F1DEC34CA0004C706 /* NA.png */,
 				513571111DEC3B730004C706 /* KandC.jpg */,
 				51C5F5D41DED8C44004E0B86 /* arrow.png */,
-				5191B4D11DEDCA8C00047717 /* greystar.png */,
+				519BEE111E05378C00D77B81 /* greystar.png */,
 				5191B4CF1DEDC98C00047717 /* star.png */,
 				51F596451DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld */,
 				510CF6811DFEA6A50058B536 /* POIs+CoreDataClass.swift */,
@@ -254,7 +254,7 @@
 				51C5F5D51DED8C44004E0B86 /* arrow.png in Resources */,
 				51EA18671DC3AD30007591CC /* pause.jpg in Resources */,
 				814C3ACA1B69877600E307BB /* Main.storyboard in Resources */,
-				5191B4D21DEDCA8C00047717 /* greystar.png in Resources */,
+				519BEE121E05378C00D77B81 /* greystar.png in Resources */,
 				814C3ACB1B69877600E307BB /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
