@@ -88,26 +88,31 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
         
-        
-        coreDataFetch { (Bool) in
-            newParseFetchAndSave { (Bool) in
-                print("completed Parse Fetch")
-                self.distanceOrder { (Bool) in
-                    print("completed distance Order")
-                    print(self.nameArray)
-                    print(self.distanceArray)
-                    print(self.completedArray)
-                    self.coreDataFetch2 { (Bool) in
-                        self.ParseFetch2()
-                        print("completed array \(self.completedArray)")
-                        // background running
-                        self.getOutdatedPOIs(completion: { (Bool) in
-                            self.deleteOutdatedPOIs()
-                        })
+        deleteSavedData { (Bool) in
+            
+            coreDataFetch { (Bool) in
+                
+                newParseFetchAndSave { (Bool) in
+                    print("completed Parse Fetch")
+
+                    self.distanceOrder { (Bool) in
+                        print("completed distance Order")
+                        print(self.nameArray)
+                        print(self.distanceArray)
+                        print(self.completedArray)
+                        self.coreDataFetch2 { (Bool) in
+                            self.ParseFetch2()
+                            print("completed array \(self.completedArray)")
+                            // background running
+                            self.getOutdatedPOIs { (Bool) in
+                                self.deleteOutdatedPOIs()
+                            }
+                        }
                     }
                 }
             }
         }
+
 
         
     }
@@ -130,6 +135,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         do {
             try moc.execute(batchDeleteRequest)
             completion(true)
+            print("deleted all core data")
         } catch {
             // Error Handling
         }
@@ -156,6 +162,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             let fetchedPOIs = try moc.fetch(poiFetch) as! [POIs]
             if fetchedPOIs.count > 0 {
                 var i = 0
+                print("\(fetchedPOIs.count) objects found in core")
                 for poi in fetchedPOIs {
                     if let tempName = poi.value(forKey: "name") as? String {
                         nameArray.append(tempName)
@@ -177,70 +184,23 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     if i == fetchedPOIs.count {
                         completion(true)
                         print("completed")
+                        print("fetched \(self.nameArray.count) POI from core")
+                        print("fetched \(self.distanceArray.count) POI distances from core")
+                        
                     }
                 }
             } else {
                 completion(true)
+                print("no objects found saved in core")
+                print("\(self.nameArray.count) in name array after core fetch")
+                print("\(self.distanceArray.count) in distance array after core fetch")
             }
         } catch {
             fatalError("Failed to fetch POI: \(error)")
         }
     }
     
-    func getOutdatedPOIs(completion: @escaping (_ result: Bool)->()) {
-        nameArrayOutdated = self.nameArray
-        let query = PFQuery(className: "POI")
-        query.whereKey("area", equalTo: self.chosenAreaPOI)
-        query.findObjectsInBackground { (objects, error) in
-            if error != nil {
-                print(error)
-            } else {
-                if let objects = objects {
-                    var i = 0
-                    for object in objects {
-                        if let tempName = object["name"] as? String  {
-                            if self.nameArrayOutdated.contains(tempName) {
-                                if let indexNo = self.nameArrayOutdated.index(of: tempName) {
-                                    self.nameArrayOutdated.remove(at: indexNo)
-                                }
-                            }
-                        }
-                        i += 1
-                        if i == objects.count {
-                            print("outdated array \(self.nameArrayOutdated)")
-                            completion(true)
-                        }
-                    }
-
-                } else {
-                    completion(true)
-                }
-            }
-        }
-    }
-    
-    func deleteOutdatedPOIs() {
-        if nameArrayOutdated.count > 0 {
-            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
-            request.predicate = NSPredicate(format: "name = %@", argumentArray: nameArrayOutdated)
-            request.returnsObjectsAsFaults = false
-            do {
-                let results = try moc.fetch(request)
-                for result in results as! [NSManagedObject] {
-                    self.moc.delete(result)
-                    
-                    do {
-                        try self.moc.save()
-                        print("delete saved")
-                    } catch { print("delete failed")
-                    }
-                }
-            } catch {
-                print(error)
-            }
-        }
-    }
-    
+ 
     func newParseFetchAndSave(completion: @escaping (_ result: Bool)->()) {
         // 2. get new data from parse and save to core data - names and coords
 
@@ -255,6 +215,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 if let objects = objects {
                 if objects.count > 0 {
                     var i = 0
+                    print("\(objects.count) new objects found")
                     for object in objects {
                         let entity = NSEntityDescription.insertNewObject(forEntityName: "POIs", into: self.moc) as! POIs
                         // get the POI distances from user location
@@ -278,7 +239,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 entity.setValue(addressTemp, forKey: "address")
                             }
                             if let areaTemp = object["area"] as? String {
-                                self.nameArray.append(areaTemp)
                                 entity.setValue(areaTemp, forKey: "area")
                             }
                             if let completedTemp = object["completed"] as? [String] {
@@ -303,6 +263,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         if i == objects.count {
                             completion(true)
                             print("added new objects to core")
+                            print("round 2 check:")
+                            print("fetched \(self.nameArray.count) POI names")
+                            print("fetched \(self.distanceArray.count) POI distances")
+                            
                         }
                     }
                 } else {
@@ -319,35 +283,39 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func distanceOrder(completion: (_ result: Bool)->()) {
         // create dictionary out of name array and distance
         print("distance array \(self.distanceArray.count)")
-        print("distance array \(self.sortingWithDistanceArray.count)")
-
+        print("sorting distance array \(self.sortingWithDistanceArray.count)")
+        print("name array \(self.nameArray.count)")
         var i = 0
-        var dictName: [String: Double] = [:]
-        var dictDist: [String: Double] = [:]
-        
-        for (name, number) in self.nameArray.enumerated() {
-            dictName[number] = self.sortingWithDistanceArray[name]
-        }
-        for (distance, number) in self.distanceArray.enumerated() {
-            dictDist[number] = self.sortingWithDistanceArray[distance]
-        }
-        
-        let sortedName = (dictName as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
-        let sortedDist = (dictDist as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
-        
-        self.nameArray = sortedName as! [String]
-        self.distanceArray = sortedDist as! [String]
-        
-        var tempDistanceArray = [String]()
-        tempDistanceArray.removeAll()
-        for item in self.distanceArray {
-            let number: Double = round(Double(item)! * 100) / 100
-            tempDistanceArray.append(String(number))
-            if tempDistanceArray.count == distanceArray.count {
-                i += 1
+        if sortingWithDistanceArray.count == distanceArray.count && nameArray.count == sortingWithDistanceArray.count {
+            
+            var dictName: [String: Double] = [:]
+            var dictDist: [String: Double] = [:]
+            
+            for (name, number) in self.nameArray.enumerated() {
+                dictName[number] = self.sortingWithDistanceArray[name]
             }
+            for (distance, number) in self.distanceArray.enumerated() {
+                dictDist[number] = self.sortingWithDistanceArray[distance]
+            }
+            
+            let sortedName = (dictName as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
+            let sortedDist = (dictDist as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
+            
+            self.nameArray = sortedName as! [String]
+            self.distanceArray = sortedDist as! [String]
+            
+            var tempDistanceArray = [String]()
+            tempDistanceArray.removeAll()
+            for item in self.distanceArray {
+                let number: Double = round(Double(item)! * 100) / 100
+                tempDistanceArray.append(String(number))
+                if tempDistanceArray.count == distanceArray.count {
+                    i += 1
+                }
+            }
+            self.distanceArray = tempDistanceArray
+            
         }
-        self.distanceArray = tempDistanceArray
         
         // prepare for other information in getData function
         self.addressArray.removeAll()
@@ -432,6 +400,59 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
     
+    func getOutdatedPOIs(completion: @escaping (_ result: Bool)->()) {
+        nameArrayOutdated = self.nameArray
+        let query = PFQuery(className: "POI")
+        query.whereKey("area", equalTo: self.chosenAreaPOI)
+        query.findObjectsInBackground { (objects, error) in
+            if error != nil {
+                print(error)
+            } else {
+                if let objects = objects {
+                    var i = 0
+                    for object in objects {
+                        if let tempName = object["name"] as? String  {
+                            if self.nameArrayOutdated.contains(tempName) {
+                                if let indexNo = self.nameArrayOutdated.index(of: tempName) {
+                                    self.nameArrayOutdated.remove(at: indexNo)
+                                }
+                            }
+                        }
+                        i += 1
+                        if i == objects.count {
+                            print("outdated array \(self.nameArrayOutdated)")
+                            completion(true)
+                        }
+                    }
+                    
+                } else {
+                    completion(true)
+                }
+            }
+        }
+    }
+    
+    func deleteOutdatedPOIs() {
+        if nameArrayOutdated.count > 0 {
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+            request.predicate = NSPredicate(format: "name = %@", argumentArray: nameArrayOutdated)
+            request.returnsObjectsAsFaults = false
+            do {
+                let results = try moc.fetch(request)
+                for result in results as! [NSManagedObject] {
+                    self.moc.delete(result)
+                    
+                    do {
+                        try self.moc.save()
+                        print("delete saved")
+                    } catch { print("delete failed")
+                    }
+                }
+            } catch {
+                print(error)
+            }
+        }
+    }
     
 
     override func didReceiveMemoryWarning() {
