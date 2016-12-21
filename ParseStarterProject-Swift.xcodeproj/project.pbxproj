@@ -16,7 +16,6 @@
 		515B157E1DEDC07A0008BAFE /* no audio.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 515B157D1DEDC07A0008BAFE /* no audio.mp3 */; };
 		5170A9361DEDCE60006859BF /* FavTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5170A9351DEDCE60006859BF /* FavTableViewCell.swift */; };
 		518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */; };
-		518B18221DE2D44800FAD4EE /* SinglePOITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */; };
 		5191B4CE1DEDC66100047717 /* FavouritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */; };
 		5191B4D01DEDC98C00047717 /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = 5191B4CF1DEDC98C00047717 /* star.png */; };
 		519BEE121E05378C00D77B81 /* greystar.png in Resources */ = {isa = PBXBuildFile; fileRef = 519BEE111E05378C00D77B81 /* greystar.png */; };
@@ -53,7 +52,6 @@
 		515B157D1DEDC07A0008BAFE /* no audio.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "no audio.mp3"; sourceTree = "<group>"; };
 		5170A9351DEDCE60006859BF /* FavTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavTableViewCell.swift; sourceTree = "<group>"; };
 		518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOIViewController.swift; sourceTree = "<group>"; };
-		518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOITableViewCell.swift; sourceTree = "<group>"; };
 		5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavouritesViewController.swift; sourceTree = "<group>"; };
 		5191B4CF1DEDC98C00047717 /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star.png; sourceTree = "<group>"; };
 		519BEE111E05378C00D77B81 /* greystar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greystar.png; sourceTree = "<group>"; };
@@ -136,7 +134,6 @@
 				81BA814C1A49DA1800E65899 /* ViewController.swift */,
 				51EA185A1DC3AD30007591CC /* MapViewController.swift */,
 				518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */,
-				518B18211DE2D44800FAD4EE /* SinglePOITableViewCell.swift */,
 				51EA18571DC3AD30007591CC /* AreaTableViewController.swift */,
 				51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */,
 				51EA185E1DC3AD30007591CC /* POIsViewController.swift */,
@@ -278,7 +275,6 @@
 				51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */,
 				5170A9361DEDCE60006859BF /* FavTableViewCell.swift in Sources */,
 				51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */,
-				518B18221DE2D44800FAD4EE /* SinglePOITableViewCell.swift in Sources */,
 				51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */,
 				518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */,
 				510CF6841DFEA6A50058B536 /* POIs+CoreDataProperties.swift in Sources */,

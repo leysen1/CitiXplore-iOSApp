@@ -10,10 +10,9 @@ import UIKit
 import Parse
 import AVFoundation
 
-class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
+class SinglePOIViewController: UIViewController, CLLocationManagerDelegate {
     
     var name = String()
-
     var address = String()
     var distance = String()
     var coordinates = CLLocationCoordinate2D()
@@ -28,7 +27,12 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var activityIndicator = UIActivityIndicatorView()
     
-    @IBOutlet var tableView: UITableView!
+    @IBOutlet weak var poiName: UILabel!
+    @IBOutlet weak var poiDistance: UILabel!
+    @IBOutlet weak var poiImage: UIImageView!
+    @IBOutlet weak var poiAddress: UILabel!
+    @IBOutlet weak var completedImage: UIImageView!
+    
     @IBOutlet var scrubber: UISlider!
     @IBAction func scrubberChanged(_ sender: AnyObject) {
         trackPlaying.currentTime = TimeInterval(scrubber.value)
@@ -54,28 +58,7 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
         
     }
     
-    func playNewSong() {
-        self.time = self.trackPlaying.duration
-        self.trackPlaying.volume = 0.9
-        self.trackPlaying.play()
-        self.playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
-        self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
-        self.scrubber.maximumValue = Float(self.trackPlaying.duration)
-        self.scrubber.value = 0
-        self.playMode = true
-        
-        let minutes = Int(self.time / 60)
-        var seconds = ""
-        if Int(self.time) - (minutes * 60) < 10 {
-            let tempSec = Int(self.time) - (minutes * 60)
-            seconds = String("0\(tempSec)")
-        } else {
-            seconds = String(Int(self.time) - (minutes * 60))
-        }
-        
-        self.audioTimeLeft.text = "\(minutes):\(seconds)"
-        
-    }
+
     
     func updateSlider() {
         scrubber.value = Float(trackPlaying.currentTime)
@@ -102,17 +85,60 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Listen"
-        self.playButtonImage.isEnabled = false
-        self.scrubber.isEnabled = false
+        title = "Listen"
+        print("hello")
+        print(name)
+        playButtonImage.isEnabled = false
+        scrubber.isEnabled = false
         
+        fetchData { (Bool) in
+            print("data fetched")
+            print("completed \(self.completed)")
+            self.poiName.text = self.name
+            if self.address != "" {
+                self.poiAddress.text = self.address
+            }
+            
+            if self.distance != "" {
+                self.poiDistance.text = "\(self.distance) km"
+            }
+            
+            if self.imageData != [] {
+                self.imageData[0].getDataInBackground { (data, error) in
+                    
+                    if let tempImageData = data {
+                        if let downloadedImage = UIImage(data: tempImageData) {
+                            self.poiImage.image = downloadedImage
+                        }
+                    }
+                }
+            }
+            if self.completed == "yes" {
+                self.completedImage.image = UIImage(named: "tick.png")
+            } else {
+                self.completedImage.image = UIImage()
+            }
+            
+        }
+        
+        fetchAudio { (Bool) in
+            self.playButtonImage.isEnabled = true
+            self.scrubber.isEnabled = true
+            self.prepareAudio()
+        }
+
+
+}
+    
+    func fetchData(completion: @escaping (_ result: Bool)->()) {
         let query = PFQuery(className: "POI")
         query.whereKey("name", equalTo: name)
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
-                print(error)
+                print("error")
             } else {
                 if let objects = objects {
+                    var i = 0
                     for object in objects {
                         if let tempaddress = object["address"] as? String {
                             self.address = tempaddress
@@ -150,7 +176,7 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
                             self.completed = "no"
                         }
                         
-                        if let tempPhoto = object["picture"] as? PFFile {
+                        if let tempPhoto = object["smallPicture"] as? PFFile {
                             self.imageData.append(tempPhoto)
                         } else {
                             if let imageFiller = UIImage(named: "NA.png") {
@@ -159,161 +185,82 @@ class SinglePOIViewController: UIViewController, UITableViewDelegate, UITableVie
                                 }
                             }
                         }
-                        self.tableView.reloadData()
-                        self.tableView.tableFooterView = UIView()
+                        i += 1
+                        if i == objects.count {
+                            completion(true)
+                        }
                     }
-                    self.tableView.reloadData()
-                }
-            }
-    }
 
-}
-    
-
-    
-    
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
-    }
-
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SinglePOITableViewCell
-        cell.locationName.text = name
-        cell.locationAddress.text = address
-        if distance != "" {
-            cell.locationDistance.text = "You are \(distance)km away"
-        }
-        
-        if imageData != [] {
-            imageData[0].getDataInBackground { (data, error) in
-                
-                if let tempImageData = data {
-                    if let downloadedImage = UIImage(data: tempImageData) {
-                        cell.locationImage.image = downloadedImage
-                    }
-                }
-            }
-        }
-        
-        if completed == "yes" {
-            
-            cell.backgroundColor = UIColor.clear
-            cell.locationName.textColor = UIColor.lightGray
-            cell.locationAddress.textColor = UIColor.lightGray
-            cell.locationDistance.textColor = UIColor.lightGray
-            cell.locationImage.alpha = 0.5
-            cell.tickImage.image = UIImage(named: "tick.png")
-        } else {
-            cell.backgroundColor = UIColor.groupTableViewBackground
-            cell.locationName.textColor = UIColor.black
-            cell.locationAddress.textColor = UIColor.black
-            cell.locationDistance.textColor = UIColor.black
-            cell.locationImage.alpha = 1
-            cell.tickImage.image = UIImage()
-        }
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
-        cell.locationImage.addGestureRecognizer(tapGesture)
-        cell.locationImage.isUserInteractionEnabled = true
-
-         return cell
-        
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        var tempPlayer = AVAudioPlayer()
-        
-        if name != "" {
-            //Spinner
-            activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-            activityIndicator.center = self.view.center
-            activityIndicator.hidesWhenStopped = true
-            activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
-            activityIndicator.startAnimating()
-            UIApplication.shared.beginIgnoringInteractionEvents()
-            view.addSubview(activityIndicator)
-            
-            audioLocationName.text = name
-            let query = PFQuery(className: "POI")
-            query.whereKey("name", equalTo: name)
-            query.findObjectsInBackground(block: { (objects, error) in
-                if error != nil {
-                    print(error)
                 } else {
-                    if let objects = objects {
-                        tempPlayer = AVAudioPlayer()
-                        for object in objects {
-                            if let audioClip = object["audio"] as? PFFile {
-                                audioClip.getDataInBackground(block: { (data, error) in
-                                    if error != nil {
-                                        print(error)
-                                    } else {
-                                        do { tempPlayer = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
-                                            self.trackPlaying = tempPlayer
-                                            if tempPlayer != AVAudioPlayer() {
-                                                self.playNewSong()
-                                            }
-                                            
-                                        } catch {  print(error)
-                                        }
+                    completion(true)
+                }
+            }
+        }
+    }
+    
+    func fetchAudio(completion: @escaping (_ result: Bool)->()) {
+        var tempPlayer = AVAudioPlayer()
+        audioLocationName.text = name
+        let query = PFQuery(className: "POI")
+        query.whereKey("name", equalTo: name)
+        query.findObjectsInBackground(block: { (objects, error) in
+            if error != nil {
+                print("error")
+            } else {
+                if let objects = objects {
+                    tempPlayer = AVAudioPlayer()
+                    for object in objects {
+                        if let audioClip = object["audio"] as? PFFile {
+                            audioClip.getDataInBackground(block: { (data, error) in
+                                if error != nil {
+                                    print("error")
+                                } else {
+                                    do { tempPlayer = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
+                                        self.trackPlaying = tempPlayer
+                                        completion(true)
+                                    } catch {  print(error)
                                     }
-                                    self.activityIndicator.stopAnimating()
-                                    UIApplication.shared.endIgnoringInteractionEvents()
-                                })
-                            } else {
-                                // no audio found
-                                let audioPath = Bundle.main.path(forResource: "no audio", ofType: "mp3")
-                                do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
-                                    self.trackPlaying = audioFiller
-                                    if tempPlayer != AVAudioPlayer() {
-                                        self.playNewSong()
-                                    }
-                                } catch {
-                                    // error
                                 }
-                                self.activityIndicator.stopAnimating()
-                                UIApplication.shared.endIgnoringInteractionEvents()
+                            })
+                        } else {
+                            // no audio found
+                            let audioPath = Bundle.main.path(forResource: "no audio", ofType: "mp3")
+                            do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
+                                self.trackPlaying = audioFiller
+                                completion(true)
+                            } catch {
+                                // error
                             }
                         }
                     }
+                } else {
+                    completion(true)
                 }
-            })
-            if self.playButtonImage.isEnabled == false {
-                self.playButtonImage.isEnabled = true
-                self.scrubber.isEnabled = true
-            } else {
-                trackPlaying.stop()
             }
-        } else {
-            // no audio found
-        }
+        })
     }
-    
-    func imageTapped(gesture: UIGestureRecognizer) {
-        
-        let overlay = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height))
-        let fullImageView = UIImageView(image: (gesture.view as! UIImageView).image) // This includes your image in table view cell
-        fullImageView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
-        fullImageView.contentMode = .scaleAspectFit
-        
-        let doneBtn = UIButton(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)) // set up according to your requirements
-        doneBtn.addTarget(self, action: #selector(pressed), for: .touchUpInside)
-        
-        overlay.addSubview(fullImageView)
-        overlay.addSubview(doneBtn)
-        
-        self.view.addSubview(overlay)
-    }
-    
-    func pressed(sender: UIButton!) {
-        
-        sender.superview?.removeFromSuperview()
-    }
-    
 
+    func prepareAudio() {
+        self.time = self.trackPlaying.duration
+        self.trackPlaying.volume = 0.9
+        self.playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
+        self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
+        self.scrubber.maximumValue = Float(self.trackPlaying.duration)
+        self.scrubber.value = 0
+        self.playMode = false
+        
+        let minutes = Int(self.time / 60)
+        var seconds = ""
+        if Int(self.time) - (minutes * 60) < 10 {
+            let tempSec = Int(self.time) - (minutes * 60)
+            seconds = String("0\(tempSec)")
+        } else {
+            seconds = String(Int(self.time) - (minutes * 60))
+        }
+        
+        self.audioTimeLeft.text = "\(minutes):\(seconds)"
+        
+    }
     
 
     override func viewWillDisappear(_ animated: Bool) {

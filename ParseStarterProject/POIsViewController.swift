@@ -101,7 +101,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         print(self.distanceArray)
                         print(self.completedArray)
                         self.coreDataFetch2 { (Bool) in
-                            self.ParseFetch2()
+                            self.ParseFetchImages()
                             print("completed array \(self.completedArray)")
                             // background running
                             self.getOutdatedPOIs { (Bool) in
@@ -209,7 +209,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         queryName.whereKey("name", notContainedIn: self.nameArray)
         queryName.findObjectsInBackground { (objects, error) in
             if error != nil {
-                print(error)
+                print("error")
                 print("error - no objects found")
             } else {
                 if let objects = objects {
@@ -377,7 +377,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func ParseFetch2() {
+    func ParseFetchImages() {
         // Get Parse images
         let queryRest = PFQuery(className: "POI")
         queryRest.whereKey("area", equalTo: self.chosenAreaPOI)
@@ -406,7 +406,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         query.whereKey("area", equalTo: self.chosenAreaPOI)
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
-                print(error)
+                print("error")
             } else {
                 if let objects = objects {
                     var i = 0
@@ -487,7 +487,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if addressArray != [] {
                 cell.locationAddress.text = addressArray[indexValue!] }
             if distanceArray != [] {
-                cell.locationDistance.text = "You are \(distanceArray[indexValue!])km away" }
+                cell.locationDistance.text = "\(distanceArray[indexValue!]) km" }
             
             // picture
             if imageDataArray != [] {
@@ -526,7 +526,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if addressArray != [] {
                 cell.locationAddress.text = addressArray[indexPath.row] }
             if distanceArray != [] {
-                cell.locationDistance.text = "You are \(distanceArray[indexPath.row])km away" }
+                cell.locationDistance.text = "\(distanceArray[indexPath.row]) km" }
             
             // picture
             if imageDataArray != [] {
@@ -598,7 +598,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
                 query.findObjectsInBackground(block: { (objects, error) in
                     if error != nil {
-                        print(error)
+                        print("error")
                     } else {
                         if let objects = objects {
                             tempPlayer = AVAudioPlayer()
@@ -607,7 +607,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 if let audioClip = object["audio"] as? PFFile {
                                     audioClip.getDataInBackground(block: { (data, error) in
                                         if error != nil {
-                                            print(error)
+                                            print("error")
                                         } else {
                                             do { tempPlayer = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
                                                 self.trackPlaying = tempPlayer
