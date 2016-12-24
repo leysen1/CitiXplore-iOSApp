@@ -13,7 +13,7 @@ class ProfileViewController: UIViewController {
 
     var totalPOIs = Double()
     var completedPOIs = Double()
-    var percentage = Double()
+    var percentage = Int()
     var username = String()
     @IBOutlet var emailLabel: UILabel!
     @IBOutlet var completedLabel: UILabel!
@@ -34,7 +34,7 @@ class ProfileViewController: UIViewController {
             query.whereKey("username", contains: username)
             query.findObjectsInBackground(block: { (objects, error) in
                 if error != nil {
-                    print(error)
+                    print("error")
                 } else {
                     if let objects = objects {
                         for object in objects {
@@ -53,20 +53,21 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         
         if let tempUsername = PFUser.current()?.username {
-            emailLabel.text = tempUsername
+            emailLabel.text = "Hello \(tempUsername)"
             username = tempUsername
         }
 
         fetchPOIInfo { (Bool) in
             
             if self.totalPOIs != 0 {
-                self.percentage = self.completedPOIs / self.totalPOIs
-                self.percentage = round(self.percentage * 100)
+                var percentageTemp = self.completedPOIs / self.totalPOIs
+                percentageTemp = round(percentageTemp * 100)
+                self.percentage = Int(percentageTemp)
             } else {
-                self.percentage = 0.0
+                self.percentage = 0
             }
             
-            self.completedLabel.text = "\(self.percentage)%"
+            self.completedLabel.text = "You have completed \(self.percentage)% of our London POIs."
         }
     }
     
@@ -77,7 +78,7 @@ class ProfileViewController: UIViewController {
         
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
-                print(error)
+                print("error")
             } else {
                 if let objects = objects {
                     self.totalPOIs = Double(objects.count)
@@ -95,7 +96,7 @@ class ProfileViewController: UIViewController {
         query2.whereKey("completed", contains: username)
         query2.findObjectsInBackground { (objects, error) in
             if error != nil {
-                print(error)
+                print("error")
             } else {
                 if let objects = objects {
                     self.completedPOIs = Double(objects.count)

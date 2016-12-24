@@ -135,7 +135,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
         query.whereKey("rated", notContainedIn: [username])
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
-                print(error)
+                print("error")
             } else {
                 if let objects = objects {
                     if objects.count != 0 {
@@ -211,7 +211,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
                 query2.whereKey("name", equalTo: self.nameArray[0])
                 query2.findObjectsInBackground(block: { (objects, error) in
                     if error != nil {
-                        print(error)
+                        print("error")
                     } else {
                         if let objects = objects {
                             for object in objects {
@@ -219,7 +219,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
                                 object.add(self.username, forKey: "rated")
                                 object.saveInBackground(block: { (success, error) in
                                     if error != nil {
-                                        print(error)
+                                        print("error")
                                     } else {
                                         // do somthing
                                         print("saved")
@@ -274,7 +274,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
         let query = PFQuery(className: "POI")
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
-                print(error)
+                print("error")
             } else {
                 if let objects = objects {
                     var i = 0

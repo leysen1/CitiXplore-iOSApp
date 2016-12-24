@@ -98,7 +98,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             PFUser.current()?["location"] = tempUserLocation
             PFUser.current()?.saveInBackground(block: { (success, error) in
                 if error != nil {
-                    print(error)
+                    print("error")
                 } else {
                     print("saved user location")
                     if let items = (self.navigationController?.toolbarItems) {
@@ -199,7 +199,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             query.whereKey("coordinates", nearGeoPoint: PFGeoPoint(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude), withinKilometers: 0.05)
             query.findObjectsInBackground { (objects, error) in
                 if error != nil {
-                    print(error)
+                    print("error")
                 } else {
                     if let objects = objects {
                         for object in objects {
@@ -275,7 +275,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             print("rated POI \(ratedPOI)")
             if let indexNo = self.annotationTitle.index(of: ratedPOI) {
                 let ratedPOILocation = self.annotationLocation[indexNo]
-                let region = MKCoordinateRegion(center: ratedPOILocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+                let region = MKCoordinateRegion(center: ratedPOILocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                 self.mapView.setRegion(region, animated: false)
             }
 

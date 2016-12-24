@@ -15,6 +15,8 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     var perAreaPOIs = [String: Int]()
     var allAreas = [String]()
     var completed = [String: Int]()
+    var areaImageDic = [String: PFFile]()
+    var imageArray = [PFFile]()
     var londonArray = [String]()
     var chosenArea = String()
     var userLocation = CLLocationCoordinate2D()
@@ -25,11 +27,23 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+       
+        totalPOI()
+        completedPOI()
+        fetchAreaImages { (Bool) in
+            print("completed image fetch")
+            self.sortAreaImages()
+        }
+        self.tableView.separatorStyle = .none
+ 
+    }
+    
+    func totalPOI() {
         let query = PFQuery(className: "POI")
         query.whereKey("city", equalTo: "London")
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
-                print(error)
+                print("error")
             } else {
                 
                 // create an array of all the different areas in London
@@ -42,30 +56,28 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
                         if self.londonArray.contains(area) {
                             // do nothing
                         } else {
-                             self.londonArray.append(area)
+                            self.londonArray.append(area)
                         }
-            }
+                    }
                     self.londonArray.sort()
                     for item in self.allAreas {
                         self.perAreaPOIs[item] = (self.perAreaPOIs[item] ?? 0) + 1 }
-                    print("perAreaPOIs")
-                    print(self.perAreaPOIs)
-                    print(self.londonArray)
-                    print("all areas \(self.allAreas)")
-                    
                     self.tableView.reloadData()
                     self.tableView.tableFooterView = UIView()
-
+                    
                 }
+            }
         }
-    }
 
+    }
+    
+    func completedPOI() {
         let query2 = PFQuery(className: "POI")
         query2.whereKey("city", equalTo: "London")
         query2.whereKey("completed", contains: username)
         query2.findObjectsInBackground { (objects, error) in
             if error != nil {
-                print(error)
+                print("error")
             } else {
                 self.allAreas.removeAll()
                 // create array of user's completed POIS
@@ -77,14 +89,57 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
                     
                     for item in self.allAreas {
                         self.completed[item] = (self.completed[item] ?? 0) + 1 }
-                    print("completed POI")
-                    print(self.completed)
-
+                    
                     self.tableView.reloadData()
                     self.tableView.tableFooterView = UIView()
                 }
             }
         }
+        
+    }
+    
+    func fetchAreaImages(completion: @escaping (_ result: Bool)->()) {
+        
+        let query = PFQuery(className: "Area")
+        query.whereKey("city", equalTo: "London")
+        query.findObjectsInBackground { (objects, error) in
+            if error != nil {
+                print("error")
+            } else {
+                if let objects = objects {
+                    var i = 0
+                    for object in objects {
+                        
+                        if let tempName = object["name"] as? String {
+                                // add photo to all POIs
+                                if let photo = object["picture"] as? PFFile {
+                                    self.areaImageDic[tempName] = photo
+                                    i += 1
+                                    if i == objects.count {
+                                        completion(true)
+                                    }
+                            }
+                        }
+                        
+                        
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    func sortAreaImages() {
+        
+        print("sorting")
+        let sortedImages = areaImageDic.sorted{ $0.key < $1.key }
+        print(sortedImages)
+        
+        let values = sortedImages.map {return $0.1 }
+        self.imageArray = values
+        print(values)
+        self.tableView.reloadData()
+        self.tableView.tableFooterView = UIView()
         
     }
     
@@ -119,9 +174,16 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
 
 
         }
-        if londonArray[indexPath.row] == "Kensington and Chelsea" {
-            cell.backImageView.image = UIImage(named: "KandC.jpg")
-        }
+            if imageArray != [] {
+                imageArray[indexPath.row].getDataInBackground { (data, error) in
+                    
+                    if let imageData = data {
+                        if let downloadedImage = UIImage(data: imageData) {
+                            cell.backImageView.image = downloadedImage
+                        }
+                    }
+                }
+            }
         
         
 

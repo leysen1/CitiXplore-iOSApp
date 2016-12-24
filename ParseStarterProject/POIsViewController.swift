@@ -80,6 +80,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.title = chosenAreaPOI
         self.playButtonImage.isEnabled = false
         self.scrubber.isEnabled = false
         
