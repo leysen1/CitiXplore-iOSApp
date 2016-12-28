@@ -16,6 +16,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet var usernameInput: UITextField!
     @IBOutlet var passwordInput: UITextField!
+    @IBOutlet weak var nameInput: UITextField!
     @IBOutlet var changeModeLabel: UILabel!
     @IBOutlet var loginOrSignupButtonLabel: UIButton!    
     @IBOutlet var changeSignupOrLoginButtonLabel: UIButton!
@@ -42,64 +43,93 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(activityIndicator)
         UIApplication.shared.beginIgnoringInteractionEvents()
         
-        if loginMode == true {
-            // log in user
+        if isValidEmail(testStr: usernameInput.text!) {
+            print("Valid Email")
             
-            PFUser.logInWithUsername(inBackground: usernameInput.text!, password: passwordInput.text!, block: { (user, error) in
-                
-                self.activityIndicator.stopAnimating()
-                UIApplication.shared.endIgnoringInteractionEvents()
-                
-                if error != nil {
+            if loginMode == true {
+                // log in user
+                print("logging in")
+                PFUser.logInWithUsername(inBackground: usernameInput.text!, password: passwordInput.text!, block: { (user, error) in
                     
-                    var displayErrorMessage = "Please try again later"
-                    let error = error as NSError?
-                    if let errorMessage = error?.userInfo["error"] as? String {
-                        displayErrorMessage = errorMessage
+                    self.activityIndicator.stopAnimating()
+                    UIApplication.shared.endIgnoringInteractionEvents()
+                    
+                    if error != nil {
+                        
+                        var displayErrorMessage = "Please try again later"
+                        let error = error as NSError?
+                        if let errorMessage = error?.userInfo["error"] as? String {
+                            displayErrorMessage = errorMessage
+                        }
+                        self.createAlert(title: "Log In Error", message: displayErrorMessage)
+                        
+                    } else {
+                        print("Logged in")
+                        self.performSegue(withIdentifier: "toMapView", sender: self)
+                        
+                        
                     }
-                    self.createAlert(title: "Log In Error", message: displayErrorMessage)
-                    
-                } else {
-                    print("Logged in")
-                    self.performSegue(withIdentifier: "toMapView", sender: self)
-                    
-                    
-                }
-            })
-
-        } else if loginMode == false {
-            // sign up user
-            
-            let user = PFUser()
-            user.username = usernameInput.text
-            user.password = passwordInput.text
-            
-            let acl = PFACL()
-            acl.getPublicWriteAccess = true
-            acl.getPublicReadAccess = true
-            user.acl = acl
-            
-            user.signUpInBackground(block: { (success, error) in
-                self.activityIndicator.stopAnimating()
-                UIApplication.shared.endIgnoringInteractionEvents()
+                })
                 
-                if error != nil {
-                    
-                    var displayErrorMessage = "Please try again later"
-                    let error = error as NSError?
-                    if let errorMessage = error?.userInfo["error"] as? String {
-                        displayErrorMessage = errorMessage
-                    }
-                    self.createAlert(title: "Sign Up Error", message: displayErrorMessage)
-                    
+            } else if loginMode == false {
+                // sign up user
+                if nameInput.text == "" {
+                    createAlert(title: "Missing Field", message: "Please enter your name.")
+                    self.activityIndicator.stopAnimating()
+                    UIApplication.shared.endIgnoringInteractionEvents()
                 } else {
-                    print("user signed up")
-                    self.performSegue(withIdentifier: "toMapView", sender: self)
+                let user = PFUser()
+                user.username = usernameInput.text
+                user.password = passwordInput.text
+                
+                let acl = PFACL()
+                acl.getPublicWriteAccess = true
+                acl.getPublicReadAccess = true
+                user.acl = acl
+                
+                user.signUpInBackground(block: { (success, error) in
+                    self.activityIndicator.stopAnimating()
+                    UIApplication.shared.endIgnoringInteractionEvents()
                     
-                    
+                    if error != nil {
+                        
+                        var displayErrorMessage = "Please try again later"
+                        let error = error as NSError?
+                        if let errorMessage = error?.userInfo["error"] as? String {
+                            displayErrorMessage = errorMessage
+                        }
+                        self.createAlert(title: "Sign Up Error", message: displayErrorMessage)
+                        
+                    } else {
+                        let query = PFQuery(className: "_User")
+                        query.whereKey("username", equalTo: self.usernameInput.text)
+                        query.findObjectsInBackground(block: { (objects, error) in
+                            if error != nil {
+                                
+                            } else {
+                                if let objects = objects {
+                                    for object in objects {
+                                        if self.nameInput.text != "" {
+                                            object["name"] = self.nameInput.text
+                                            object.saveInBackground()
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                        print("user signed up")
+                        self.performSegue(withIdentifier: "toMapView", sender: self)
+                        
+                        
+                    }
+                })
                 }
-            })
-            
+            }
+        }   else {
+            print("invalid Email")
+            createAlert(title: "Invalid Email Address", message: "Please enter a valid email address.")
+            self.activityIndicator.stopAnimating()
+            UIApplication.shared.endIgnoringInteractionEvents()
         }
     }
     
@@ -111,6 +141,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
             loginOrSignupButtonLabel.setTitle("Sign Up", for: [])
             changeSignupOrLoginButtonLabel.setTitle("Log In", for: [])
             changeModeLabel.text = "Already member?"
+            nameInput.alpha = 1
+            nameInput.isEnabled = true
             
         } else {
             // change to log in mode
@@ -118,6 +150,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
             loginOrSignupButtonLabel.setTitle("Log In", for: [])
             changeSignupOrLoginButtonLabel.setTitle("Sign Up", for: [])
             changeModeLabel.text = "Don't have an account?"
+            nameInput.alpha = 0
+            nameInput.isEnabled = false
             
         }
     }
@@ -127,18 +161,33 @@ class ViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        loginMode = true
         // rid keyboard
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)
         
         usernameInput.delegate = self
         passwordInput.delegate = self
+        nameInput.delegate = self
+        
+        nameInput.alpha = 0
+        nameInput.isEnabled = false
+        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         usernameInput.resignFirstResponder()
         passwordInput.resignFirstResponder()
         return true
+    }
+    
+    func isValidEmail(testStr:String) -> Bool {
+        print("validate emilId: \(testStr)")
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        let result = emailTest.evaluate(with: testStr)
+        return result
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

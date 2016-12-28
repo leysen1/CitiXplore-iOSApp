@@ -51,10 +51,25 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         if let tempUsername = PFUser.current()?.username {
-            emailLabel.text = "Hello \(tempUsername)"
-            username = tempUsername
+            let query = PFQuery(className: "_User")
+            query.whereKey("username", equalTo: tempUsername)
+            query.findObjectsInBackground(block: { (objects, error) in
+                if error != nil {
+                } else {
+                    if let objects = objects {
+                        for object in objects {
+                            if let nameTemp = object["name"] as? String {
+                                self.emailLabel.text = "Hello \(nameTemp)"
+                                self.username = nameTemp
+                            } else {
+                                self.emailLabel.text = "Hello there"
+                                self.username = ""
+                            }
+                        }
+                    }
+                }
+            })
         }
 
         fetchPOIInfo { (Bool) in
