@@ -100,16 +100,19 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     self.distanceOrder { (Bool) in
                         print("completed distance Order")
                         self.fetchCompletedParse(completion: { (Bool) in
-                            self.saveCompleted()
-                            self.coreDataFetch2 { (Bool) in
-                                self.ParseFetchImages()
-                                print("completed array \(self.completedArray)")
-                                // background running
-                                
-                                self.getOutdatedPOIs { (Bool) in
-                                    self.deleteOutdatedPOIs()
+                            print("fetch completed done")
+                            self.saveCompleted(completion: { (Bool) in
+                                self.coreDataFetch2 { (Bool) in
+                                    self.ParseFetchImages()
+                                    print("completed array \(self.completedArray)")
+                                    // background running
+                                    
+                                    self.getOutdatedPOIs { (Bool) in
+                                        self.deleteOutdatedPOIs()
+                                    }
                                 }
-                            }
+                            })
+                            
                         })
                         
                     }
@@ -273,6 +276,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var parseFetchCompleted = [String]()
     
     func fetchCompletedParse(completion: @escaping (_ result: Bool)->()) {
+        parseFetchCompleted.removeAll()
         let query = PFQuery(className: "POI")
         query.whereKey("area", equalTo: self.chosenAreaPOI)
         query.whereKey("completed", contains: email)
@@ -281,9 +285,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 
             } else {
                 if let objects = objects {
+                    print("found objects")
                     var i = 0
-                    for object in objects {
-                        if objects.count > 0 {
+                    if objects.count > 0 {
+                        for object in objects {
                             if let nameTemp = object["name"] as? String {
                                 self.parseFetchCompleted.append(nameTemp)
                             }
@@ -291,9 +296,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             if i == objects.count {
                                 completion(true)
                             }
-                        } else {
-                            completion(true)
                         }
+                    } else {
+                        completion(true)
                     }
                 } else {
                     completion(true)
@@ -302,25 +307,34 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func saveCompleted() {
-        for i in parseFetchCompleted {
-            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
-            request.predicate = NSPredicate(format: "name = %@", i)
-            request.returnsObjectsAsFaults = false
-            
-            do {
-                let fetchedPOIs = try moc.fetch(request) as! [POIs]
-                if fetchedPOIs.count > 0 {
-                    for poi in fetchedPOIs {
-                        poi.setValue("yes", forKey: "completed")
-                        do {
-                            try moc.save()
-                        } catch { print("error") }
+    func saveCompleted(completion: @escaping (_ result: Bool)->()) {
+        var i = 0
+        if parseFetchCompleted.count > 0 {
+            for item in parseFetchCompleted {
+                let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+                request.predicate = NSPredicate(format: "name = %@", item)
+                request.returnsObjectsAsFaults = false
+                
+                do {
+                    let fetchedPOIs = try moc.fetch(request) as! [POIs]
+                    if fetchedPOIs.count > 0 {
+                        for poi in fetchedPOIs {
+                            poi.setValue("yes", forKey: "completed")
+                            do {
+                                try moc.save()
+                            } catch { print("error") }
+                        }
                     }
+                } catch {
+                    print(error)
                 }
-            } catch {
-                print(error)
+                i += 1
+                if i == parseFetchCompleted.count {
+                    completion(true)
+                }
             }
+        } else {
+            completion(true)
         }
     }
 
