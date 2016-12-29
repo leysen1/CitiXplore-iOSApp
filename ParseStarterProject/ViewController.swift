@@ -9,20 +9,21 @@
 
 import UIKit
 import Parse
+import FBSDKLoginKit
 
 var helpClicked = true
 
-class ViewController: UIViewController, UITextFieldDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate {
 
-    @IBOutlet var usernameInput: UITextField!
+    @IBOutlet var emailInput: UITextField!
     @IBOutlet var passwordInput: UITextField!
-    @IBOutlet weak var nameInput: UITextField!
     @IBOutlet var changeModeLabel: UILabel!
     @IBOutlet var loginOrSignupButtonLabel: UIButton!    
     @IBOutlet var changeSignupOrLoginButtonLabel: UIButton!
     
     var loginMode = true
     var activityIndicator = UIActivityIndicatorView()
+    var fbLoginPressed = Bool()
     
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
@@ -43,13 +44,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(activityIndicator)
         UIApplication.shared.beginIgnoringInteractionEvents()
         
-        if isValidEmail(testStr: usernameInput.text!) {
+        if isValidEmail(testStr: emailInput.text!) {
             print("Valid Email")
             
             if loginMode == true {
                 // log in user
                 print("logging in")
-                PFUser.logInWithUsername(inBackground: usernameInput.text!, password: passwordInput.text!, block: { (user, error) in
+                PFUser.logInWithUsername(inBackground: emailInput.text!, password: passwordInput.text!, block: { (user, error) in
                     
                     self.activityIndicator.stopAnimating()
                     UIApplication.shared.endIgnoringInteractionEvents()
@@ -73,14 +74,14 @@ class ViewController: UIViewController, UITextFieldDelegate {
                 
             } else if loginMode == false {
                 // sign up user
-                if nameInput.text == "" {
-                    createAlert(title: "Missing Field", message: "Please enter your name.")
+                if emailInput.text == "" {
+                    createAlert(title: "Missing Field", message: "Please enter your email.")
                     self.activityIndicator.stopAnimating()
                     UIApplication.shared.endIgnoringInteractionEvents()
                 } else {
                 let user = PFUser()
-                user.username = usernameInput.text
                 user.password = passwordInput.text
+                user.username = emailInput.text
                 
                 let acl = PFACL()
                 acl.getPublicWriteAccess = true
@@ -92,35 +93,15 @@ class ViewController: UIViewController, UITextFieldDelegate {
                     UIApplication.shared.endIgnoringInteractionEvents()
                     
                     if error != nil {
-                        
                         var displayErrorMessage = "Please try again later"
                         let error = error as NSError?
                         if let errorMessage = error?.userInfo["error"] as? String {
                             displayErrorMessage = errorMessage
                         }
                         self.createAlert(title: "Sign Up Error", message: displayErrorMessage)
-                        
                     } else {
-                        let query = PFQuery(className: "_User")
-                        query.whereKey("username", equalTo: self.usernameInput.text)
-                        query.findObjectsInBackground(block: { (objects, error) in
-                            if error != nil {
-                                
-                            } else {
-                                if let objects = objects {
-                                    for object in objects {
-                                        if self.nameInput.text != "" {
-                                            object["name"] = self.nameInput.text
-                                            object.saveInBackground()
-                                        }
-                                    }
-                                }
-                            }
-                        })
                         print("user signed up")
                         self.performSegue(withIdentifier: "toMapView", sender: self)
-                        
-                        
                     }
                 })
                 }
@@ -141,8 +122,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
             loginOrSignupButtonLabel.setTitle("Sign Up", for: [])
             changeSignupOrLoginButtonLabel.setTitle("Log In", for: [])
             changeModeLabel.text = "Already member?"
-            nameInput.alpha = 1
-            nameInput.isEnabled = true
             
         } else {
             // change to log in mode
@@ -150,8 +129,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
             loginOrSignupButtonLabel.setTitle("Log In", for: [])
             changeSignupOrLoginButtonLabel.setTitle("Sign Up", for: [])
             changeModeLabel.text = "Don't have an account?"
-            nameInput.alpha = 0
-            nameInput.isEnabled = false
             
         }
     }
@@ -166,17 +143,36 @@ class ViewController: UIViewController, UITextFieldDelegate {
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)
         
-        usernameInput.delegate = self
+        emailInput.delegate = self
         passwordInput.delegate = self
-        nameInput.delegate = self
+
         
-        nameInput.alpha = 0
-        nameInput.isEnabled = false
+        // facebook login
         
+        let loginButton : FBSDKLoginButton = FBSDKLoginButton()
+        loginButton.center = CGPoint(x: self.view.frame.width / 2, y: self.view.frame.height - self.view.frame.height / 6)
+        loginButton.readPermissions = ["public_profile", "email"]
+        loginButton.delegate = self
+        self.view.addSubview(loginButton)
+        
+
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        if (FBSDKAccessToken.current() != nil) {
+            if fbLoginPressed == false {
+                print("User Logged In")
+                self.fbToParse()
+            }
+            
+        } else {
+            print("User not logged in")
+        }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        usernameInput.resignFirstResponder()
+        emailInput.resignFirstResponder()
         passwordInput.resignFirstResponder()
         return true
     }
@@ -189,6 +185,119 @@ class ViewController: UIViewController, UITextFieldDelegate {
         return result
         
     }
+    
+    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
+        if error != nil {
+            print(error)
+        }
+        else if result.isCancelled { 
+            print("User cancelled login")
+        }
+        else {
+            if result.grantedPermissions.contains("email") {
+                print("logged in")
+                fbLoginPressed = true
+                fbToParse()
+            }
+
+        }
+    }
+    
+    func fbToParse() {
+        // check if already exists in parse
+        //Spinner
+        activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        activityIndicator.center = self.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        activityIndicator.startAnimating()
+        view.addSubview(activityIndicator)
+        UIApplication.shared.beginIgnoringInteractionEvents()
+        
+        if let graphRequest = FBSDKGraphRequest(graphPath: "me", parameters: ["fields":"email,name"]) {
+            graphRequest.start(completionHandler: { (connection, result, error) in
+                if error != nil {
+                    print("error")
+                } else {
+                    if let userDetails = result as? [String: String] {
+
+                        let query = PFQuery(className: "_User")
+                        query.whereKey("username", contains: userDetails["email"])
+                        query.findObjectsInBackground(block: { (objects, error) in
+                            if error != nil {
+                                print("error")
+                            } else {
+                                if let objects = objects {
+                                    print("there are objects")
+                                    if objects.count > 0 {
+                                        // facebook user already logged in
+                                        print("welcome back user")
+                                        PFUser.logInWithUsername(inBackground: userDetails["email"]!, password: "password", block: { (user, error) in
+                                            
+                                            self.activityIndicator.stopAnimating()
+                                            UIApplication.shared.endIgnoringInteractionEvents()
+                                            
+                                            if error != nil {
+                                                
+                                                var displayErrorMessage = "Please try again later"
+                                                let error = error as NSError?
+                                                if let errorMessage = error?.userInfo["error"] as? String {
+                                                    displayErrorMessage = errorMessage
+                                                }
+                                                self.createAlert(title: "Log In Error", message: displayErrorMessage)
+                                                
+                                            } else {
+                                                print("Logged in")
+                                                self.performSegue(withIdentifier: "toMapView", sender: self)
+                                            }
+                                        })
+                                    } else {
+                                        // facebook user's first log in
+                                        // save details to parse
+                                        let user = PFUser()
+                                        user.username = userDetails["email"]
+                                        user.password = "password"
+                                        
+                                        
+                                        let acl = PFACL()
+                                        acl.getPublicWriteAccess = true
+                                        acl.getPublicReadAccess = true
+                                        user.acl = acl
+                                        
+                                        user.signUpInBackground(block: { (success, error) in
+                                            self.activityIndicator.stopAnimating()
+                                            UIApplication.shared.endIgnoringInteractionEvents()
+                                            
+                                            if error != nil {
+                                                
+                                                var displayErrorMessage = "Please try again later"
+                                                let error = error as NSError?
+                                                if let errorMessage = error?.userInfo["error"] as? String {
+                                                    displayErrorMessage = errorMessage
+                                                }
+                                                self.createAlert(title: "Sign Up Error", message: displayErrorMessage)
+                                                
+                                            } else {
+                                                print("user signed up")
+                                                self.performSegue(withIdentifier: "toMapView", sender: self)
+                                            }
+                                        })
+                                    }
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        }
+
+    }
+    
+    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+        print("Logged out")
+    }
+    
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "toMapView") {
@@ -203,7 +312,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         UIView.animate(withDuration: 0, delay: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
             self.view.layoutIfNeeded()
             }, completion: { (completed) in
-                self.usernameInput.resignFirstResponder()
+                self.emailInput.resignFirstResponder()
                 self.passwordInput.resignFirstResponder()
         })
     }

@@ -49,6 +49,16 @@
                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="History and Architecture" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WdP-iE-cWI">
+                                <rect key="frame" x="34" y="181" width="308" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="lkN-kh-AKz"/>
+                                    <constraint firstAttribute="width" constant="308" id="xCf-tM-5pO"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Password" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="1wS-Xo-Hmi">
                                 <rect key="frame" x="16" y="297" width="343" height="30"/>
                                 <constraints>
@@ -59,7 +69,7 @@
                                 <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tSD-Af-Z03">
-                                <rect key="frame" x="16" y="373" width="108" height="36"/>
+                                <rect key="frame" x="16" y="335" width="108" height="36"/>
                                 <color key="backgroundColor" red="0.40000000600000002" green="1" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="108" id="UCh-7y-k5G"/>
@@ -74,7 +84,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Don't have an account?" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Fa-ad-Ehx">
-                                <rect key="frame" x="16" y="416" width="196" height="24"/>
+                                <rect key="frame" x="16" y="378" width="196" height="24"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="24" id="VCM-RY-OlD"/>
                                     <constraint firstAttribute="width" constant="196" id="dBL-7P-32Y"/>
@@ -84,7 +94,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7D5-rv-bO3">
-                                <rect key="frame" x="217" y="409" width="74" height="36"/>
+                                <rect key="frame" x="217" y="371" width="74" height="36"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="36" id="Brg-rw-V76"/>
                                     <constraint firstAttribute="width" constant="74" id="axl-A8-1nX"/>
@@ -97,62 +107,39 @@
                                     <action selector="changeSignupOrLoginWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="VE4-Dh-K1j"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="History and Architecture" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WdP-iE-cWI">
-                                <rect key="frame" x="34" y="181" width="308" height="34"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="34" id="lkN-kh-AKz"/>
-                                    <constraint firstAttribute="width" constant="308" id="xCf-tM-5pO"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="17"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Name" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="lZv-P7-S9x">
-                                <rect key="frame" x="16" y="335" width="343" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="c8A-5a-zuo"/>
-                                </constraints>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="m14-nL-nv5" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="2Jg-ic-fRx"/>
                             <constraint firstItem="7Fa-ad-Ehx" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="3yB-QQ-JNc"/>
-                            <constraint firstItem="lZv-P7-S9x" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="51W-Nl-czI"/>
                             <constraint firstItem="7Fa-ad-Ehx" firstAttribute="top" secondItem="tSD-Af-Z03" secondAttribute="bottom" constant="7" id="6Sf-2U-W9C"/>
                             <constraint firstItem="NCb-A4-p0a" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="7Bw-M0-5Og"/>
                             <constraint firstItem="hzm-FM-Uo8" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="7EB-yl-gFi"/>
                             <constraint firstAttribute="trailing" secondItem="m14-nL-nv5" secondAttribute="trailing" id="CHh-e8-epL"/>
                             <constraint firstItem="WdP-iE-cWI" firstAttribute="top" secondItem="hzm-FM-Uo8" secondAttribute="bottom" constant="-40" id="IEk-iT-sIc"/>
-                            <constraint firstItem="lZv-P7-S9x" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="KEG-Rr-UPT"/>
+                            <constraint firstItem="7D5-rv-bO3" firstAttribute="top" secondItem="1wS-Xo-Hmi" secondAttribute="bottom" constant="44" id="M4V-N6-rC2"/>
                             <constraint firstItem="1wS-Xo-Hmi" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="OzH-fh-KFX"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="m14-nL-nv5" secondAttribute="bottom" id="VT6-wh-n2h"/>
                             <constraint firstItem="7D5-rv-bO3" firstAttribute="leading" secondItem="7Fa-ad-Ehx" secondAttribute="trailing" constant="5" id="Wf8-eP-LdW"/>
                             <constraint firstItem="m14-nL-nv5" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="XK8-kd-bNM"/>
                             <constraint firstItem="hzm-FM-Uo8" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="62" id="YGi-lP-DUh"/>
-                            <constraint firstItem="1wS-Xo-Hmi" firstAttribute="top" secondItem="NCb-A4-p0a" secondAttribute="bottom" constant="8" id="Zn9-Gf-lRO"/>
                             <constraint firstItem="tSD-Af-Z03" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="acb-h0-t8G"/>
-                            <constraint firstItem="lZv-P7-S9x" firstAttribute="top" secondItem="1wS-Xo-Hmi" secondAttribute="bottom" constant="8" id="ayg-Of-zkS"/>
                             <constraint firstItem="NCb-A4-p0a" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="d2r-AM-UR3"/>
                             <constraint firstItem="NCb-A4-p0a" firstAttribute="top" secondItem="hzm-FM-Uo8" secondAttribute="bottom" constant="38" id="kNh-9g-Yu6"/>
                             <constraint firstAttribute="trailing" secondItem="hzm-FM-Uo8" secondAttribute="trailing" constant="20" id="liy-gL-auP"/>
                             <constraint firstItem="1wS-Xo-Hmi" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="n0O-wz-Hva"/>
-                            <constraint firstItem="tSD-Af-Z03" firstAttribute="top" secondItem="lZv-P7-S9x" secondAttribute="bottom" constant="8" id="nj3-7Y-h7S"/>
-                            <constraint firstItem="7D5-rv-bO3" firstAttribute="top" secondItem="lZv-P7-S9x" secondAttribute="bottom" constant="44" id="pMS-Gb-Xds"/>
+                            <constraint firstItem="tSD-Af-Z03" firstAttribute="top" secondItem="1wS-Xo-Hmi" secondAttribute="bottom" constant="8" id="orc-Nk-2aa"/>
                             <constraint firstItem="WdP-iE-cWI" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="rJr-1s-sGV"/>
                             <constraint firstItem="hzm-FM-Uo8" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" id="re4-gj-Inw"/>
+                            <constraint firstItem="1wS-Xo-Hmi" firstAttribute="top" secondItem="NCb-A4-p0a" secondAttribute="bottom" constant="8" id="vjG-lI-e8I"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="changeModeLabel" destination="7Fa-ad-Ehx" id="L97-gW-PKk"/>
                         <outlet property="changeSignupOrLoginButtonLabel" destination="7D5-rv-bO3" id="taG-Y4-9ax"/>
+                        <outlet property="emailInput" destination="NCb-A4-p0a" id="syc-p2-YYD"/>
                         <outlet property="loginOrSignupButtonLabel" destination="tSD-Af-Z03" id="pYD-2E-PcS"/>
-                        <outlet property="nameInput" destination="lZv-P7-S9x" id="2P8-1a-KOA"/>
                         <outlet property="passwordInput" destination="1wS-Xo-Hmi" id="B2I-aN-0HN"/>
-                        <outlet property="usernameInput" destination="NCb-A4-p0a" id="O8e-SI-9KM"/>
                         <segue destination="OSI-KX-AB4" kind="show" identifier="toMapView" id="vMT-Cm-s6n"/>
                     </connections>
                 </viewController>
@@ -497,7 +484,7 @@
                     <navigationItem key="navigationItem" id="2cU-QJ-uoL">
                         <barButtonItem key="leftBarButtonItem" image="Profile" id="YYL-Jf-Xr7">
                             <connections>
-                                <segue destination="Jz7-Vm-p4B" kind="show" id="dlo-1T-ba0"/>
+                                <segue destination="Jz7-Vm-p4B" kind="show" identifier="toProfile" id="dlo-1T-ba0"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" image="Help" style="plain" id="AFh-b8-Fqa">

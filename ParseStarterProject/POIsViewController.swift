@@ -33,7 +33,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var chosenAreaPOI = ""
     var activityIndicator = UIActivityIndicatorView()
     var userLocation = CLLocationCoordinate2D()
-    var username: String?
+    var email: String?
     
     // audio Variables
     var trackPlaying = AVAudioPlayer()
@@ -79,6 +79,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        print("User email \(email)")
         
         self.title = chosenAreaPOI
         self.playButtonImage.isEnabled = false
@@ -243,8 +245,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 entity.setValue(areaTemp, forKey: "area")
                             }
                             if let completedTemp = object["completed"] as? [String] {
-                                if let usernameTemp = self.username {
-                                    if completedTemp.contains(usernameTemp) {
+                                if let emailTemp = self.email {
+                                    if completedTemp.contains(emailTemp) {
                                         entity.setValue("yes", forKey: "completed")
                                     } else {
                                         entity.setValue("no", forKey: "completed")

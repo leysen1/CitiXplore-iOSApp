@@ -8,13 +8,14 @@
 
 import UIKit
 import Parse
+import FBSDKLoginKit
 
 class ProfileViewController: UIViewController {
 
     var totalPOIs = Double()
     var completedPOIs = Double()
     var percentage = Int()
-    var username = String()
+    var email = String()
     @IBOutlet var emailLabel: UILabel!
     @IBOutlet var completedLabel: UILabel!
     @IBOutlet var commentEntry: UITextView!
@@ -31,7 +32,7 @@ class ProfileViewController: UIViewController {
         
         if commentEntry.text != "" {
             let query = PFQuery(className: "_User")
-            query.whereKey("username", contains: username)
+            query.whereKey("email", contains: email)
             query.findObjectsInBackground(block: { (objects, error) in
                 if error != nil {
                     print("error")
@@ -51,9 +52,9 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let tempUsername = PFUser.current()?.username {
+        if let tempEmail = PFUser.current()?.email {
             let query = PFQuery(className: "_User")
-            query.whereKey("username", equalTo: tempUsername)
+            query.whereKey("email", equalTo: tempEmail)
             query.findObjectsInBackground(block: { (objects, error) in
                 if error != nil {
                 } else {
@@ -61,10 +62,10 @@ class ProfileViewController: UIViewController {
                         for object in objects {
                             if let nameTemp = object["name"] as? String {
                                 self.emailLabel.text = "Hello \(nameTemp)"
-                                self.username = nameTemp
+                                self.email = nameTemp
                             } else {
                                 self.emailLabel.text = "Hello there"
-                                self.username = ""
+                                self.email = ""
                             }
                         }
                     }
@@ -108,7 +109,7 @@ class ProfileViewController: UIViewController {
         }
         
         let query2 = PFQuery(className: "POI")
-        query2.whereKey("completed", contains: username)
+        query2.whereKey("completed", contains: email)
         query2.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print("error")
@@ -138,7 +139,11 @@ class ProfileViewController: UIViewController {
         print("logged out")
         dismiss(animated: true, completion: nil)
         
+        let loginManager = FBSDKLoginManager()
+        loginManager.logOut()
+    
     }
+    
 
 
 }

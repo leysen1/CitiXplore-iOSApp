@@ -20,7 +20,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     var londonArray = [String]()
     var chosenArea = String()
     var userLocation = CLLocationCoordinate2D()
-    var username = String()
+    var email = String()
 
     @IBOutlet var tableView: UITableView!
     
@@ -74,7 +74,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
     func completedPOI() {
         let query2 = PFQuery(className: "POI")
         query2.whereKey("city", equalTo: "London")
-        query2.whereKey("completed", contains: username)
+        query2.whereKey("completed", contains: email)
         query2.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print("error")
@@ -212,7 +212,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
                 let POIVC = segue.destination as! POIsViewController
                 POIVC.chosenAreaPOI = self.chosenArea
                 POIVC.userLocation = self.userLocation
-                POIVC.username = self.username
+                POIVC.email = self.email
             } else {
                 // Fallback on earlier versions
             }

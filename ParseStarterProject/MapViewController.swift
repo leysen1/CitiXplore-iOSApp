@@ -19,14 +19,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var locationManager = CLLocationManager()
     var userLocation: CLLocationCoordinate2D = CLLocationCoordinate2D()
     
-    let username = (PFUser.current()?.username!)!
+    var email = String()
     var userAnnotation = MKPointAnnotation()
     var annotationTitle = [String]()
     var annotationAddress = [String]()
     var annotationLocation = [CLLocationCoordinate2D]()
     var MKPinColorArray = [MKPinAnnotationColor]()
     var chosenPOI = String()
-    let serialQueue = DispatchQueue(label: "label")
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var arrowImage: UIImageView!
     
@@ -151,7 +150,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         }
                         completedArray = poiLocation["completed"] as? [String]
                         if completedArray != nil {
-                        if (completedArray?.contains(self.username))! {
+                        if (completedArray?.contains(self.email))! {
                             self.MKPinColorArray.append(MKPinAnnotationColor.green)
                         }
                         else {
@@ -194,8 +193,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         // if current location is near POI, then check off list
         
         let query = PFQuery(className: "POI")
-        if let username = PFUser.current()?.username {
-            query.whereKey("completed", notContainedIn: [username])
+        if let email = PFUser.current()?.username {
+            query.whereKey("completed", notContainedIn: [email])
             query.whereKey("coordinates", nearGeoPoint: PFGeoPoint(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude), withinKilometers: 0.05)
             query.findObjectsInBackground { (objects, error) in
                 if error != nil {
@@ -204,7 +203,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     if let objects = objects {
                         for object in objects {
                             print("object here \(object)")
-                            object.addUniqueObject(username, forKey: "completed")
+                            object.addUniqueObject(email, forKey: "completed")
                             object.saveInBackground()
                             print("object saved")
                             if let tempName = object["name"] as? String {
@@ -235,6 +234,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        
+        if let emailTemp = (PFUser.current()?.username!) {
+            email = emailTemp
+            print("email \(email)")
+        }
         
         saveUserLocation { (Bool) in
             self.findPOIs(completion: { (Bool) in
@@ -369,13 +373,20 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         if (segue.identifier == "areaSegue") {
             let AreaVC = segue.destination as! AreaTableViewController
             AreaVC.userLocation = self.userLocation
-            AreaVC.username = self.username
+            AreaVC.email = self.email
         }
         
         if (segue.identifier == "toFavs") {
             let favVC = segue.destination as! FavouritesViewController
-            favVC.username = self.username
+            favVC.email = self.email
         }
+        
+        if (segue.identifier == "toProfile") {
+            let profVC = segue.destination as! ProfileViewController
+            profVC.email = self.email
+        }
+        
+       
         
         
     }

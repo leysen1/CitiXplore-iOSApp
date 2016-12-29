@@ -165,8 +165,8 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate {
                         }
                         
                         if let tempCompletedArray = object["completed"] as? [String] {
-                            if let username = (PFUser.current()?.username!) {
-                                if tempCompletedArray.contains(username) {
+                            if let email = (PFUser.current()?.username!) {
+                                if tempCompletedArray.contains(email) {
                                     self.completed = "yes"
                                 } else {
                                     self.completed = "no"

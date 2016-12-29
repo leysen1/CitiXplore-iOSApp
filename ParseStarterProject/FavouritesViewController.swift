@@ -11,7 +11,7 @@ import Parse
 
 class FavouritesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    var username = ""
+    var email = ""
     var imageArray = [UIImage]()
     var nameArray = [String]()
     var rating = Int()
@@ -123,7 +123,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         
     
-        print("username \(username)")
+        print("email \(email)")
     }
     
     
@@ -131,8 +131,8 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
     func updateArray(completion: @escaping (_ result: Bool)->()) {
         
         let query = PFQuery(className: "POI")
-        query.whereKey("completed", contains: username)
-        query.whereKey("rated", notContainedIn: [username])
+        query.whereKey("completed", contains: email)
+        query.whereKey("rated", notContainedIn: [email])
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print("error")
@@ -216,7 +216,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
                         if let objects = objects {
                             for object in objects {
                                 object.add(self.rating, forKey: "rating")
-                                object.add(self.username, forKey: "rated")
+                                object.add(self.email, forKey: "rated")
                                 object.saveInBackground(block: { (success, error) in
                                     if error != nil {
                                         print("error")
@@ -241,7 +241,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     @IBAction func submit(_ sender: AnyObject) {
         
-        if username != "" {
+        if email != "" {
             saveSubmit()
         }
         
