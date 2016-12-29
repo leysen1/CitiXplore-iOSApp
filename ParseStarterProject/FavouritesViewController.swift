@@ -162,7 +162,9 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
                             } else {
                                 // no image in object
                                 print("could not get image")
-                                self.ratingsComplete()
+                                if objects.count == 1 {
+                                    self.ratingsComplete()
+                                }
                             }
                             i += 1
                             if i == objects.count {

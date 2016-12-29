@@ -14,7 +14,7 @@ import CoreData
 
 // create alert message if data doesn't load
 
-@available(iOS 10.0, *)
+
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
     let moc = DataController().managedObjectContext
@@ -34,6 +34,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var activityIndicator = UIActivityIndicatorView()
     var userLocation = CLLocationCoordinate2D()
     var email: String?
+    
     
     // audio Variables
     var trackPlaying = AVAudioPlayer()
@@ -91,8 +92,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
         
-        deleteSavedData { (Bool) in
-            
             coreDataFetch { (Bool) in
                 
                 newParseFetchAndSave { (Bool) in
@@ -100,37 +99,32 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
 
                     self.distanceOrder { (Bool) in
                         print("completed distance Order")
-                        print(self.nameArray)
-                        print(self.distanceArray)
-                        print(self.completedArray)
-                        self.coreDataFetch2 { (Bool) in
-                            self.ParseFetchImages()
-                            print("completed array \(self.completedArray)")
-                            // background running
-                            self.getOutdatedPOIs { (Bool) in
-                                self.deleteOutdatedPOIs()
+                        self.fetchCompletedParse(completion: { (Bool) in
+                            self.saveCompleted()
+                            self.coreDataFetch2 { (Bool) in
+                                self.ParseFetchImages()
+                                print("completed array \(self.completedArray)")
+                                // background running
+                                
+                                self.getOutdatedPOIs { (Bool) in
+                                    self.deleteOutdatedPOIs()
+                                }
                             }
-                        }
+                        })
+                        
                     }
                 }
             }
-        }
 
-
-        
     }
 
-
-    override func viewDidAppear(_ animated: Bool) {
-        
- 
-    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.searchController.searchBar.endEditing(true)
         return true
     }
     
+    @available(iOS 9.0, *)
     func deleteSavedData(completion: (_ result: Bool)->()) {
         // Delete all saved CoreData
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
@@ -160,6 +154,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
 
         // 1. get saved data - name and coords
         let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+        poiFetch.predicate = NSPredicate(format: "area = %@", chosenAreaPOI)
         
         do {
             let fetchedPOIs = try moc.fetch(poiFetch) as! [POIs]
@@ -187,16 +182,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     if i == fetchedPOIs.count {
                         completion(true)
                         print("completed")
-                        print("fetched \(self.nameArray.count) POI from core")
-                        print("fetched \(self.distanceArray.count) POI distances from core")
-                        
                     }
                 }
             } else {
                 completion(true)
                 print("no objects found saved in core")
-                print("\(self.nameArray.count) in name array after core fetch")
-                print("\(self.distanceArray.count) in distance array after core fetch")
             }
         } catch {
             fatalError("Failed to fetch POI: \(error)")
@@ -265,11 +255,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         i += 1
                         if i == objects.count {
                             completion(true)
-                            print("added new objects to core")
-                            print("round 2 check:")
-                            print("fetched \(self.nameArray.count) POI names")
-                            print("fetched \(self.distanceArray.count) POI distances")
-                            
                         }
                     }
                 } else {
@@ -283,6 +268,62 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+
+    
+    var parseFetchCompleted = [String]()
+    
+    func fetchCompletedParse(completion: @escaping (_ result: Bool)->()) {
+        let query = PFQuery(className: "POI")
+        query.whereKey("area", equalTo: self.chosenAreaPOI)
+        query.whereKey("completed", contains: email)
+        query.findObjectsInBackground { (objects, error) in
+            if error != nil {
+                
+            } else {
+                if let objects = objects {
+                    var i = 0
+                    for object in objects {
+                        if objects.count > 0 {
+                            if let nameTemp = object["name"] as? String {
+                                self.parseFetchCompleted.append(nameTemp)
+                            }
+                            i += 1
+                            if i == objects.count {
+                                completion(true)
+                            }
+                        } else {
+                            completion(true)
+                        }
+                    }
+                } else {
+                    completion(true)
+                }
+            }
+        }
+    }
+    
+    func saveCompleted() {
+        for i in parseFetchCompleted {
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+            request.predicate = NSPredicate(format: "name = %@", i)
+            request.returnsObjectsAsFaults = false
+            
+            do {
+                let fetchedPOIs = try moc.fetch(request) as! [POIs]
+                if fetchedPOIs.count > 0 {
+                    for poi in fetchedPOIs {
+                        poi.setValue("yes", forKey: "completed")
+                        do {
+                            try moc.save()
+                        } catch { print("error") }
+                    }
+                }
+            } catch {
+                print(error)
+            }
+        }
+    }
+
     func distanceOrder(completion: (_ result: Bool)->()) {
         // create dictionary out of name array and distance
         print("distance array \(self.distanceArray.count)")
@@ -749,7 +790,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
 }
 
-@available(iOS 10.0, *)
+
 extension POIsViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         filterContentForSearchText(searchText: searchController.searchBar.text!)

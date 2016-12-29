@@ -32,7 +32,7 @@ class ProfileViewController: UIViewController {
         
         if commentEntry.text != "" {
             let query = PFQuery(className: "_User")
-            query.whereKey("email", contains: email)
+            query.whereKey("username", contains: email)
             query.findObjectsInBackground(block: { (objects, error) in
                 if error != nil {
                     print("error")
@@ -52,26 +52,8 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let tempEmail = PFUser.current()?.email {
-            let query = PFQuery(className: "_User")
-            query.whereKey("email", equalTo: tempEmail)
-            query.findObjectsInBackground(block: { (objects, error) in
-                if error != nil {
-                } else {
-                    if let objects = objects {
-                        for object in objects {
-                            if let nameTemp = object["name"] as? String {
-                                self.emailLabel.text = "Hello \(nameTemp)"
-                                self.email = nameTemp
-                            } else {
-                                self.emailLabel.text = "Hello there"
-                                self.email = ""
-                            }
-                        }
-                    }
-                }
-            })
-        }
+        print("profile email \(email)")
+        self.emailLabel.text = "Hello there"
 
         fetchPOIInfo { (Bool) in
             
