@@ -54,6 +54,11 @@ class ProfileViewController: UIViewController {
         super.viewDidLoad()
         print("profile email \(email)")
         self.emailLabel.text = "Hello there"
+        
+        let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
+        view.addGestureRecognizer(dismissKeyboard)
+        
+
 
         fetchPOIInfo { (Bool) in
             
@@ -125,6 +130,17 @@ class ProfileViewController: UIViewController {
         loginManager.logOut()
     
     }
+    
+    func tap(gesture: UITapGestureRecognizer) {
+        
+        UIView.animate(withDuration: 0, delay: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
+            self.view.layoutIfNeeded()
+        }, completion: { (completed) in
+            self.commentEntry.resignFirstResponder()
+        })
+    }
+    
+
     
 
 

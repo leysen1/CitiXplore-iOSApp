@@ -96,25 +96,13 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        star1Image.alpha = 1
-        star2Image.alpha = 1
-        star3Image.alpha = 1
-        star4Image.alpha = 1
-        star5Image.alpha = 1
-        submitButtonLabel.alpha = 1
-        submitButtonLabel.isEnabled = true
-        backImage.image = UIImage()
-        desLabel.alpha = 1
-        // hide top rated
-        topRatedLabel.alpha = 0
-        tableView.alpha = 0
+        ratingsNotComplete()
         
         updateArray { (Bool) in
             print("completed updatedArray")
-            if self.nameArray.count == 0 {
-                
-                // self.ratingsComplete()
-            }
+                print(self.nameArray)
+                print(self.imageArray)
+
         }
         
         
@@ -130,6 +118,7 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func updateArray(completion: @escaping (_ result: Bool)->()) {
         
+        backImage.image = UIImage()
         let query = PFQuery(className: "POI")
         query.whereKey("completed", contains: email)
         query.whereKey("rated", notContainedIn: [email])
@@ -156,19 +145,27 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
                                         }
                                         print("namearray \(self.nameArray)")
                                     }
+                                    i += 1
                                     
                                 })
                                 
                             } else {
                                 // no image in object
                                 print("could not get image")
-                                if objects.count == 1 {
-                                    self.ratingsComplete()
-                                }
+                                i += 1
                             }
-                            i += 1
+                            
                             if i == objects.count {
-                                completion(true)
+                                if self.nameArray.count == 0 {
+                                    self.ratingsComplete()
+                                    completion(true)
+                                    print("none with images found")
+                                } else {
+                                    self.ratingsNotComplete()
+                                    print("rating not complete 2")
+                                    completion(true)
+                                }
+                                
                             }
                         }
                     } else {
@@ -200,6 +197,22 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
         self.topRatedLabel.alpha = 1
         self.tableView.alpha = 1
         self.desLabel.alpha = 0
+
+    }
+    
+    func ratingsNotComplete() {
+        star1Image.alpha = 1
+        star2Image.alpha = 1
+        star3Image.alpha = 1
+        star4Image.alpha = 1
+        star5Image.alpha = 1
+        submitButtonLabel.alpha = 1
+        submitButtonLabel.isEnabled = true
+        backImage.image = UIImage()
+        desLabel.alpha = 1
+        // hide top rated
+        topRatedLabel.alpha = 0
+        tableView.alpha = 0
 
     }
 

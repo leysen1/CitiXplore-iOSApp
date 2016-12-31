@@ -92,32 +92,36 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
         
-            coreDataFetch { (Bool) in
+        self.navigationItem.hidesBackButton = true
+        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.plain, target: self, action: #selector(POIsViewController.back(sender:)))
+        self.navigationItem.leftBarButtonItem = newBackButton
+        
+        coreDataFetch { (Bool) in
+            
+            newParseFetchAndSave { (Bool) in
+                print("completed Parse Fetch")
                 
-                newParseFetchAndSave { (Bool) in
-                    print("completed Parse Fetch")
-
-                    self.distanceOrder { (Bool) in
-                        print("completed distance Order")
-                        self.fetchCompletedParse(completion: { (Bool) in
-                            print("fetch completed done")
-                            self.saveCompleted(completion: { (Bool) in
-                                self.coreDataFetch2 { (Bool) in
-                                    self.ParseFetchImages()
-                                    print("completed array \(self.completedArray)")
-                                    // background running
-                                    
-                                    self.getOutdatedPOIs { (Bool) in
-                                        self.deleteOutdatedPOIs()
-                                    }
+                self.distanceOrder { (Bool) in
+                    print("completed distance Order")
+                    self.fetchCompletedParse(completion: { (Bool) in
+                        print("fetch completed done")
+                        self.saveCompleted(completion: { (Bool) in
+                            self.coreDataFetch2 { (Bool) in
+                                self.ParseFetchImages()
+                                print("completed array \(self.completedArray)")
+                                // background running
+                                
+                                self.getOutdatedPOIs { (Bool) in
+                                    self.deleteOutdatedPOIs()
                                 }
-                            })
-                            
+                            }
                         })
                         
-                    }
+                    })
+                    
                 }
             }
+        }
 
     }
 
@@ -745,11 +749,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func playNewSong() {
             self.time = self.trackPlaying.duration
             self.trackPlaying.volume = 0.9
-            self.trackPlaying.play()
             self.playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
             self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
             self.scrubber.maximumValue = Float(self.trackPlaying.duration)
             self.scrubber.value = 0
+            self.trackPlaying.play()
             self.playMode = true
         
             let minutes = Int(self.time / 60)
@@ -800,6 +804,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         sortingWithDistanceArray.removeAll()
         filteredNameArray.removeAll()
         
+    }
+    
+    func back(sender: UIBarButtonItem) {
+        Parse.cancelPreviousPerformRequests(withTarget: self)
+        _ = navigationController?.popViewController(animated: true)
     }
     
 }
