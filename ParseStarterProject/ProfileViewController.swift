@@ -53,7 +53,7 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print("profile email \(email)")
-        self.emailLabel.text = "Hello there"
+        self.emailLabel.text = email
         
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)

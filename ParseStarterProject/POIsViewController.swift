@@ -33,7 +33,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var chosenAreaPOI = ""
     var activityIndicator = UIActivityIndicatorView()
     var userLocation = CLLocationCoordinate2D()
-    var email: String?
+    var email = String()
     
     
     // audio Variables
@@ -96,32 +96,33 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.plain, target: self, action: #selector(POIsViewController.back(sender:)))
         self.navigationItem.leftBarButtonItem = newBackButton
         
-        coreDataFetch { (Bool) in
-            
-            newParseFetchAndSave { (Bool) in
-                print("completed Parse Fetch")
-                
-                self.distanceOrder { (Bool) in
-                    print("completed distance Order")
-                    self.fetchCompletedParse(completion: { (Bool) in
-                        print("fetch completed done")
-                        self.saveCompleted(completion: { (Bool) in
-                            self.coreDataFetch2 { (Bool) in
-                                self.ParseFetchImages()
-                                print("completed array \(self.completedArray)")
-                                // background running
-                                
-                                self.getOutdatedPOIs { (Bool) in
-                                    self.deleteOutdatedPOIs()
-                                }
-                            }
-                        })
-                        
-                    })
+
+                coreDataFetch { (Bool) in
                     
+                    newParseFetchAndSave { (Bool) in
+                        print("completed Parse Fetch")
+                        
+                        self.distanceOrder { (Bool) in
+                            print("completed distance Order")
+                            self.fetchCompletedParse(completion: { (Bool) in
+                                print("fetch completed done")
+                                self.saveCompleted(completion: { (Bool) in
+                                    self.coreDataFetch2 { (Bool) in
+                                        self.ParseFetchImages()
+                                        print("completed array \(self.completedArray)")
+                                        // background running
+                                        
+                                        self.getOutdatedPOIs { (Bool) in
+                                            self.deleteOutdatedPOIs()
+                                        }
+                                    }
+                                })
+                                
+                            })
+                            
+                        }
+                    }
                 }
-            }
-        }
 
     }
 
@@ -242,7 +243,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 entity.setValue(areaTemp, forKey: "area")
                             }
                             if let completedTemp = object["completed"] as? [String] {
-                                if let emailTemp = self.email {
+                                if self.email != String() {
+                                    let emailTemp = self.email
                                     if completedTemp.contains(emailTemp) {
                                         entity.setValue("yes", forKey: "completed")
                                     } else {
@@ -283,7 +285,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         parseFetchCompleted.removeAll()
         let query = PFQuery(className: "POI")
         query.whereKey("area", equalTo: self.chosenAreaPOI)
-        query.whereKey("completed", contains: email)
+        query.whereKey("completed", contains: self.email)
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
                 
