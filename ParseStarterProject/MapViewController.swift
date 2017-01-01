@@ -224,7 +224,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
 
     // load view
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -292,9 +292,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
  
     }
  
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        print("authorisation changed")
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.5) {
+            let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+            self.mapView.setRegion(region, animated: false)
+        }
+
+    }
+    
     func animateArrow() {
             if helpClicked == false {
-                arrowImage.image = UIImage(named: "arrow.png")
+                arrowImage.image = UIImage(named: "redarrow.png")
                 arrowImage.alpha = 0
                 UIView.animate(withDuration: 0.5, delay: 0, options: [.curveEaseIn, .repeat, .autoreverse], animations: {
                     self.arrowImage.alpha = 1.0

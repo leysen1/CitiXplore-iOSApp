@@ -14,11 +14,10 @@ import CoreData
 
 // create alert message if data doesn't load
 
-
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
     let moc = DataController().managedObjectContext
-
+    
     var nameArray = [String]()
     var coreDataNameArray = [String]()
     var nameArrayOutdated = [String]()
@@ -33,7 +32,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var chosenAreaPOI = ""
     var activityIndicator = UIActivityIndicatorView()
     var userLocation = CLLocationCoordinate2D()
-    var email = String()
+    var email: String?
     
     
     // audio Variables
@@ -55,27 +54,27 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     @IBOutlet var audioLocationName: UILabel!
     @IBOutlet var audioTimeLeft: UILabel!
-
+    
     var timer = Timer()
     var time = Double()
-
+    
     @IBOutlet var playButtonImage: UIButton!
-
+    
     @IBAction func playPauseButton(_ sender: AnyObject) {
-
-            if playMode == true {
-                // pausing audio
-                playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
-                trackPlaying.pause()
-                timer.invalidate()
-                playMode = false
-            } else {
-                // playing audio
-                playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
-                trackPlaying.play()
-                timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
-                playMode = true
-            }
+        
+        if playMode == true {
+            // pausing audio
+            playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
+            trackPlaying.pause()
+            timer.invalidate()
+            playMode = false
+        } else {
+            // playing audio
+            playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
+            trackPlaying.play()
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
+            playMode = true
+        }
     }
     
     override func viewDidLoad() {
@@ -96,36 +95,35 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.plain, target: self, action: #selector(POIsViewController.back(sender:)))
         self.navigationItem.leftBarButtonItem = newBackButton
         
-
-                coreDataFetch { (Bool) in
-                    
-                    newParseFetchAndSave { (Bool) in
-                        print("completed Parse Fetch")
-                        
-                        self.distanceOrder { (Bool) in
-                            print("completed distance Order")
-                            self.fetchCompletedParse(completion: { (Bool) in
-                                print("fetch completed done")
-                                self.saveCompleted(completion: { (Bool) in
-                                    self.coreDataFetch2 { (Bool) in
-                                        self.ParseFetchImages()
-                                        print("completed array \(self.completedArray)")
-                                        // background running
-                                        
-                                        self.getOutdatedPOIs { (Bool) in
-                                            self.deleteOutdatedPOIs()
-                                        }
-                                    }
-                                })
+        coreDataFetch { (Bool) in
+            
+            newParseFetchAndSave { (Bool) in
+                print("completed Parse Fetch")
+                
+                self.distanceOrder { (Bool) in
+                    print("completed distance Order")
+                    self.fetchCompletedParse(completion: { (Bool) in
+                        print("fetch completed done")
+                        self.saveCompleted(completion: { (Bool) in
+                            self.coreDataFetch2 { (Bool) in
+                                self.ParseFetchImages()
+                                print("completed array \(self.completedArray)")
+                                // background running
                                 
-                            })
-                            
-                        }
-                    }
+                                self.getOutdatedPOIs { (Bool) in
+                                    self.deleteOutdatedPOIs()
+                                }
+                            }
+                        })
+                        
+                    })
+                    
                 }
-
+            }
+        }
+        
     }
-
+    
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.searchController.searchBar.endEditing(true)
@@ -135,7 +133,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     @available(iOS 9.0, *)
     func deleteSavedData(completion: (_ result: Bool)->()) {
         // Delete all saved CoreData
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "POI")
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         do {
             try moc.execute(batchDeleteRequest)
@@ -146,8 +144,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-
-
+    
+    
     func coreDataFetch(completion: (_ result: Bool)->()) {
         self.nameArray.removeAll()
         self.coreDataNameArray.removeAll()
@@ -159,13 +157,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.imageDataArray.removeAll()
         
         print("removed arrays")
-
+        
         // 1. get saved data - name and coords
-        let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+        let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "POI")
         poiFetch.predicate = NSPredicate(format: "area = %@", chosenAreaPOI)
         
         do {
-            let fetchedPOIs = try moc.fetch(poiFetch) as! [POIs]
+            let fetchedPOIs = try moc.fetch(poiFetch) as! [POI]
             if fetchedPOIs.count > 0 {
                 var i = 0
                 print("\(fetchedPOIs.count) objects found in core")
@@ -201,10 +199,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
- 
+    
     func newParseFetchAndSave(completion: @escaping (_ result: Bool)->()) {
         // 2. get new data from parse and save to core data - names and coords
-
         let queryName = PFQuery(className: "POI")
         queryName.whereKey("area", equalTo: self.chosenAreaPOI)
         queryName.whereKey("name", notContainedIn: self.nameArray)
@@ -214,61 +211,60 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 print("error - no objects found")
             } else {
                 if let objects = objects {
-                if objects.count > 0 {
-                    var i = 0
-                    print("\(objects.count) new objects found")
-                    for object in objects {
-                        let entity = NSEntityDescription.insertNewObject(forEntityName: "POIs", into: self.moc) as! POIs
-                        // get the POI distances from user location
-                        if let POILocation = object["coordinates"] as? PFGeoPoint {
-                            self.coordinatesArray.append(CLLocationCoordinate2D(latitude: POILocation.latitude, longitude: POILocation.longitude))
-                            entity.setValue(POILocation.latitude, forKey: "latitude")
-                            entity.setValue(POILocation.longitude, forKey: "longitude")
-                            if self.userLocation.latitude > 0 {
-                                let tempUserLocation = CLLocation(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude)
-                                let tempPOILocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
-                                let distance = Double(tempUserLocation.distance(from: tempPOILocation) / 1000)
-                                self.distanceArray.append(String(distance))
-                                self.sortingWithDistanceArray.append(distance)
-                            }
-                            // get new POI data and save to core
-                            if let nameTemp = object["name"] as? String {
-                                self.nameArray.append(nameTemp)
-                                entity.setValue(nameTemp, forKey: "name")
-                            }
-                            if let addressTemp = object["address"] as? String {
-                                entity.setValue(addressTemp, forKey: "address")
-                            }
-                            if let areaTemp = object["area"] as? String {
-                                entity.setValue(areaTemp, forKey: "area")
-                            }
-                            if let completedTemp = object["completed"] as? [String] {
-                                if self.email != String() {
-                                    let emailTemp = self.email
-                                    if completedTemp.contains(emailTemp) {
-                                        entity.setValue("yes", forKey: "completed")
-                                    } else {
-                                        entity.setValue("no", forKey: "completed")
+                    if objects.count > 0 {
+                        var i = 0
+                        print("\(objects.count) new objects found")
+                        for object in objects {
+                            let entity = NSEntityDescription.insertNewObject(forEntityName: "POI", into: self.moc) as! POI
+                            // get the POI distances from user location
+                            if let POILocation = object["coordinates"] as? PFGeoPoint {
+                                self.coordinatesArray.append(CLLocationCoordinate2D(latitude: POILocation.latitude, longitude: POILocation.longitude))
+                                entity.setValue(POILocation.latitude, forKey: "latitude")
+                                entity.setValue(POILocation.longitude, forKey: "longitude")
+                                if self.userLocation.latitude > 0 {
+                                    let tempUserLocation = CLLocation(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude)
+                                    let tempPOILocation = CLLocation(latitude: POILocation.latitude, longitude: POILocation.longitude)
+                                    let distance = Double(tempUserLocation.distance(from: tempPOILocation) / 1000)
+                                    self.distanceArray.append(String(distance))
+                                    self.sortingWithDistanceArray.append(distance)
+                                }
+                                // get new POI data and save to core
+                                if let nameTemp = object["name"] as? String {
+                                    self.nameArray.append(nameTemp)
+                                    entity.setValue(nameTemp, forKey: "name")
+                                }
+                                if let addressTemp = object["address"] as? String {
+                                    entity.setValue(addressTemp, forKey: "address")
+                                }
+                                if let areaTemp = object["area"] as? String {
+                                    entity.setValue(areaTemp, forKey: "area")
+                                }
+                                if let completedTemp = object["completed"] as? [String] {
+                                    if let emailTemp = self.email {
+                                        if completedTemp.contains(emailTemp) {
+                                            entity.setValue("yes", forKey: "completed")
+                                        } else {
+                                            entity.setValue("no", forKey: "completed")
+                                        }
                                     }
                                 }
+                            } else {
+                                print("Could not get POI Location")
                             }
-                        } else {
-                            print("Could not get POI Location")
+                            
+                            do {
+                                try self.moc.save()
+                            } catch {
+                                fatalError("Failure to save context: \(error)")
+                            }
+                            i += 1
+                            if i == objects.count {
+                                completion(true)
+                            }
                         }
-                        
-                        do {
-                            try self.moc.save()
-                        } catch {
-                            fatalError("Failure to save context: \(error)")
-                        }
-                        i += 1
-                        if i == objects.count {
-                            completion(true)
-                        }
-                    }
-                } else {
-                    print("no objects found as count = 0")
-                    completion(true)
+                    } else {
+                        print("no objects found as count = 0")
+                        completion(true)
                     }
                 } else {
                     completion(true)
@@ -277,7 +273,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-
+    
     
     var parseFetchCompleted = [String]()
     
@@ -285,7 +281,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         parseFetchCompleted.removeAll()
         let query = PFQuery(className: "POI")
         query.whereKey("area", equalTo: self.chosenAreaPOI)
-        query.whereKey("completed", contains: self.email)
+        query.whereKey("completed", contains: email)
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
                 
@@ -317,12 +313,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         var i = 0
         if parseFetchCompleted.count > 0 {
             for item in parseFetchCompleted {
-                let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+                let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POI")
                 request.predicate = NSPredicate(format: "name = %@", item)
                 request.returnsObjectsAsFaults = false
                 
                 do {
-                    let fetchedPOIs = try moc.fetch(request) as! [POIs]
+                    let fetchedPOIs = try moc.fetch(request) as! [POI]
                     if fetchedPOIs.count > 0 {
                         for poi in fetchedPOIs {
                             poi.setValue("yes", forKey: "completed")
@@ -343,7 +339,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             completion(true)
         }
     }
-
+    
     func distanceOrder(completion: (_ result: Bool)->()) {
         // create dictionary out of name array and distance
         print("distance array \(self.distanceArray.count)")
@@ -403,10 +399,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-
+    
     func coreDataFetch2(completion: (_ result: Bool)->()) {
         // Get all address and completed in right order
-        let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+        let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "POI")
         if self.addressArray.count == self.nameArray.count && self.completedArray.count == self.nameArray.count {
             print("address and completed array ARE ready")
             var i = 0
@@ -453,16 +449,16 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             // add photo to all POIs
                             if let photo = object["smallPicture"] as? PFFile {
                                 self.imageDataArray[indexCheck] = photo
-                                }
                             }
                         }
-                        self.tableView.reloadData()
                     }
+                    self.tableView.reloadData()
+                }
                 self.tableView.reloadData()
                 self.tableView.tableFooterView = UIView()
-                }
             }
         }
+    }
     
     func getOutdatedPOIs(completion: @escaping (_ result: Bool)->()) {
         nameArrayOutdated = self.nameArray
@@ -498,7 +494,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func deleteOutdatedPOIs() {
         if nameArrayOutdated.count > 0 {
-            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POIs")
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "POI")
             request.predicate = NSPredicate(format: "name = %@", argumentArray: nameArrayOutdated)
             request.returnsObjectsAsFaults = false
             do {
@@ -518,7 +514,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -531,14 +527,14 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if searchController.isActive && searchController.searchBar.text != "" {
                 return filteredNameArray.count
             }
-
+            
             return nameArray.count
         } else {
             return 0
         }
         
     }
-
+    
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! POIsTableViewCell
         
@@ -603,7 +599,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     }
                 }
             }
-
+            
             if completedArray[indexPath.row] == "yes" {
                 cell.backgroundColor = UIColor.groupTableViewBackground
                 cell.locationName.textColor = UIColor.black
@@ -629,7 +625,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         // return
         return cell
     }
-      
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         var tempPlayer = AVAudioPlayer()
@@ -647,11 +643,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
             activityIndicator.center = self.view.center
             activityIndicator.hidesWhenStopped = true
-            activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray   
+            activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
             activityIndicator.startAnimating()
             UIApplication.shared.beginIgnoringInteractionEvents()
             view.addSubview(activityIndicator)
-  
+            
             let query = PFQuery(className: "POI")
             if searchController.isActive && searchController.searchBar.text != "" {
                 query.whereKey("name", equalTo: filteredNameArray[indexPath.row])
@@ -660,66 +656,66 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 query.whereKey("name", equalTo: nameArray[indexPath.row])
                 audioLocationName.text = nameArray[indexPath.row]
             }
-                query.findObjectsInBackground(block: { (objects, error) in
-                    if error != nil {
-                        print("error")
-                    } else {
-                        if let objects = objects {
-                            tempPlayer = AVAudioPlayer()
-                            for object in objects {
-                                
-                                if let audioClip = object["audio"] as? PFFile {
-                                    audioClip.getDataInBackground(block: { (data, error) in
-                                        if error != nil {
-                                            print("error")
-                                        } else {
-                                            do { tempPlayer = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
-                                                self.trackPlaying = tempPlayer
-                                                if tempPlayer != AVAudioPlayer() {
-                                                    self.playNewSong()
-                                                    if self.playButtonImage.isEnabled == false {
-                                                        self.playButtonImage.isEnabled = true
-                                                        self.scrubber.isEnabled = true
-                                                        
-                                                    } else {
-                                                        self.trackPlaying.stop()
-                                                    }
+            query.findObjectsInBackground(block: { (objects, error) in
+                if error != nil {
+                    print("error")
+                } else {
+                    if let objects = objects {
+                        tempPlayer = AVAudioPlayer()
+                        for object in objects {
+                            
+                            if let audioClip = object["audio"] as? PFFile {
+                                audioClip.getDataInBackground(block: { (data, error) in
+                                    if error != nil {
+                                        print("error")
+                                    } else {
+                                        do { tempPlayer = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
+                                            self.trackPlaying = tempPlayer
+                                            if tempPlayer != AVAudioPlayer() {
+                                                self.playNewSong()
+                                                if self.playButtonImage.isEnabled == false {
+                                                    self.playButtonImage.isEnabled = true
+                                                    self.scrubber.isEnabled = true
+                                                    
+                                                } else {
+                                                    self.trackPlaying.stop()
                                                 }
-                                                
-                                            } catch {  print(error)
                                             }
+                                            
+                                        } catch {  print(error)
                                         }
-                                        self.activityIndicator.stopAnimating()
-                                        UIApplication.shared.endIgnoringInteractionEvents()
-                                    })
-                                } else {
-                                        // no audio found
-                                    let audioPath = Bundle.main.path(forResource: "no audio", ofType: "mp3")
-                                    do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
-                                        self.trackPlaying = audioFiller
-                                        if tempPlayer != AVAudioPlayer() {
-                                            self.playNewSong()
-                                            if self.playButtonImage.isEnabled == false {
-                                                self.playButtonImage.isEnabled = true
-                                                self.scrubber.isEnabled = true
-                                                
-                                            } else {
-                                                self.trackPlaying.stop()
-                                            }
-
-                                        }
-                                    } catch {
-                                        // error
                                     }
                                     self.activityIndicator.stopAnimating()
                                     UIApplication.shared.endIgnoringInteractionEvents()
+                                })
+                            } else {
+                                // no audio found
+                                let audioPath = Bundle.main.path(forResource: "no audio", ofType: "mp3")
+                                do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
+                                    self.trackPlaying = audioFiller
+                                    if tempPlayer != AVAudioPlayer() {
+                                        self.playNewSong()
+                                        if self.playButtonImage.isEnabled == false {
+                                            self.playButtonImage.isEnabled = true
+                                            self.scrubber.isEnabled = true
+                                            
+                                        } else {
+                                            self.trackPlaying.stop()
+                                        }
+                                        
+                                    }
+                                } catch {
+                                    // error
                                 }
+                                self.activityIndicator.stopAnimating()
+                                UIApplication.shared.endIgnoringInteractionEvents()
                             }
                         }
                     }
-                })
+                }
+            })
             
-
+            
             
         } else {
             // no audio found
@@ -749,27 +745,27 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
     func playNewSong() {
-            self.time = self.trackPlaying.duration
-            self.trackPlaying.volume = 0.9
-            self.playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
-            self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
-            self.scrubber.maximumValue = Float(self.trackPlaying.duration)
-            self.scrubber.value = 0
-            self.trackPlaying.play()
-            self.playMode = true
+        self.time = self.trackPlaying.duration
+        self.trackPlaying.volume = 0.9
+        self.trackPlaying.play()
+        self.playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
+        self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
+        self.scrubber.maximumValue = Float(self.trackPlaying.duration)
+        self.scrubber.value = 0
+        self.playMode = true
         
-            let minutes = Int(self.time / 60)
-            var seconds = ""
-            if Int(self.time) - (minutes * 60) < 10 {
-                let tempSec = Int(self.time) - (minutes * 60)
-                seconds = String("0\(tempSec)")
-            } else {
-                seconds = String(Int(self.time) - (minutes * 60))
-            }
-
-            self.audioTimeLeft.text = "\(minutes):\(seconds)"
+        let minutes = Int(self.time / 60)
+        var seconds = ""
+        if Int(self.time) - (minutes * 60) < 10 {
+            let tempSec = Int(self.time) - (minutes * 60)
+            seconds = String("0\(tempSec)")
+        } else {
+            seconds = String(Int(self.time) - (minutes * 60))
+        }
+        
+        self.audioTimeLeft.text = "\(minutes):\(seconds)"
     }
- 
+    
     func updateSlider() {
         scrubber.value = Float(trackPlaying.currentTime)
         
@@ -785,12 +781,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             timer.invalidate()
         }
-    func timerOn() {
-        updateSlider()
-        decreaseTimer()
-    }
+        func timerOn() {
+            updateSlider()
+            decreaseTimer()
+        }
         
-}
+    }
     override func viewWillDisappear(_ animated: Bool) {
         
         if playMode {
@@ -809,8 +805,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func back(sender: UIBarButtonItem) {
-        Parse.cancelPreviousPerformRequests(withTarget: self)
-        _ = navigationController?.popViewController(animated: true)
+        if nameArray.count == completedArray.count {
+            Parse.cancelPreviousPerformRequests(withTarget: self)
+            _ = navigationController?.popViewController(animated: true)
+    }
     }
     
 }

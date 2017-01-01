@@ -138,24 +138,9 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        loginMode = true
-        // rid keyboard
-        let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
-        view.addGestureRecognizer(dismissKeyboard)
         
-        emailInput.delegate = self
-        passwordInput.delegate = self
-
         
-        // facebook login
-        
-        let loginButton : FBSDKLoginButton = FBSDKLoginButton()
-        loginButton.center = CGPoint(x: self.view.frame.width / 2, y: self.view.frame.height - self.view.frame.height / 6)
-        loginButton.readPermissions = ["public_profile", "email"]
-        loginButton.delegate = self
-        self.view.addSubview(loginButton)
-        
-
+      
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -167,8 +152,38 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
             }
             
         } else {
-            print("User not logged in")
+            print("Facebook user not logged in")
+            if let currentUser = PFUser.current() {
+                if currentUser.email != nil {
+                    print("\(currentUser.email) is logged in")
+                    self.performSegue(withIdentifier: "toMapView", sender: self)
+                    
+                } else {
+                    print("none logged in")
+                    
+                    loginMode = true
+                    // rid keyboard
+                    let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
+                    view.addGestureRecognizer(dismissKeyboard)
+                    
+                    emailInput.delegate = self
+                    passwordInput.delegate = self
+                    
+                    
+                    // facebook login
+                    
+                    let loginButton : FBSDKLoginButton = FBSDKLoginButton()
+                    loginButton.center = CGPoint(x: self.view.frame.width / 2, y: self.view.frame.height - self.view.frame.height / 6)
+                    loginButton.readPermissions = ["public_profile", "email"]
+                    loginButton.delegate = self
+                    self.view.addSubview(loginButton)
+                    
+                }
+            } else {
+                print("could not reach parse")
+            }
         }
+
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

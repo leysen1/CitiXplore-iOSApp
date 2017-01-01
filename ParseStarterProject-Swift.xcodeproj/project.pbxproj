@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		510CF6831DFEA6A50058B536 /* POIs+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510CF6811DFEA6A50058B536 /* POIs+CoreDataClass.swift */; };
-		510CF6841DFEA6A50058B536 /* POIs+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510CF6821DFEA6A50058B536 /* POIs+CoreDataProperties.swift */; };
 		510CF6861DFEA6D70058B536 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510CF6851DFEA6D70058B536 /* DataController.swift */; };
 		5124CCD71DDC038D007007C6 /* tick.png in Resources */ = {isa = PBXBuildFile; fileRef = 5124CCD61DDC038D007007C6 /* tick.png */; };
 		513571101DEC34CA0004C706 /* NA.png in Resources */ = {isa = PBXBuildFile; fileRef = 5135710F1DEC34CA0004C706 /* NA.png */; };
@@ -22,7 +20,9 @@
 		5191B4CE1DEDC66100047717 /* FavouritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */; };
 		5191B4D01DEDC98C00047717 /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = 5191B4CF1DEDC98C00047717 /* star.png */; };
 		519BEE121E05378C00D77B81 /* greystar.png in Resources */ = {isa = PBXBuildFile; fileRef = 519BEE111E05378C00D77B81 /* greystar.png */; };
-		51C5F5D51DED8C44004E0B86 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 51C5F5D41DED8C44004E0B86 /* arrow.png */; };
+		51C48CF41E17F88200A8B1F2 /* POI+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */; };
+		51C48CF51E17F88200A8B1F2 /* POI+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */; };
+		51C48CF71E19338400A8B1F2 /* redarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 51C48CF61E19338400A8B1F2 /* redarrow.png */; };
 		51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */; };
 		51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */; };
 		51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18571DC3AD30007591CC /* AreaTableViewController.swift */; };
@@ -46,8 +46,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		510CF6811DFEA6A50058B536 /* POIs+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "POIs+CoreDataClass.swift"; path = "../POIs+CoreDataClass.swift"; sourceTree = "<group>"; };
-		510CF6821DFEA6A50058B536 /* POIs+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "POIs+CoreDataProperties.swift"; path = "../POIs+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		510CF6851DFEA6D70058B536 /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		5124CCD61DDC038D007007C6 /* tick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tick.png; sourceTree = "<group>"; };
 		5135710F1DEC34CA0004C706 /* NA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NA.png; sourceTree = "<group>"; };
@@ -62,7 +60,9 @@
 		5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavouritesViewController.swift; sourceTree = "<group>"; };
 		5191B4CF1DEDC98C00047717 /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star.png; sourceTree = "<group>"; };
 		519BEE111E05378C00D77B81 /* greystar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greystar.png; sourceTree = "<group>"; };
-		51C5F5D41DED8C44004E0B86 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
+		51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "POI+CoreDataClass.swift"; path = "../POI+CoreDataClass.swift"; sourceTree = "<group>"; };
+		51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "POI+CoreDataProperties.swift"; path = "../POI+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		51C48CF61E19338400A8B1F2 /* redarrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redarrow.png; sourceTree = "<group>"; };
 		51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewCell.swift; sourceTree = "<group>"; };
 		51EA18571DC3AD30007591CC /* AreaTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewController.swift; sourceTree = "<group>"; };
@@ -159,13 +159,13 @@
 				51EA185C1DC3AD30007591CC /* play.jpg */,
 				5135710F1DEC34CA0004C706 /* NA.png */,
 				513571111DEC3B730004C706 /* KandC.jpg */,
-				51C5F5D41DED8C44004E0B86 /* arrow.png */,
+				51C48CF61E19338400A8B1F2 /* redarrow.png */,
 				519BEE111E05378C00D77B81 /* greystar.png */,
 				5191B4CF1DEDC98C00047717 /* star.png */,
 				51F596451DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld */,
-				510CF6811DFEA6A50058B536 /* POIs+CoreDataClass.swift */,
-				510CF6821DFEA6A50058B536 /* POIs+CoreDataProperties.swift */,
 				510CF6851DFEA6D70058B536 /* DataController.swift */,
+				51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */,
+				51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */,
 			);
 			path = ParseStarterProject;
 			sourceTree = "<group>";
@@ -257,12 +257,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				513571101DEC34CA0004C706 /* NA.png in Resources */,
+				51C48CF71E19338400A8B1F2 /* redarrow.png in Resources */,
 				5191B4D01DEDC98C00047717 /* star.png in Resources */,
 				515B157E1DEDC07A0008BAFE /* no audio.mp3 in Resources */,
 				5124CCD71DDC038D007007C6 /* tick.png in Resources */,
 				51EA18681DC3AD30007591CC /* play.jpg in Resources */,
 				513571121DEC3B730004C706 /* KandC.jpg in Resources */,
-				51C5F5D51DED8C44004E0B86 /* arrow.png in Resources */,
 				51EA18671DC3AD30007591CC /* pause.jpg in Resources */,
 				814C3ACA1B69877600E307BB /* Main.storyboard in Resources */,
 				519BEE121E05378C00D77B81 /* greystar.png in Resources */,
@@ -277,21 +277,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				510CF6831DFEA6A50058B536 /* POIs+CoreDataClass.swift in Sources */,
 				5191B4CE1DEDC66100047717 /* FavouritesViewController.swift in Sources */,
 				51EA18691DC3AD30007591CC /* POIsTableViewCell.swift in Sources */,
 				51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */,
+				51C48CF41E17F88200A8B1F2 /* POI+CoreDataClass.swift in Sources */,
 				51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */,
 				81BA814D1A49DA1800E65899 /* ViewController.swift in Sources */,
 				51EA186A1DC3AD30007591CC /* POIsViewController.swift in Sources */,
 				510CF6861DFEA6D70058B536 /* DataController.swift in Sources */,
 				51F596471DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld in Sources */,
 				51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */,
+				51C48CF51E17F88200A8B1F2 /* POI+CoreDataProperties.swift in Sources */,
 				5170A9361DEDCE60006859BF /* FavTableViewCell.swift in Sources */,
 				51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */,
 				51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */,
 				518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */,
-				510CF6841DFEA6A50058B536 /* POIs+CoreDataProperties.swift in Sources */,
 				81BA814B1A49DA1800E65899 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
