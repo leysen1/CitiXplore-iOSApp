@@ -19,7 +19,6 @@
 		518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */; };
 		5191B4CE1DEDC66100047717 /* FavouritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */; };
 		5191B4D01DEDC98C00047717 /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = 5191B4CF1DEDC98C00047717 /* star.png */; };
-		519BEE121E05378C00D77B81 /* greystar.png in Resources */ = {isa = PBXBuildFile; fileRef = 519BEE111E05378C00D77B81 /* greystar.png */; };
 		51C48CF41E17F88200A8B1F2 /* POI+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */; };
 		51C48CF51E17F88200A8B1F2 /* POI+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */; };
 		51C48CF71E19338400A8B1F2 /* redarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 51C48CF61E19338400A8B1F2 /* redarrow.png */; };
@@ -59,7 +58,6 @@
 		518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOIViewController.swift; sourceTree = "<group>"; };
 		5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavouritesViewController.swift; sourceTree = "<group>"; };
 		5191B4CF1DEDC98C00047717 /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star.png; sourceTree = "<group>"; };
-		519BEE111E05378C00D77B81 /* greystar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greystar.png; sourceTree = "<group>"; };
 		51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "POI+CoreDataClass.swift"; path = "../POI+CoreDataClass.swift"; sourceTree = "<group>"; };
 		51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "POI+CoreDataProperties.swift"; path = "../POI+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		51C48CF61E19338400A8B1F2 /* redarrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redarrow.png; sourceTree = "<group>"; };
@@ -160,7 +158,6 @@
 				5135710F1DEC34CA0004C706 /* NA.png */,
 				513571111DEC3B730004C706 /* KandC.jpg */,
 				51C48CF61E19338400A8B1F2 /* redarrow.png */,
-				519BEE111E05378C00D77B81 /* greystar.png */,
 				5191B4CF1DEDC98C00047717 /* star.png */,
 				51F596451DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld */,
 				510CF6851DFEA6D70058B536 /* DataController.swift */,
@@ -228,7 +225,7 @@
 				TargetAttributes = {
 					81BA81441A49DA1800E65899 = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = RVMQ8FLP6H;
+						DevelopmentTeam = DM99378N4F;
 						LastSwiftMigration = 0800;
 					};
 				};
@@ -265,7 +262,6 @@
 				513571121DEC3B730004C706 /* KandC.jpg in Resources */,
 				51EA18671DC3AD30007591CC /* pause.jpg in Resources */,
 				814C3ACA1B69877600E307BB /* Main.storyboard in Resources */,
-				519BEE121E05378C00D77B81 /* greystar.png in Resources */,
 				814C3ACB1B69877600E307BB /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -402,14 +398,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				DEVELOPMENT_TEAM = RVMQ8FLP6H;
+				DEVELOPMENT_TEAM = DM99378N4F;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.parse.Citixplore;
+				PRODUCT_BUNDLE_IDENTIFIER = com.parse.Citixplore1;
 				PRODUCT_NAME = "ParseStarterProject-Swift";
 				SWIFT_VERSION = 3.0;
 			};
@@ -420,14 +416,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				DEVELOPMENT_TEAM = RVMQ8FLP6H;
+				DEVELOPMENT_TEAM = DM99378N4F;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.parse.Citixplore;
+				PRODUCT_BUNDLE_IDENTIFIER = com.parse.Citixplore1;
 				PRODUCT_NAME = "ParseStarterProject-Swift";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
