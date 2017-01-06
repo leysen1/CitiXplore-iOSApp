@@ -33,6 +33,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var activityIndicator = UIActivityIndicatorView()
     var userLocation = CLLocationCoordinate2D()
     var email: String?
+    var scrollView = UIScrollView()
     
     
     // audio Variables
@@ -90,11 +91,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
-        
-        self.navigationItem.hidesBackButton = true
-        let newBackButton = UIBarButtonItem(title: "Back", style: UIBarButtonItemStyle.plain, target: self, action: #selector(POIsViewController.back(sender:)))
-        self.navigationItem.leftBarButtonItem = newBackButton
-        
+ 
         coreDataFetch { (Bool) in
             
             newParseFetchAndSave { (Bool) in
@@ -520,7 +517,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Dispose of any resources that can be recreated.
     }
     
-    internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // add in search count
         
         if completedArray.count > 0 && imageDataArray.count > 0 {
@@ -535,7 +532,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     }
     
-    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! POIsTableViewCell
         
         
@@ -787,30 +784,18 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
     }
+
     override func viewWillDisappear(_ animated: Bool) {
+
+        tableView.delegate = nil
         
+
         if playMode {
             self.trackPlaying.stop()
         }
-        
-        nameArray.removeAll()
-        coordinatesArray.removeAll()
-        distanceArray.removeAll()
-        addressArray.removeAll()
-        completedArray.removeAll()
-        imageDataArray.removeAll()
-        sortingWithDistanceArray.removeAll()
-        filteredNameArray.removeAll()
-        
+
     }
-    
-    func back(sender: UIBarButtonItem) {
-        if nameArray.count == completedArray.count {
-            Parse.cancelPreviousPerformRequests(withTarget: self)
-            _ = navigationController?.popViewController(animated: true)
-    }
-    }
-    
+
 }
 
 

@@ -16,6 +16,7 @@
 		513F7A3D1E13DF7B007E4B40 /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 513F7A3A1E13DF7A007E4B40 /* FBSDKShareKit.framework */; };
 		515B157E1DEDC07A0008BAFE /* no audio.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 515B157D1DEDC07A0008BAFE /* no audio.mp3 */; };
 		5168E7031E1DA9BD00CF93B5 /* greystar.png in Resources */ = {isa = PBXBuildFile; fileRef = 5168E7021E1DA9BD00CF93B5 /* greystar.png */; };
+		5168E7051E20019000CF93B5 /* notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5168E7041E20019000CF93B5 /* notes.txt */; };
 		5170A9361DEDCE60006859BF /* FavTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5170A9351DEDCE60006859BF /* FavTableViewCell.swift */; };
 		518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */; };
 		5191B4CE1DEDC66100047717 /* FavouritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */; };
@@ -56,6 +57,7 @@
 		513F7A3E1E13DF9F007E4B40 /* Facebook Login Demo.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Facebook Login Demo.entitlements"; sourceTree = "<group>"; };
 		515B157D1DEDC07A0008BAFE /* no audio.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "no audio.mp3"; sourceTree = "<group>"; };
 		5168E7021E1DA9BD00CF93B5 /* greystar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greystar.png; sourceTree = "<group>"; };
+		5168E7041E20019000CF93B5 /* notes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = notes.txt; sourceTree = "<group>"; };
 		5170A9351DEDCE60006859BF /* FavTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavTableViewCell.swift; sourceTree = "<group>"; };
 		518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOIViewController.swift; sourceTree = "<group>"; };
 		5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavouritesViewController.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				510CF6851DFEA6D70058B536 /* DataController.swift */,
 				51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */,
 				51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */,
+				5168E7041E20019000CF93B5 /* notes.txt */,
 			);
 			path = ParseStarterProject;
 			sourceTree = "<group>";
@@ -256,6 +259,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5168E7051E20019000CF93B5 /* notes.txt in Resources */,
 				513571101DEC34CA0004C706 /* NA.png in Resources */,
 				51C48CF71E19338400A8B1F2 /* redarrow.png in Resources */,
 				5191B4D01DEDC98C00047717 /* star.png in Resources */,

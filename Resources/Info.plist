@@ -35,6 +35,8 @@
 	<string>231474403960994</string>
 	<key>FacebookDisplayName</key>
 	<string>citixplore</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
