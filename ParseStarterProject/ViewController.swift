@@ -275,7 +275,6 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                                         
                                         
                                         let acl = PFACL()
-                                        acl.getPublicWriteAccess = true
                                         acl.getPublicReadAccess = true
                                         user.acl = acl
                                         

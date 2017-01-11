@@ -35,10 +35,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
             self.findPOIs(completion: { (Bool) in
-            })
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                 self.addAnnotationToMap()
                 print("reloading Annotations")
+            })
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                
             }
         }))
         self.present(alert, animated: true, completion: nil)
@@ -119,6 +120,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         // find all POIs
 
         let query = PFQuery(className: "POI")
+        query.whereKey("area", equalTo: "Kensington and Chelsea")
         query.findObjectsInBackground(block: { (objects, error) in
             if error != nil {
                 print("could not get objects")
@@ -163,6 +165,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         i += 1
                         if i == poiLocations.count {
                             completion(true)
+                            print("compeleted findPOIs")
                         }
                         
                     }
@@ -265,12 +268,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         mapView.showsUserLocation = true
         
         updateTimer()
-
+        
+        findPOIs { (Bool) in
+            self.addAnnotationToMap()
+        }
+        
+        /*
         // annotation
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
            self.addAnnotationToMap()
             print("map view \(self.mapView.annotations)")
         }
+ */
         
         // arrow if signup
         animateArrow()
