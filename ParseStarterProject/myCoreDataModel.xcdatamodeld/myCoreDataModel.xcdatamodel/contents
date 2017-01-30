@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="15G1004" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="City" representedClassName=".City" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="POI" representedClassName=".POI" syncable="YES">
         <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="area" optional="YES" attributeType="String" syncable="YES"/>
@@ -11,5 +14,6 @@
     </entity>
     <elements>
         <element name="POI" positionX="-63" positionY="-18" width="128" height="150"/>
+        <element name="City" positionX="-63" positionY="36" width="128" height="60"/>
     </elements>
 </model>

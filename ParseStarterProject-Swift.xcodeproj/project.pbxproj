@@ -25,6 +25,9 @@
 		51C48CF51E17F88200A8B1F2 /* POI+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */; };
 		51C48CF71E19338400A8B1F2 /* redarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 51C48CF61E19338400A8B1F2 /* redarrow.png */; };
 		51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */; };
+		51E9BD941E3FCBD80051A1D3 /* CityPopOverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E9BD931E3FCBD80051A1D3 /* CityPopOverViewController.swift */; };
+		51E9BD971E3FDB650051A1D3 /* City+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E9BD951E3FDB650051A1D3 /* City+CoreDataClass.swift */; };
+		51E9BD981E3FDB650051A1D3 /* City+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E9BD961E3FDB650051A1D3 /* City+CoreDataProperties.swift */; };
 		51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */; };
 		51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18571DC3AD30007591CC /* AreaTableViewController.swift */; };
 		51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA185A1DC3AD30007591CC /* MapViewController.swift */; };
@@ -66,6 +69,9 @@
 		51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "POI+CoreDataProperties.swift"; path = "../POI+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		51C48CF61E19338400A8B1F2 /* redarrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redarrow.png; sourceTree = "<group>"; };
 		51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
+		51E9BD931E3FCBD80051A1D3 /* CityPopOverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CityPopOverViewController.swift; sourceTree = "<group>"; };
+		51E9BD951E3FDB650051A1D3 /* City+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "City+CoreDataClass.swift"; path = "../City+CoreDataClass.swift"; sourceTree = "<group>"; };
+		51E9BD961E3FDB650051A1D3 /* City+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "City+CoreDataProperties.swift"; path = "../City+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewCell.swift; sourceTree = "<group>"; };
 		51EA18571DC3AD30007591CC /* AreaTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewController.swift; sourceTree = "<group>"; };
 		51EA185A1DC3AD30007591CC /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -146,11 +152,12 @@
 				814C3AC61B69877600E307BB /* Main.storyboard */,
 				81BA814C1A49DA1800E65899 /* ViewController.swift */,
 				51EA185A1DC3AD30007591CC /* MapViewController.swift */,
-				518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */,
+				51E9BD931E3FCBD80051A1D3 /* CityPopOverViewController.swift */,
 				51EA18571DC3AD30007591CC /* AreaTableViewController.swift */,
 				51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */,
 				51EA185E1DC3AD30007591CC /* POIsViewController.swift */,
 				51EA185D1DC3AD30007591CC /* POIsTableViewCell.swift */,
+				518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */,
 				51EA18601DC3AD30007591CC /* ProfileViewController.swift */,
 				51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */,
 				5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */,
@@ -168,6 +175,8 @@
 				510CF6851DFEA6D70058B536 /* DataController.swift */,
 				51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */,
 				51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */,
+				51E9BD951E3FDB650051A1D3 /* City+CoreDataClass.swift */,
+				51E9BD961E3FDB650051A1D3 /* City+CoreDataProperties.swift */,
 				5168E7041E20019000CF93B5 /* notes.txt */,
 			);
 			path = ParseStarterProject;
@@ -281,6 +290,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51E9BD981E3FDB650051A1D3 /* City+CoreDataProperties.swift in Sources */,
+				51E9BD971E3FDB650051A1D3 /* City+CoreDataClass.swift in Sources */,
 				5191B4CE1DEDC66100047717 /* FavouritesViewController.swift in Sources */,
 				51EA18691DC3AD30007591CC /* POIsTableViewCell.swift in Sources */,
 				51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */,
@@ -288,6 +299,7 @@
 				51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */,
 				81BA814D1A49DA1800E65899 /* ViewController.swift in Sources */,
 				51EA186A1DC3AD30007591CC /* POIsViewController.swift in Sources */,
+				51E9BD941E3FCBD80051A1D3 /* CityPopOverViewController.swift in Sources */,
 				510CF6861DFEA6D70058B536 /* DataController.swift in Sources */,
 				51F596471DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld in Sources */,
 				51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */,

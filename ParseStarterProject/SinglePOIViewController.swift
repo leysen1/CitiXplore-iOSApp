@@ -42,7 +42,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     @IBOutlet weak var poiImage: UIImageView!
     @IBOutlet weak var poiAddress: UILabel!
     @IBOutlet weak var completedImage: UIImageView!
-    
+    @IBOutlet weak var ratingLabel: UILabel!
     @IBOutlet var scrubber: UISlider!
     @IBAction func scrubberChanged(_ sender: AnyObject) {
         trackPlaying.currentTime = TimeInterval(scrubber.value)
@@ -167,18 +167,12 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                             self.address = "none found"
                         }
                         if let tempPOILocation = object["coordinates"] as? PFGeoPoint {
-                            
                             let POILocation = CLLocation(latitude: tempPOILocation.latitude, longitude: tempPOILocation.longitude)
-                            
                             if let userLocTemp = PFUser.current()?["location"] as? PFGeoPoint {
-                                
                                 let userLocation = CLLocation(latitude: userLocTemp.latitude, longitude: userLocTemp.longitude)
-                                
                                 let tempDistance = Double(userLocation.distance(from: POILocation) / 1000)
                                 let roundedDistance = round(tempDistance * 100) / 100
-                                
                                 self.distance = String(roundedDistance)
-                                
                                 self.coordinates = CLLocationCoordinate2D(latitude: POILocation.coordinate.latitude, longitude: POILocation.coordinate.longitude)
                             }
                         } else {
@@ -206,6 +200,24 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                                 }
                             }
                         }
+                        if let tempRating = object["ratings"] as? Int {
+                            switch tempRating {
+                            case 1:
+                                self.ratingLabel.text = "Interesting POI"
+                            case 2:
+                                self.ratingLabel.text = "Worth a detour"
+                            case 3:
+                                self.ratingLabel.text = "Worth a visit when in the area"
+                            case 4:
+                                self.ratingLabel.text = "Worth a visit when in the city"
+                            default:
+                                break
+                            }
+                           
+                        } else {
+                            
+                        }
+                        
                         i += 1
                         if i == objects.count {
                             completion(true)
@@ -302,6 +314,8 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             }
         }
     }
+    
+
     
     func addAnnotationToMap() {
         

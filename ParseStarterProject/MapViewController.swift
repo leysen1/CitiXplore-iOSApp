@@ -231,7 +231,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Map"
+        self.title = "Home"
 
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest

@@ -10,13 +10,14 @@ import UIKit
 import Parse
 
 
-class AreaTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class AreaTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPopoverPresentationControllerDelegate {
     
     var perAreaPOIs = [String: Int]()
     var allAreas = [String]()
     var completed = [String: Int]()
     var areaImageDic = [String: PFFile]()
     var imageArray = [PFFile]()
+    var city = String()
     var londonArray = [String]()
     var chosenArea = String()
     var userLocation = CLLocationCoordinate2D()
@@ -28,6 +29,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         super.viewDidLoad()
         // Do any additional setup after loading the view.
        
+        city = "London"
         totalPOI()
         completedPOI()
         fetchAreaImages { (Bool) in
@@ -38,9 +40,30 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
  
     }
     
+    @IBAction func cityPicker(_ sender: Any) {
+        
+        let VC = storyboard?.instantiateViewController(withIdentifier: "cityPopOver") as! CityPopOverViewController
+        VC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 2, height: 150)
+        
+        let navController = UINavigationController(rootViewController: VC)
+        navController.modalPresentationStyle = UIModalPresentationStyle.popover
+        
+        let popOver = navController.popoverPresentationController
+        popOver?.delegate = self
+        popOver?.barButtonItem = sender as? UIBarButtonItem
+        
+        self.present(navController, animated: true, completion: nil)
+        
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+    
+    
     func totalPOI() {
         let query = PFQuery(className: "POI")
-        query.whereKey("city", equalTo: "London")
+        query.whereKey("city", equalTo: city)
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print("error")
