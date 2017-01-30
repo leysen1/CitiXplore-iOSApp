@@ -95,7 +95,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         super.viewDidLoad()
         
         title = "Listen"
-        navigationController?.navigationBar.barTintColor = UIColor(red: 122/255, green: 251/255, blue: 214/255, alpha: 1.0)
+        navigationController?.navigationBar.barTintColor = UIColor.white
 
         print("hello")
         print(name)
