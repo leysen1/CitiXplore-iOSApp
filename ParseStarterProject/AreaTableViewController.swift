@@ -147,6 +147,8 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         if allAreas.count < 1 {
             tableView.reloadData()
         }
+        
+        navigationController?.navigationBar.barTintColor = UIColor.white
     }
     
     

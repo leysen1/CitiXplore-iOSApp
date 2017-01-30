@@ -122,6 +122,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        
+        navigationController?.navigationBar.barTintColor = UIColor.white
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.searchController.searchBar.endEditing(true)

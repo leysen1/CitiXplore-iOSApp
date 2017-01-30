@@ -9,8 +9,9 @@
 import UIKit
 import Parse
 import AVFoundation
+import MapKit
 
-class SinglePOIViewController: UIViewController, CLLocationManagerDelegate {
+class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     
     var name = String()
     var address = String()
@@ -24,6 +25,13 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate {
     var playMode = false
     var timer = Timer()
     var time = Double()
+    var poiCoord = CLLocationCoordinate2D()
+    
+    @IBOutlet weak var mapView: MKMapView!
+    @IBAction func segueToMap(_ sender: Any) {
+        
+        print("map pressed")
+    }
     
     var activityIndicator = UIActivityIndicatorView()
     
@@ -37,7 +45,6 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate {
     @IBAction func scrubberChanged(_ sender: AnyObject) {
         trackPlaying.currentTime = TimeInterval(scrubber.value)
     }
-    @IBOutlet var audioLocationName: UILabel!
     @IBOutlet var audioTimeLeft: UILabel!
     @IBOutlet var playButtonImage: UIButton!
     @IBAction func playPauseButton(_ sender: AnyObject) {
@@ -86,10 +93,15 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate {
         super.viewDidLoad()
         
         title = "Listen"
+        navigationController?.navigationBar.barTintColor = UIColor(red: 122/255, green: 251/255, blue: 214/255, alpha: 1.0)
+
         print("hello")
         print(name)
         playButtonImage.isEnabled = false
         scrubber.isEnabled = false
+        
+        mapView.delegate = self
+        mapView.showsUserLocation = true
         
         fetchData { (Bool) in
             print("data fetched")
@@ -126,9 +138,16 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate {
             self.scrubber.isEnabled = true
             self.prepareAudio()
         }
+        
+        loadMap { (Bool) in
+            let region = MKCoordinateRegion(center: self.poiCoord, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+            self.mapView.setRegion(region, animated: false)
+            self.addAnnotationToMap()
+
+        }
 
 
-}
+    }
     
     func fetchData(completion: @escaping (_ result: Bool)->()) {
         let query = PFQuery(className: "POI")
@@ -200,7 +219,6 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate {
     
     func fetchAudio(completion: @escaping (_ result: Bool)->()) {
         var tempPlayer = AVAudioPlayer()
-        audioLocationName.text = name
         let query = PFQuery(className: "POI")
         query.whereKey("name", equalTo: name)
         query.findObjectsInBackground(block: { (objects, error) in
@@ -261,6 +279,35 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate {
         self.audioTimeLeft.text = "\(minutes):\(seconds)"
         
     }
+    
+    func loadMap(completion: @escaping (_ result: Bool)->()) {
+        
+        let query = PFQuery(className: "POI")
+        query.whereKey("name", equalTo: name)
+        query.findObjectsInBackground { (objects, error) in
+            if error != nil {
+                print("error")
+            } else {
+                if let objects = objects {
+                    for object in objects {
+                        if let tempLocation = object["coordinates"] as? PFGeoPoint {
+                            self.poiCoord = CLLocationCoordinate2D(latitude: tempLocation.latitude, longitude: tempLocation.longitude)
+                            completion(true)
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+    
+    func addAnnotationToMap() {
+        
+        let annotate = Annotate(title: name, locationName: address, coordinate: poiCoord, color: MKPinAnnotationColor.red)
+        mapView.addAnnotation(annotate)
+        mapView.reloadInputViews()
+    }
+
     
 
     override func viewWillDisappear(_ animated: Bool) {

@@ -278,6 +278,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         mapView.delegate = self
         mapView.showsUserLocation = true
         
+        navigationController?.navigationBar.barTintColor = UIColor.white
+        
         updateTimer()
         
         findPOIs { (Bool) in
