@@ -31,6 +31,8 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     @IBAction func segueToMap(_ sender: Any) {
         
         print("map pressed")
+        ratedPOI = name
+        self.navigationController?.popToRootViewController(animated: true)
     }
     
     var activityIndicator = UIActivityIndicatorView()

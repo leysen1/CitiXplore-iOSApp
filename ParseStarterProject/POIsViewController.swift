@@ -786,6 +786,14 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "toSinglePOI") {
+            let singlePOI = segue.destination as! SinglePOIViewController
+            singlePOI.name = ""
+            
+        }
+    }
+    
 
     override func viewWillDisappear(_ animated: Bool) {
 

@@ -292,7 +292,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="436" y="834"/>
+            <point key="canvasLocation" x="534" y="616"/>
         </scene>
         <!--About View Controller-->
         <scene sceneID="03p-YI-lVF">
@@ -444,7 +444,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="owQ-MT-rG7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1373.5999999999999" y="848.72563718140941"/>
+            <point key="canvasLocation" x="1374" y="602"/>
         </scene>
         <!--Areas-->
         <scene sceneID="JQG-Av-r3d">
@@ -859,6 +859,7 @@
                         <outlet property="playButtonImage" destination="utG-Iq-vzy" id="atY-sm-CdJ"/>
                         <outlet property="scrubber" destination="lIr-3U-gq7" id="n7e-CS-8sM"/>
                         <outlet property="tableView" destination="9r8-yN-gxj" id="4v9-gV-cB5"/>
+                        <segue destination="gCk-eU-8cb" kind="show" identifier="toSinglePOI" id="wOZ-lp-51o"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jNQ-ve-yPv" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1319,7 +1320,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZbG-07-bDV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4120.8000000000002" y="752.02398800599701"/>
+            <point key="canvasLocation" x="3436" y="752"/>
         </scene>
     </scenes>
     <resources>
@@ -1331,4 +1332,7 @@
         <image name="play.jpg" width="626" height="626"/>
         <image name="tick.png" width="1279" height="1280"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="wOZ-lp-51o"/>
+    </inferredMetricsTieBreakers>
 </document>
