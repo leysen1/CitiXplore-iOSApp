@@ -245,9 +245,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         
         saveUserLocation { (Bool) in
             self.findPOIs(completion: { (Bool) in
+                let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+                self.mapView.setRegion(region, animated: false)
+
             })
-            let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
-            self.mapView.setRegion(region, animated: false)
         }
 
         
@@ -256,11 +257,21 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 item.isEnabled = false
             }
         }
+        
+        let trackingButton = MKUserTrackingBarButtonItem(mapView: mapView)
+        
+        self.navigationItem.rightBarButtonItem = trackingButton
 
+        if #available(iOS 9.0, *) {
+            mapView.showsCompass = true
+            mapView.showsScale = true
+        } else {
+            // Fallback on earlier versions
+        }
+      
     }
-    
-    
-    
+
+
     override func viewDidAppear(_ animated: Bool) {
         
 
@@ -272,17 +283,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         findPOIs { (Bool) in
             self.addAnnotationToMap()
         }
-        
-        /*
-        // annotation
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-           self.addAnnotationToMap()
-            print("map view \(self.mapView.annotations)")
-        }
- */
+
         
         // arrow if signup
         animateArrow()
+        
         
         if ratedPOI != "" {
             print("rated POI \(ratedPOI)")
@@ -292,11 +297,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 self.mapView.setRegion(region, animated: false)
             }
 
-        } else {
-            let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
-            self.mapView.setRegion(region, animated: false)
         }
-        
         
  
     }

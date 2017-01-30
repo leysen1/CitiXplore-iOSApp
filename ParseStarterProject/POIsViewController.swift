@@ -65,15 +65,15 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if playMode == true {
             // pausing audio
+            timer.invalidate()
             playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
             trackPlaying.pause()
-            timer.invalidate()
             playMode = false
         } else {
             // playing audio
             playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
             trackPlaying.play()
-            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
             playMode = true
         }
     }
@@ -118,6 +118,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
             }
         }
+        
         
     }
     
@@ -628,7 +629,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         var tempPlayer = AVAudioPlayer()
         
         if nameArray.count > 0 {
-            if self.playMode == true {
+            
+            if playButtonImage.isEnabled == true {
                 self.trackPlaying.stop()
                 self.playButtonImage.isEnabled = false
                 self.scrubber.isEnabled = false
@@ -742,14 +744,14 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
     func playNewSong() {
-        self.time = self.trackPlaying.duration
-        self.trackPlaying.volume = 0.9
-        self.trackPlaying.play()
-        self.playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
-        self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
-        self.scrubber.maximumValue = Float(self.trackPlaying.duration)
-        self.scrubber.value = 0
-        self.playMode = true
+        playMode = true
+        scrubber.value = 0
+        trackPlaying.volume = 0.9
+        trackPlaying.play()
+        playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
+        
+        time = trackPlaying.duration / 1.37
         
         let minutes = Int(self.time / 60)
         var seconds = ""
@@ -761,29 +763,25 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         self.audioTimeLeft.text = "\(minutes):\(seconds)"
-    }
+        scrubber.maximumValue = Float(time)
+        print("max scrubber value \(self.scrubber.maximumValue)")
+        
+        }
     
     func updateSlider() {
         scrubber.value = Float(trackPlaying.currentTime)
+        print("scruber value \(scrubber.value)")
         
-    }
-    
-    func decreaseTimer() {
-        
-        if time > 0 {
-            time -= 1
-            let minutes = Int(time/60)
-            self.audioTimeLeft.text = "\(String(minutes)):\(String(Int((time) - Double(minutes*60))))"
-            
-        } else {
+        if scrubber.value == 0 {
             timer.invalidate()
-        }
-        func timerOn() {
-            updateSlider()
-            decreaseTimer()
+            playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
+            trackPlaying.pause()
+            playMode = false
+            
         }
         
     }
+
 
     override func viewWillDisappear(_ animated: Bool) {
 

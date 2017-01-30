@@ -296,18 +296,20 @@ class FavouritesViewController: UIViewController, UITableViewDelegate, UITableVi
                     for object in objects {
                         
                         if let tempRatingArray = object["rating"] as? [Int] {
-                            if let tempName = object["name"] as? String {
-                                self.highscoreNames.append(tempName)
+                            if tempRatingArray != [] {
+                                if let tempName = object["name"] as? String {
+                                    self.highscoreNames.append(tempName)
+                                }
+                                var sumOfRatings = 0
+                                var numberOfRatings = 0
+                                for item in tempRatingArray {
+                                    sumOfRatings = item + sumOfRatings
+                                    numberOfRatings += 1
+                                }
+                                let tempHighScore = round((Double(sumOfRatings) / Double(numberOfRatings)) * 100) / 100
+                                
+                                self.highscore.append(tempHighScore)
                             }
-                            var sumOfRatings = 0
-                            var numberOfRatings = 0
-                            for item in tempRatingArray {
-                                sumOfRatings = item + sumOfRatings
-                                numberOfRatings += 1
-                            }
-                            let tempHighScore = round((Double(sumOfRatings) / Double(numberOfRatings)) * 100) / 100
-                            
-                            self.highscore.append(tempHighScore)
                         }
                         i += 1
                         if i == objects.count {

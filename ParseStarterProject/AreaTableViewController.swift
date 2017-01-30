@@ -206,7 +206,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         if (segue.identifier == "toPOIs") {
             print("segue to POI")
             let backItem = UIBarButtonItem()
-            backItem.title = "Back"
+            backItem.title = "London"
             navigationItem.backBarButtonItem = backItem
  
             let POIVC = segue.destination as! POIsViewController

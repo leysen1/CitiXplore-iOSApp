@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import FBSDKLoginKit
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UIScrollViewDelegate {
 
     var totalPOIs = Double()
     var completedPOIs = Double()
@@ -50,16 +50,15 @@ class ProfileViewController: UIViewController {
         }
     }
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+
         print("profile email \(email)")
         self.emailLabel.text = email
-        
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)
         
-
-
         fetchPOIInfo { (Bool) in
             
             if self.totalPOIs != 0 {
@@ -73,6 +72,8 @@ class ProfileViewController: UIViewController {
             self.completedLabel.text = "You have completed \(self.percentage)% of our London POIs."
         }
     }
+    
+
     
     func fetchPOIInfo(completion: @escaping (_ result: Bool)->()) {
         
@@ -118,7 +119,12 @@ class ProfileViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    func keyboardWillShow(notification: NSNotification) {
+        print("keyboard shown")
+    }
+    
+    
     @IBAction func logout(_ sender: AnyObject) {
         
         Parse.cancelPreviousPerformRequests(withTarget: self)
@@ -133,7 +139,7 @@ class ProfileViewController: UIViewController {
     
     func tap(gesture: UITapGestureRecognizer) {
         
-        UIView.animate(withDuration: 0, delay: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
+        UIView.animate(withDuration: 1, delay: 1, options: UIViewAnimationOptions.curveEaseOut, animations: {
             self.view.layoutIfNeeded()
         }, completion: { (completed) in
             self.commentEntry.resignFirstResponder()
