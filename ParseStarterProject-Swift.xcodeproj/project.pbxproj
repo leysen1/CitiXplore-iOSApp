@@ -37,6 +37,7 @@
 		51EA186A1DC3AD30007591CC /* POIsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA185E1DC3AD30007591CC /* POIsViewController.swift */; };
 		51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18601DC3AD30007591CC /* ProfileViewController.swift */; };
 		51F596471DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 51F596451DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld */; };
+		51FC64131E3FF7D800B4145A /* RatingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FC64121E3FF7D800B4145A /* RatingsViewController.swift */; };
 		814C3ACA1B69877600E307BB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 814C3AC61B69877600E307BB /* Main.storyboard */; };
 		814C3ACB1B69877600E307BB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 814C3AC81B69877600E307BB /* Images.xcassets */; };
 		81BA814B1A49DA1800E65899 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BA814A1A49DA1800E65899 /* AppDelegate.swift */; };
@@ -81,6 +82,7 @@
 		51EA185E1DC3AD30007591CC /* POIsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = POIsViewController.swift; sourceTree = "<group>"; };
 		51EA18601DC3AD30007591CC /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		51F596461DFB3FC900C26F23 /* myCoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = myCoreDataModel.xcdatamodel; sourceTree = "<group>"; };
+		51FC64121E3FF7D800B4145A /* RatingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RatingsViewController.swift; path = ../RatingsViewController.swift; sourceTree = "<group>"; };
 		814C3AC71B69877600E307BB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		814C3AC81B69877600E307BB /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		814C3AC91B69877600E307BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 				518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */,
 				51EA18601DC3AD30007591CC /* ProfileViewController.swift */,
 				51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */,
+				51FC64121E3FF7D800B4145A /* RatingsViewController.swift */,
 				5191B4CD1DEDC66100047717 /* FavouritesViewController.swift */,
 				5170A9351DEDCE60006859BF /* FavTableViewCell.swift */,
 				515B157D1DEDC07A0008BAFE /* no audio.mp3 */,
@@ -295,6 +298,7 @@
 				5191B4CE1DEDC66100047717 /* FavouritesViewController.swift in Sources */,
 				51EA18691DC3AD30007591CC /* POIsTableViewCell.swift in Sources */,
 				51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */,
+				51FC64131E3FF7D800B4145A /* RatingsViewController.swift in Sources */,
 				51C48CF41E17F88200A8B1F2 /* POI+CoreDataClass.swift in Sources */,
 				51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */,
 				81BA814D1A49DA1800E65899 /* ViewController.swift in Sources */,
