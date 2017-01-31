@@ -44,6 +44,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         
         let VC = storyboard?.instantiateViewController(withIdentifier: "cityPopOver") as! CityPopOverViewController
         VC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 2, height: 150)
+        VC.baseView = "AreaView"
         
         let navController = UINavigationController(rootViewController: VC)
         navController.modalPresentationStyle = UIModalPresentationStyle.popover

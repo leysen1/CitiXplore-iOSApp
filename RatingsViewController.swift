@@ -91,7 +91,8 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
 
     @IBAction func cityPicker(_ sender: Any) {
         let VC = storyboard?.instantiateViewController(withIdentifier: "cityPopOver") as! CityPopOverViewController
-        VC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 2, height: 150)
+        VC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 150)
+        VC.baseView = "RatingsView"
         
         let navController = UINavigationController(rootViewController: VC)
         navController.modalPresentationStyle = UIModalPresentationStyle.popover

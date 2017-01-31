@@ -26,8 +26,6 @@
 		51C48CF71E19338400A8B1F2 /* redarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 51C48CF61E19338400A8B1F2 /* redarrow.png */; };
 		51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */; };
 		51E9BD941E3FCBD80051A1D3 /* CityPopOverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E9BD931E3FCBD80051A1D3 /* CityPopOverViewController.swift */; };
-		51E9BD971E3FDB650051A1D3 /* City+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E9BD951E3FDB650051A1D3 /* City+CoreDataClass.swift */; };
-		51E9BD981E3FDB650051A1D3 /* City+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E9BD961E3FDB650051A1D3 /* City+CoreDataProperties.swift */; };
 		51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */; };
 		51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18571DC3AD30007591CC /* AreaTableViewController.swift */; };
 		51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA185A1DC3AD30007591CC /* MapViewController.swift */; };
@@ -38,6 +36,8 @@
 		51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18601DC3AD30007591CC /* ProfileViewController.swift */; };
 		51F596471DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 51F596451DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld */; };
 		51FC64131E3FF7D800B4145A /* RatingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FC64121E3FF7D800B4145A /* RatingsViewController.swift */; };
+		51FC641A1E4138A500B4145A /* Shortcuts+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FC64181E4138A500B4145A /* Shortcuts+CoreDataClass.swift */; };
+		51FC641B1E4138A500B4145A /* Shortcuts+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FC64191E4138A500B4145A /* Shortcuts+CoreDataProperties.swift */; };
 		814C3ACA1B69877600E307BB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 814C3AC61B69877600E307BB /* Main.storyboard */; };
 		814C3ACB1B69877600E307BB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 814C3AC81B69877600E307BB /* Images.xcassets */; };
 		81BA814B1A49DA1800E65899 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BA814A1A49DA1800E65899 /* AppDelegate.swift */; };
@@ -71,8 +71,6 @@
 		51C48CF61E19338400A8B1F2 /* redarrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redarrow.png; sourceTree = "<group>"; };
 		51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		51E9BD931E3FCBD80051A1D3 /* CityPopOverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CityPopOverViewController.swift; sourceTree = "<group>"; };
-		51E9BD951E3FDB650051A1D3 /* City+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "City+CoreDataClass.swift"; path = "../City+CoreDataClass.swift"; sourceTree = "<group>"; };
-		51E9BD961E3FDB650051A1D3 /* City+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "City+CoreDataProperties.swift"; path = "../City+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewCell.swift; sourceTree = "<group>"; };
 		51EA18571DC3AD30007591CC /* AreaTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewController.swift; sourceTree = "<group>"; };
 		51EA185A1DC3AD30007591CC /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -83,6 +81,8 @@
 		51EA18601DC3AD30007591CC /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		51F596461DFB3FC900C26F23 /* myCoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = myCoreDataModel.xcdatamodel; sourceTree = "<group>"; };
 		51FC64121E3FF7D800B4145A /* RatingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RatingsViewController.swift; path = ../RatingsViewController.swift; sourceTree = "<group>"; };
+		51FC64181E4138A500B4145A /* Shortcuts+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Shortcuts+CoreDataClass.swift"; path = "../Shortcuts+CoreDataClass.swift"; sourceTree = "<group>"; };
+		51FC64191E4138A500B4145A /* Shortcuts+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Shortcuts+CoreDataProperties.swift"; path = "../Shortcuts+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		814C3AC71B69877600E307BB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		814C3AC81B69877600E307BB /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		814C3AC91B69877600E307BB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -178,8 +178,8 @@
 				510CF6851DFEA6D70058B536 /* DataController.swift */,
 				51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */,
 				51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */,
-				51E9BD951E3FDB650051A1D3 /* City+CoreDataClass.swift */,
-				51E9BD961E3FDB650051A1D3 /* City+CoreDataProperties.swift */,
+				51FC64181E4138A500B4145A /* Shortcuts+CoreDataClass.swift */,
+				51FC64191E4138A500B4145A /* Shortcuts+CoreDataProperties.swift */,
 				5168E7041E20019000CF93B5 /* notes.txt */,
 			);
 			path = ParseStarterProject;
@@ -293,11 +293,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				51E9BD981E3FDB650051A1D3 /* City+CoreDataProperties.swift in Sources */,
-				51E9BD971E3FDB650051A1D3 /* City+CoreDataClass.swift in Sources */,
 				5191B4CE1DEDC66100047717 /* FavouritesViewController.swift in Sources */,
 				51EA18691DC3AD30007591CC /* POIsTableViewCell.swift in Sources */,
 				51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */,
+				51FC641A1E4138A500B4145A /* Shortcuts+CoreDataClass.swift in Sources */,
 				51FC64131E3FF7D800B4145A /* RatingsViewController.swift in Sources */,
 				51C48CF41E17F88200A8B1F2 /* POI+CoreDataClass.swift in Sources */,
 				51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */,
@@ -313,6 +312,7 @@
 				51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */,
 				518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */,
 				81BA814B1A49DA1800E65899 /* AppDelegate.swift in Sources */,
+				51FC641B1E4138A500B4145A /* Shortcuts+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
