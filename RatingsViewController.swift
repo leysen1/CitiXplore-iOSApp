@@ -9,7 +9,7 @@
 import UIKit
 import Parse
 
-class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPopoverPresentationControllerDelegate {
     
     let rankings = ["Must See","Worth a Visit when in the City","Worth a Visit when in the Area","Worth a detour","Interesting POI"]
     
@@ -24,6 +24,8 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.title = "Categories"
         
         fetchData { (Bool) in
             
@@ -87,6 +89,25 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         
     }
 
+    @IBAction func cityPicker(_ sender: Any) {
+        let VC = storyboard?.instantiateViewController(withIdentifier: "cityPopOver") as! CityPopOverViewController
+        VC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 2, height: 150)
+        
+        let navController = UINavigationController(rootViewController: VC)
+        navController.modalPresentationStyle = UIModalPresentationStyle.popover
+        
+        let popOver = navController.popoverPresentationController
+        popOver?.delegate = self
+        popOver?.barButtonItem = sender as? UIBarButtonItem
+        
+        self.present(navController, animated: true, completion: nil)
+        
+    }
+
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -109,6 +130,14 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
          let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
         cell.textLabel?.text = data[indexPath.section][indexPath.row]
         return cell
+        
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        ratedPOI = data[indexPath.section][indexPath.row]
+        self.navigationController?.popToRootViewController(animated: true)
+        
         
     }
     

@@ -399,8 +399,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
         
         if (segue.identifier == "toFavs") {
-            let favVC = segue.destination as! FavouritesViewController
-            favVC.email = self.email
+            
         }
         
         if (segue.identifier == "toProfile") {
