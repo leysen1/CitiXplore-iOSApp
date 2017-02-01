@@ -310,6 +310,32 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                                             } else {
                                                 print("Logged in")
                                                 self.performSegue(withIdentifier: "toMapView", sender: self)
+                                                
+                                                // check if shortcut created
+                                                let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
+                                                do {
+                                                    let fetch = try self.moc.fetch(request) as! [Shortcuts]
+                                                    if fetch.count > 0 {
+                                                        // already have a shortcut
+                                                        print("already have shortcut")
+                                                    } else {
+                                                        let entity = NSEntityDescription.insertNewObject(forEntityName: "Shortcuts", into: self.moc) as! Shortcuts
+                                                        entity.setValue(self.emailInput.text, forKey: "username")
+                                                        entity.setValue(self.passwordInput.text, forKey: "password")
+                                                        entity.setValue("none", forKey: "area")
+                                                        entity.setValue("none", forKey: "city")
+                                                        
+                                                        do {
+                                                            try self.moc.save()
+                                                            print("saved shortcut")
+                                                        } catch {
+                                                            fatalError("Failure to save context: \(error)")
+                                                        }
+                                                    }
+                                                } catch {
+                                                    
+                                                }
+
                                             }
                                         })
                                     } else {
@@ -340,6 +366,23 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                                             } else {
                                                 print("user signed up")
                                                 self.performSegue(withIdentifier: "toMapView", sender: self)
+                                                
+                                                // save details to shortcut
+                                                
+                                                let entity = NSEntityDescription.insertNewObject(forEntityName: "Shortcuts", into: self.moc) as! Shortcuts
+                                                entity.setValue(self.emailInput.text, forKey: "username")
+                                                entity.setValue(self.passwordInput.text, forKey: "password")
+                                                entity.setValue("none", forKey: "area")
+                                                entity.setValue("none", forKey: "city")
+                                                
+                                                do {
+                                                    try self.moc.save()
+                                                    print("saved shortcut")
+                                                } catch {
+                                                    fatalError("Failure to save context: \(error)")
+                                                }
+
+                                                
                                             }
                                         })
                                     }

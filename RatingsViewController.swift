@@ -139,21 +139,31 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 20))
+        let view = UIView()
         //view.backgroundColor = UIColor(red: 121/255, green: 251/255, blue: 214/255, alpha: 1.0)
-        view.backgroundColor = UIColor.lightGray
-        
-        
-        let titleLabel = UILabel(frame: CGRect(x: 10, y: 4, width: UIScreen.main.bounds.width, height: 20))
+        view.backgroundColor = UIColor.groupTableViewBackground
+
+        let titleLabel = UILabel(frame: CGRect(x: 35, y: 4, width: UIScreen.main.bounds.width, height: 20))
         titleLabel.text = self.rankings[section]
+        titleLabel.font = UIFont(name: "Avenir Next Bold", size: 17)
+        
+        let myCustomView = UIImageView(frame: CGRect(x: 10, y: 4, width: 20, height: 20))
+        let myImage = UIImage(named: "star.png")!
+        myCustomView.image = myImage
+        
+        
         view.addSubview(titleLabel)
+        view.addSubview(myCustomView)
     
         return view
     }
     
+
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
          let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
         cell.textLabel?.text = data[indexPath.section][indexPath.row]
+        cell.textLabel?.font = UIFont(name: "Avenir Next", size: 17)
         return cell
         
     }

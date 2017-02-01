@@ -19,6 +19,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var coordinates = CLLocationCoordinate2D()
     var completed = String()
     var imageData = [PFFile]()
+    var poiDescription = String()
 
     var audio = AVAudioPlayer()
     var trackPlaying = AVAudioPlayer()
@@ -34,6 +35,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         ratedPOI = name
         self.navigationController?.popToRootViewController(animated: true)
     }
+    @IBOutlet weak var descriptionLabel: UITextView!
     
     var activityIndicator = UIActivityIndicatorView()
     
@@ -109,17 +111,12 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             print("data fetched")
             print("completed \(self.completed)")
             self.poiName.text = self.name
-            if self.address != "" {
-                self.poiAddress.text = self.address
-            }
-            
-            if self.distance != "" {
-                self.poiDistance.text = "\(self.distance) km"
-            }
+            self.poiAddress.text = self.address
+            self.poiDistance.text = "\(self.distance) km"
+            self.descriptionLabel.text = self.poiDescription
             
             if self.imageData != [] {
                 self.imageData[0].getDataInBackground { (data, error) in
-                    
                     if let tempImageData = data {
                         if let downloadedImage = UIImage(data: tempImageData) {
                             self.poiImage.image = downloadedImage
@@ -216,6 +213,12 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                            
                         } else {
                             
+                        }
+                        
+                        if let tempDescription = object["description"] as? String {
+                            self.poiDescription = tempDescription
+                        } else {
+                            self.poiDescription = "Description Coming Soon."
                         }
                         
                         i += 1
