@@ -558,7 +558,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="40"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="kxt-sZ-p8D" id="zCl-gN-ZjK">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="39.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="39"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -581,8 +581,10 @@
                     <nil key="simulatedStatusBarMetrics"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="375" height="667"/>
                     <connections>
-                        <outlet property="tableView" destination="c8d-lg-Dts" id="sh3-le-3TD"/>
+                        <outlet property="tableViewPopOver" destination="c8d-lg-Dts" id="hzE-xZ-m7N"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W1A-nf-5iJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1099,7 +1101,7 @@
         <!--Ratings-->
         <scene sceneID="PC0-jC-tbH">
             <objects>
-                <viewController title="Ratings" automaticallyAdjustsScrollViewInsets="NO" id="HGM-Gi-tdG" customClass="RatingsViewController" customModule="ParseStarterProject_Swift" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ratingsVC" title="Ratings" automaticallyAdjustsScrollViewInsets="NO" id="HGM-Gi-tdG" customClass="RatingsViewController" customModule="ParseStarterProject_Swift" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8Su-ez-rfS"/>
                         <viewControllerLayoutGuide type="bottom" id="hkI-U2-2gJ"/>
@@ -1109,7 +1111,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Br6-PT-WrW">
-                                <rect key="frame" x="0.0" y="104" width="375" height="519"/>
+                                <rect key="frame" x="0.0" y="134" width="375" height="489"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="jFG-t0-dLV">
@@ -1126,10 +1128,20 @@
                                     <outlet property="delegate" destination="HGM-Gi-tdG" id="Ysb-mD-wmx"/>
                                 </connections>
                             </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Click on POI to centre map" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mye-zm-Gu5">
-                                <rect key="frame" x="16" y="64" width="343" height="32"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Kensington and Chelsea" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aVx-Pe-yos">
+                                <rect key="frame" x="0.0" y="64" width="375" height="32"/>
+                                <color key="backgroundColor" red="0.40000000000000002" green="1" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="32" id="Wem-SY-r8F"/>
+                                    <constraint firstAttribute="height" constant="32" id="orq-xT-q4M"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="15"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Click on POI to centre map" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mye-zm-Gu5">
+                                <rect key="frame" x="0.0" y="94" width="375" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="zrF-4b-qWk"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="AvenirNext-Regular" family="Avenir Next" pointSize="15"/>
                                 <nil key="textColor"/>
@@ -1138,26 +1150,33 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="Mye-zm-Gu5" secondAttribute="trailing" id="1XQ-Cn-F56"/>
+                            <constraint firstItem="aVx-Pe-yos" firstAttribute="top" secondItem="8Su-ez-rfS" secondAttribute="bottom" id="7HA-gk-JUg"/>
                             <constraint firstAttribute="trailing" secondItem="Br6-PT-WrW" secondAttribute="trailing" id="Fra-AM-U1d"/>
                             <constraint firstItem="hkI-U2-2gJ" firstAttribute="top" secondItem="Br6-PT-WrW" secondAttribute="bottom" id="N3B-PA-NcI"/>
-                            <constraint firstItem="Mye-zm-Gu5" firstAttribute="trailing" secondItem="Myc-9d-YGf" secondAttribute="trailingMargin" id="UMp-7a-jpX"/>
-                            <constraint firstItem="Br6-PT-WrW" firstAttribute="top" secondItem="Mye-zm-Gu5" secondAttribute="bottom" constant="8" id="Z3x-Df-Bnc"/>
                             <constraint firstItem="Br6-PT-WrW" firstAttribute="leading" secondItem="Myc-9d-YGf" secondAttribute="leading" id="hzT-vP-aoD"/>
-                            <constraint firstItem="Mye-zm-Gu5" firstAttribute="leading" secondItem="Myc-9d-YGf" secondAttribute="leadingMargin" id="n0M-N6-hO8"/>
-                            <constraint firstItem="Mye-zm-Gu5" firstAttribute="top" secondItem="8Su-ez-rfS" secondAttribute="bottom" id="wgg-F3-4Qm"/>
+                            <constraint firstAttribute="trailing" secondItem="aVx-Pe-yos" secondAttribute="trailing" id="jBg-G0-VTu"/>
+                            <constraint firstItem="Mye-zm-Gu5" firstAttribute="leading" secondItem="Myc-9d-YGf" secondAttribute="leading" id="jie-Vq-5I1"/>
+                            <constraint firstItem="aVx-Pe-yos" firstAttribute="leading" secondItem="Myc-9d-YGf" secondAttribute="leading" id="ppe-SQ-na8"/>
+                            <constraint firstItem="Mye-zm-Gu5" firstAttribute="top" secondItem="aVx-Pe-yos" secondAttribute="bottom" constant="-2" id="rp0-DP-VMW"/>
+                            <constraint firstItem="Br6-PT-WrW" firstAttribute="top" secondItem="Mye-zm-Gu5" secondAttribute="bottom" constant="8" id="wWR-po-d6t"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Categories" id="HA2-Rt-PbI">
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="VPN-jK-gbz">
                             <connections>
-                                <action selector="cityPicker:" destination="HGM-Gi-tdG" id="zXB-D2-esR"/>
+                                <action selector="filter:" destination="HGM-Gi-tdG" id="oyh-a7-E4w"/>
+                                <segue destination="R4G-Bv-YLI" kind="popoverPresentation" identifier="cityPopover" popoverAnchorBarButtonItem="VPN-jK-gbz" id="wXe-6b-xgk">
+                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                </segue>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="areaLabel" destination="aVx-Pe-yos" id="9mo-jc-GlZ"/>
                         <outlet property="tableView" destination="Br6-PT-WrW" id="7u1-9A-UrL"/>
                     </connections>
                 </viewController>

@@ -9,7 +9,7 @@
 import UIKit
 import Parse
 
-class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPopoverPresentationControllerDelegate {
+class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPopoverPresentationControllerDelegate, DataSentDelegate {
     
     let rankings = ["Must See","Worth a Visit when in the City","Worth a Visit when in the Area","Worth a detour","Interesting POI"]
     
@@ -19,40 +19,34 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     var rating4 = [String]()
     
     var data = [[String]]()
+    var chosenArea = "Kensington and Chelsea"
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var areaLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.title = "Categories"
+        areaLabel.text = chosenArea
+        self.tableView.tableFooterView = UIView()
         
         fetchData { (Bool) in
-            
-            self.rating1.sort()
-            self.rating2.sort()
-            self.rating3.sort()
-            self.rating4.sort()
-            
-            print("ratings \(self.rating1) \(self.rating2) \(self.rating3) \(self.rating4)")
-            
-            self.data.append(self.rating4)
-            self.data.append(self.rating3)
-            self.data.append(self.rating2)
-            self.data.append(self.rating1)
-            
-            print("all in one")
-            print(self.data)
-            
-            self.tableView.reloadData()
-            
+            self.orderData()
         }
 
     }
     
+
     func fetchData(completion: @escaping (_ result: Bool)->()) {
         
+        rating1.removeAll()
+        rating2.removeAll()
+        rating3.removeAll()
+        rating4.removeAll()
+        
         let query = PFQuery(className: "POI")
+        query.whereKey("area", equalTo: chosenArea)
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print("error")
@@ -88,26 +82,43 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         }
         
     }
-
-    @IBAction func cityPicker(_ sender: Any) {
-        let VC = storyboard?.instantiateViewController(withIdentifier: "cityPopOver") as! CityPopOverViewController
-        VC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 150)
-        VC.baseView = "RatingsView"
+    
+    func orderData() {
         
-        let navController = UINavigationController(rootViewController: VC)
-        navController.modalPresentationStyle = UIModalPresentationStyle.popover
+        data.removeAll()
         
-        let popOver = navController.popoverPresentationController
-        popOver?.delegate = self
-        popOver?.barButtonItem = sender as? UIBarButtonItem
+        rating1.sort()
+        rating2.sort()
+        rating3.sort()
+        rating4.sort()
         
-        self.present(navController, animated: true, completion: nil)
+        data.append(self.rating4)
+        data.append(self.rating3)
+        data.append(self.rating2)
+        data.append(self.rating1)
         
+        print("all in one")
+        print(data)
+        
+       
+        tableView.reloadData()
     }
-
+    
+    
+    
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
     }
+    
+    func userSelectedData(data: String) {
+        chosenArea = data
+        areaLabel.text = data
+        print(chosenArea)
+        fetchData { (Bool) in
+            self.orderData()
+        }
+    }
+
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -127,6 +138,19 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         return rankings[section]
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 20))
+        //view.backgroundColor = UIColor(red: 121/255, green: 251/255, blue: 214/255, alpha: 1.0)
+        view.backgroundColor = UIColor.lightGray
+        
+        
+        let titleLabel = UILabel(frame: CGRect(x: 10, y: 4, width: UIScreen.main.bounds.width, height: 20))
+        titleLabel.text = self.rankings[section]
+        view.addSubview(titleLabel)
+    
+        return view
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
          let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
         cell.textLabel?.text = data[indexPath.section][indexPath.row]
@@ -142,6 +166,25 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         
     }
     
-
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "cityPopover" {
+            
+            let popoverVC: CityPopOverViewController = segue.destination as! CityPopOverViewController
+            popoverVC.baseView = "RatingsView"
+            popoverVC.delegate = self
+            
+            popoverVC.modalPresentationStyle = UIModalPresentationStyle.popover
+            popoverVC.popoverPresentationController!.delegate = self
+            popoverVC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 150)
+            
+            
+            
+        }
+    }
 
 }
+
+
+
+

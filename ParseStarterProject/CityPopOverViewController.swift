@@ -10,8 +10,13 @@ import UIKit
 import CoreData
 import Parse
 
-class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+protocol DataSentDelegate {
+    func userSelectedData(data: String)
+}
 
+class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    var delegate: DataSentDelegate? = nil
     let moc = DataController().managedObjectContext
     var baseView = ""
     
@@ -19,8 +24,10 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     var areas = [String]()
     var chosenCity = String()
     
-    @IBOutlet weak var tableView: UITableView!
+
+    @IBOutlet weak var tableViewPopOver: UITableView!
     
+    /*
     @IBAction func retrieveCore(_ sender: Any) {
         
         let cityFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
@@ -39,10 +46,13 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
         } catch {
             
         }
+ 
     }
+ */
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 150)
         print(baseView)
         
         let query = PFQuery(className: "Area")
@@ -53,19 +63,18 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
                 if let objects = objects {
                     for object in objects {
                         if let areaTemp = object["name"] as? String {
-                            self.areas.append(areaTemp)
+                            if areaTemp != "" {
+                                self.areas.append(areaTemp)
+                            }
                         }
-                        self.tableView.reloadData()
+                        self.tableViewPopOver.reloadData()
                     }
                 }
             }
         }
         
     }
-    
-    func savedData() {
-        
-    }
+
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -95,8 +104,10 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        chosenCity = cities[indexPath.row]
         
+
+        chosenCity = cities[indexPath.row]
+
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
         
        
@@ -107,7 +118,8 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
                     for log in shortcutData {
                          if baseView == "AreaView" {
                             if (log.value(forKey: "city") as? String) != nil {
-                                log.setValue(cities[indexPath.row], forKey: "city")
+                                let cityTemp = self.cities[indexPath.row]
+                                log.setValue(cityTemp, forKey: "city")
                                 do {
                                     try moc.save()
                                     print("updated location")
@@ -115,11 +127,18 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
                             }
                         }
                         if baseView == "RatingsView" {
-                            if (log.value(forKey: "area") as? String) != nil {
-                                log.setValue(areas[indexPath.row], forKey: "area")
+                            if (log.value(forKey: "area") as? String) != nil  {
+                                let areaTemp = self.areas[indexPath.row]
+                                log.setValue(areaTemp, forKey: "area")
                                 do {
                                     try moc.save()
                                     print("updated location")
+                                    
+                                    if delegate != nil {
+                                            delegate?.userSelectedData(data: areaTemp)
+                                            self.dismiss(animated: true, completion: nil)
+                                    }
+                                    
                                 } catch { print("catch - save error") }
                             }
                         }
@@ -129,4 +148,11 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
                 }
             } catch { print("catch - fetch error") }
     }
+
+
 }
+
+
+
+
+
