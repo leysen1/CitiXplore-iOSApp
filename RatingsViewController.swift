@@ -11,7 +11,7 @@ import Parse
 
 class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPopoverPresentationControllerDelegate, DataSentDelegate {
     
-    let rankings = ["Must See","Worth a Visit when in the City","Worth a Visit when in the Area","Worth a detour","Interesting POI"]
+    let rankings = ["Must See","When in the City","When in the Area","Worth a detour","Interesting POI"]
     
     var rating1 = [String]()
     var rating2 = [String]()
@@ -21,13 +21,33 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     var data = [[String]]()
     var chosenArea = "Kensington and Chelsea"
     
+    let starone = UIImageView(frame: CGRect(x: 10, y: 4, width: 20, height: 20))
+    let staroneImage = UIImage(named: "star.png")!
+    
+    let startwo = UIImageView(frame: CGRect(x: 10, y: 4, width: 45, height: 20))
+    let startwoImage = UIImage(named: "2star.png")!
+    
+    let starthree = UIImageView(frame: CGRect(x: 10, y: 4, width: 65, height: 20))
+    let starthreeImage = UIImage(named: "3star.png")!
+    
+    let starfour = UIImageView(frame: CGRect(x: 10, y: 4, width: 85, height: 20))
+    let starfourImage = UIImage(named: "4star.png")!
+    
+    var starArray = [UIImageView]()
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var areaLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Categories"
+        starone.image = staroneImage
+        startwo.image = startwoImage
+        starthree.image = starthreeImage
+        starfour.image = starfourImage
+        
+        starArray = [starone, startwo, starthree, starfour]
+        
         areaLabel.text = chosenArea
         self.tableView.tableFooterView = UIView()
         
@@ -36,6 +56,8 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         }
 
     }
+    
+    
     
 
     func fetchData(completion: @escaping (_ result: Bool)->()) {
@@ -140,20 +162,19 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
-        //view.backgroundColor = UIColor(red: 121/255, green: 251/255, blue: 214/255, alpha: 1.0)
-        view.backgroundColor = UIColor.groupTableViewBackground
+        view.backgroundColor = UIColor(red: 121/255, green: 251/255, blue: 214/255, alpha: 1.0)
+        //view.backgroundColor = UIColor.groupTableViewBackground
 
-        let titleLabel = UILabel(frame: CGRect(x: 35, y: 4, width: UIScreen.main.bounds.width, height: 20))
+        let titleLabel = UILabel(frame: CGRect(x: 0, y: 4, width: UIScreen.main.bounds.width, height: 20))
         titleLabel.text = self.rankings[section]
         titleLabel.font = UIFont(name: "Avenir Next Bold", size: 17)
+        titleLabel.textAlignment = .center
         
-        let myCustomView = UIImageView(frame: CGRect(x: 10, y: 4, width: 20, height: 20))
-        let myImage = UIImage(named: "star.png")!
-        myCustomView.image = myImage
-        
-        
+
+
         view.addSubview(titleLabel)
-        view.addSubview(myCustomView)
+        view.addSubview(starArray[section])
+
     
         return view
     }

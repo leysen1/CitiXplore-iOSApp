@@ -90,11 +90,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        
-        navigationController?.navigationBar.barTintColor = UIColor.white
-    }
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.searchController.searchBar.endEditing(true)
         return true
@@ -532,19 +528,28 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
             if completedArray[indexValue!] == "yes" {
-                cell.backgroundColor = UIColor.groupTableViewBackground
+                cell.backgroundColor = UIColor(red: 241/255, green: 255/255, blue: 251/255, alpha: 1.0)
                 cell.locationName.textColor = UIColor.black
                 cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
                 cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage(named: "tick.png")
             } else {
+                /*
                 cell.backgroundColor = UIColor.clear
                 cell.locationName.textColor = UIColor.lightGray
                 cell.locationAddress.textColor = UIColor.lightGray
                 cell.locationDistance.textColor = UIColor.lightGray
                 cell.locationImage.alpha = 0.5
                 cell.tickImage.image = UIImage()
+                 */
+                cell.backgroundColor = UIColor.clear
+                cell.locationName.textColor = UIColor.black
+                cell.locationAddress.textColor = UIColor.black
+                cell.locationDistance.textColor = UIColor.black
+                cell.locationImage.alpha = 1
+                cell.tickImage.image = UIImage()
+                
             }
             
         } else {
@@ -571,18 +576,26 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
             if completedArray[indexPath.row] == "yes" {
-                cell.backgroundColor = UIColor.groupTableViewBackground
+                cell.backgroundColor = UIColor(red: 241/255, green: 255/255, blue: 251/255, alpha: 1.0)
                 cell.locationName.textColor = UIColor.black
                 cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
                 cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage(named: "tick.png")
             } else {
+                /*
+                 cell.backgroundColor = UIColor.clear
+                 cell.locationName.textColor = UIColor.lightGray
+                 cell.locationAddress.textColor = UIColor.lightGray
+                 cell.locationDistance.textColor = UIColor.lightGray
+                 cell.locationImage.alpha = 0.5
+                 cell.tickImage.image = UIImage()
+                 */
                 cell.backgroundColor = UIColor.clear
-                cell.locationName.textColor = UIColor.lightGray
-                cell.locationAddress.textColor = UIColor.lightGray
-                cell.locationDistance.textColor = UIColor.lightGray
-                cell.locationImage.alpha = 0.5
+                cell.locationName.textColor = UIColor.black
+                cell.locationAddress.textColor = UIColor.black
+                cell.locationDistance.textColor = UIColor.black
+                cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage()
             }
         }

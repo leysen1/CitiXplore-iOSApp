@@ -20,6 +20,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var completed = String()
     var imageData = [PFFile]()
     var poiDescription = String()
+    var rating = Int()
 
     var audio = AVAudioPlayer()
     var trackPlaying = AVAudioPlayer()
@@ -28,6 +29,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var time = Double()
     var poiCoord = CLLocationCoordinate2D()
     
+    @IBOutlet weak var starImage: UIImageView!
     @IBOutlet weak var mapView: MKMapView!
     @IBAction func segueToMap(_ sender: Any) {
         
@@ -97,7 +99,6 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         super.viewDidLoad()
         
         title = "Listen"
-        navigationController?.navigationBar.barTintColor = UIColor.white
 
         print("hello")
         print(name)
@@ -106,6 +107,8 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
         mapView.delegate = self
         mapView.showsUserLocation = true
+        
+
         
         fetchData { (Bool) in
             print("data fetched")
@@ -129,6 +132,25 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             } else {
                 self.completedImage.image = UIImage()
             }
+            
+            // stars
+            switch self.rating {
+            case 1:
+                self.starImage.image = UIImage(named: "star.png")
+                self.starImage.frame = CGRect(x: 15, y: 60, width: 25, height: 25)
+            case 2:
+                self.starImage.image = UIImage(named: "2star.png")
+                self.starImage.frame = CGRect(x: 15, y: 60, width: 50, height: 25)
+            case 3:
+                self.starImage.image = UIImage(named: "3star.png")
+                self.starImage.frame = CGRect(x: 15, y: 60, width: 75, height: 25)
+            case 4:
+                self.starImage.image = UIImage(named: "4star.png")
+                self.starImage.frame = CGRect(x: 15, y: 60, width: 100, height: 25)
+            default:
+                break
+            }
+            
             
         }
         
@@ -198,6 +220,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                             }
                         }
                         if let tempRating = object["ratings"] as? Int {
+                            self.rating = tempRating
                             switch tempRating {
                             case 1:
                                 self.ratingLabel.text = "Interesting POI"
@@ -252,6 +275,20 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                                 } else {
                                     do { tempPlayer = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
                                         self.trackPlaying = tempPlayer
+                                        // background playing
+                                        do {
+                                            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+                                            print("AVAudioSession Category Playback OK")
+                                            do {
+                                                try AVAudioSession.sharedInstance().setActive(true)
+                                                print("AVAudioSession is Active")
+                                            } catch let error as NSError {
+                                                print(error.localizedDescription)
+                                            }
+                                        } catch let error as NSError {
+                                            print(error.localizedDescription)
+                                        }
+                                        
                                         completion(true)
                                     } catch {  print(error)
                                     }

@@ -278,7 +278,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         mapView.delegate = self
         mapView.showsUserLocation = true
         
-        navigationController?.navigationBar.barTintColor = UIColor.white
+        navigationController?.navigationBar.barTintColor = UIColor(red: 241/255, green: 255/255, blue: 251/255, alpha: 1.0)
+        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 0/255, green: 153/255, blue: 153/255, alpha: 1.0)]
+        navigationController?.navigationBar.tintColor =  UIColor(red: 0/255, green: 153/255, blue: 153/255, alpha: 1.0)
+        navigationController?.toolbar.barTintColor = UIColor(red: 241/255, green: 255/255, blue: 251/255, alpha: 1.0)
+        
+        
         
         updateTimer()
         

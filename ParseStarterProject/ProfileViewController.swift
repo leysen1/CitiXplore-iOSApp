@@ -56,8 +56,7 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
 
         print("profile email \(email)")
         self.emailLabel.text = email
-        // navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
-        navigationController?.navigationBar.barTintColor = UIColor.white
+
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)
         

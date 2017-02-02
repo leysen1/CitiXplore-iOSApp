@@ -29,6 +29,7 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         super.viewDidLoad()
         // Do any additional setup after loading the view.
        
+        self.title = "LONDON"
         city = "London"
         totalPOI()
         completedPOI()
@@ -156,8 +157,9 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         if allAreas.count < 1 {
             tableView.reloadData()
         }
+
         
-        navigationController?.navigationBar.barTintColor = UIColor.white
+    
     }
     
     
@@ -217,7 +219,8 @@ class AreaTableViewController: UIViewController, UITableViewDelegate, UITableVie
         if (segue.identifier == "toPOIs") {
             print("segue to POI")
             let backItem = UIBarButtonItem()
-            backItem.title = "London"
+            backItem.title = "Back"
+                    
             navigationItem.backBarButtonItem = backItem
  
             let POIVC = segue.destination as! POIsViewController
