@@ -22,6 +22,8 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
     @IBOutlet var loginOrSignupButtonLabel: UIButton!    
     @IBOutlet var changeSignupOrLoginButtonLabel: UIButton!
     
+    @IBOutlet weak var heading: UILabel!
+    
     var loginMode = true
     var activityIndicator = UIActivityIndicatorView()
     var fbLoginPressed = Bool()
@@ -183,7 +185,10 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
+        heading.layer.cornerRadius = 10
+        heading.layer.masksToBounds = true
+        loginOrSignupButtonLabel.layer.cornerRadius = 5
+        loginOrSignupButtonLabel.layer.masksToBounds = true
         
         
       
@@ -219,10 +224,23 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                     // facebook login
                     
                     let loginButton : FBSDKLoginButton = FBSDKLoginButton()
-                    loginButton.center = CGPoint(x: self.view.frame.width / 2, y: self.view.frame.height - self.view.frame.height / 6)
                     loginButton.readPermissions = ["public_profile", "email"]
+                    loginButton.center = view.center
                     loginButton.delegate = self
+                    loginButton.translatesAutoresizingMaskIntoConstraints = false
                     self.view.addSubview(loginButton)
+                    loginButton.backgroundColor = UIColor(red: 46/255, green: 150/255, blue: 149/255, alpha: 1.0)
+
+                    
+                    let centerXConstraint = NSLayoutConstraint(item: loginButton, attribute: .centerX, relatedBy: .equal, toItem: emailInput, attribute: .centerX, multiplier: 1, constant: 0)
+                    
+                    let centerYConstraint = NSLayoutConstraint(item: loginButton, attribute: .bottom, relatedBy: .equal, toItem: emailInput, attribute: .top, multiplier: 1, constant: -30)
+                        
+                    self.view.addConstraints([centerXConstraint, centerYConstraint])
+   
+
+                    
+                    
                     
                 }
             } else {

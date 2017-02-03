@@ -29,6 +29,20 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var time = Double()
     var poiCoord = CLLocationCoordinate2D()
     
+    
+    @IBOutlet weak var checkOffLabel: UIButton!
+    @IBAction func checkOffButton(_ sender: Any) {
+        
+        if checkOffLabel.title(for: .normal) == "Seen it already?" {
+            print("seen already")
+            createAlert(title: "Look at you!", message: "Are you sure you want to check off this POI?")
+        } else {
+            print("not seen")
+            createAlert(title: "Changed you mind?", message: "Are you sure you want to uncheck this POI?")
+        }
+        
+    }
+    
     @IBOutlet weak var starImage: UIImageView!
     @IBOutlet weak var mapView: MKMapView!
     @IBAction func segueToMap(_ sender: Any) {
@@ -71,11 +85,8 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
     }
     
-
-    
     func updateSlider() {
         scrubber.value = Float(trackPlaying.currentTime)
-        
     }
     
     func decreaseTimer() {
@@ -95,6 +106,8 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
     }
 
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -129,8 +142,10 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             }
             if self.completed == "yes" {
                 self.completedImage.image = UIImage(named: "tick.png")
+                self.checkOffLabel.setTitle("Not yet seen?", for: .normal)
             } else {
                 self.completedImage.image = UIImage()
+                self.checkOffLabel.setTitle("Seen it already?", for: .normal)
             }
             
             // stars
@@ -362,6 +377,70 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         let annotate = Annotate(title: name, locationName: address, coordinate: poiCoord, color: MKPinAnnotationColor.red)
         mapView.addAnnotation(annotate)
         mapView.reloadInputViews()
+    }
+
+    
+    func createAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (action) in
+            
+        }))
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
+            if self.checkOffLabel.title(for: .normal) == "Seen it already?" {
+                // checking POI
+                self.checkOffLabel.setTitle("Not yet seen?", for: .normal)
+                
+                let query = PFQuery(className: "POI")
+                query.whereKey("name", equalTo: self.name)
+                query.findObjectsInBackground(block: { (objects, error) in
+                    if error != nil {
+                        print("error")
+                    } else {
+                        if let objects = objects {
+                            for object in objects {
+                                if let email = PFUser.current()?.username {
+                                    object.addUniqueObject(email, forKey: "completed")
+                                    object.addUniqueObject(email, forKey: "completedRemote")
+                                    object.saveInBackground()
+                                    print("Added POI and saved")
+                                }
+                                
+                            }
+                        }
+                    }
+                })
+                
+            } else {
+                // unchecking POI
+                self.checkOffLabel.setTitle("Seen it already?", for: .normal)
+                let query = PFQuery(className: "POI")
+                query.whereKey("name", equalTo: self.name)
+                query.findObjectsInBackground(block: { (objects, error) in
+                    if error != nil {
+                        print("error")
+                    } else {
+                        if let objects = objects {
+                            for object in objects {
+                                if let email = PFUser.current()?.username {
+                                    if let tempCompleted = object["completed"] as? [String] {
+                                        if tempCompleted.contains(email) {
+                                            object.remove(email, forKey: "completed")
+                                            object.remove(email, forKey: "completedRemote")
+                                            object.saveInBackground()
+                                            print("removed completed POI and saved")
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
+                })
+            }
+        }))
+        
+        
+        self.present(alert, animated: true, completion: nil)
     }
 
     

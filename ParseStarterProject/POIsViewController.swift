@@ -240,7 +240,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     
-    
+    // see here - add in a deletion of completion
     var parseFetchCompleted = [String]()
     
     func fetchCompletedParse(completion: @escaping (_ result: Bool)->()) {
@@ -535,14 +535,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage(named: "tick.png")
             } else {
-                /*
-                cell.backgroundColor = UIColor.clear
-                cell.locationName.textColor = UIColor.lightGray
-                cell.locationAddress.textColor = UIColor.lightGray
-                cell.locationDistance.textColor = UIColor.lightGray
-                cell.locationImage.alpha = 0.5
-                cell.tickImage.image = UIImage()
-                 */
+
                 cell.backgroundColor = UIColor.clear
                 cell.locationName.textColor = UIColor.black
                 cell.locationAddress.textColor = UIColor.black
@@ -583,14 +576,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage(named: "tick.png")
             } else {
-                /*
-                 cell.backgroundColor = UIColor.clear
-                 cell.locationName.textColor = UIColor.lightGray
-                 cell.locationAddress.textColor = UIColor.lightGray
-                 cell.locationDistance.textColor = UIColor.lightGray
-                 cell.locationImage.alpha = 0.5
-                 cell.tickImage.image = UIImage()
-                 */
+
                 cell.backgroundColor = UIColor.clear
                 cell.locationName.textColor = UIColor.black
                 cell.locationAddress.textColor = UIColor.black

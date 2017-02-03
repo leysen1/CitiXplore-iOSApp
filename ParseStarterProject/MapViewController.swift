@@ -154,6 +154,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         if completedArray != nil {
                         if (completedArray?.contains(self.email))! {
                             self.MKPinColorArray.append(MKPinAnnotationColor.green)
+                            
                         }
                         else {
                             self.MKPinColorArray.append(MKPinAnnotationColor.red)
@@ -184,6 +185,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         if annotationTitle.count > 0 {
             for item in annotationTitle {
                 let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
+                
+                let fdaskl = Annotate(title: <#T##String#>, locationName: <#T##String#>, coordinate: <#T##CLLocationCoordinate2D#>, color: <#T##MKPinAnnotationColor#>)
                 print("annotate \(annotate)")
                 mapView.addAnnotation(annotate)
                 mapView.reloadInputViews()
@@ -278,10 +281,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         mapView.delegate = self
         mapView.showsUserLocation = true
         
-        navigationController?.navigationBar.barTintColor = UIColor(red: 241/255, green: 255/255, blue: 251/255, alpha: 1.0)
-        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 0/255, green: 153/255, blue: 153/255, alpha: 1.0)]
-        navigationController?.navigationBar.tintColor =  UIColor(red: 0/255, green: 153/255, blue: 153/255, alpha: 1.0)
-        navigationController?.toolbar.barTintColor = UIColor(red: 241/255, green: 255/255, blue: 251/255, alpha: 1.0)
+        navigationController?.navigationBar.barTintColor = UIColor(red: 246/255, green: 246/255, blue: 246/255, alpha: 1.0)
+        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 1.0)]
+        navigationController?.navigationBar.tintColor =  UIColor(red: 46/255, green: 150/255, blue: 149/255, alpha: 1.0)
+
         
         
         
@@ -343,7 +346,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             } else {
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 view.pinColor = annotation.color
-                view.canShowCallout = true
                 view.calloutOffset = CGPoint(x: -5, y: 5)
                 view.rightCalloutAccessoryView = UIButton.init(type: .detailDisclosure) as UIView
                 
@@ -352,7 +354,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
         return nil
     }
+ 
     
+
 
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         print("tapped")
