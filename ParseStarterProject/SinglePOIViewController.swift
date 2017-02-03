@@ -374,7 +374,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     
     func addAnnotationToMap() {
         
-        let annotate = Annotate(title: name, locationName: address, coordinate: poiCoord, color: MKPinAnnotationColor.red)
+        let annotate = Annotate(title: name, locationName: address, coordinate: poiCoord, imagePOI: UIImage(named: "Cross")!)
         mapView.addAnnotation(annotate)
         mapView.reloadInputViews()
     }

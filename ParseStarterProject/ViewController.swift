@@ -229,7 +229,7 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                     loginButton.delegate = self
                     loginButton.translatesAutoresizingMaskIntoConstraints = false
                     self.view.addSubview(loginButton)
-                    loginButton.backgroundColor = UIColor(red: 46/255, green: 150/255, blue: 149/255, alpha: 1.0)
+
 
                     
                     let centerXConstraint = NSLayoutConstraint(item: loginButton, attribute: .centerX, relatedBy: .equal, toItem: emailInput, attribute: .centerX, multiplier: 1, constant: 0)

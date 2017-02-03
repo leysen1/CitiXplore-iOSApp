@@ -24,13 +24,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var annotationTitle = [String]()
     var annotationAddress = [String]()
     var annotationLocation = [CLLocationCoordinate2D]()
-    var MKPinColorArray = [MKPinAnnotationColor]()
+    var pinCompletedArray = [String]()
     var chosenPOI = String()
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var arrowImage: UIImageView!
     
     var activityIndicator = UIActivityIndicatorView()
-
+    
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
@@ -44,7 +44,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }))
         self.present(alert, animated: true, completion: nil)
     }
-
+    
     var timer = Timer()
     
     
@@ -75,12 +75,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         print("updated")
         
     }
-
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let locationCoord = manager.location?.coordinate {
             
             userLocation = CLLocationCoordinate2D(latitude: locationCoord.latitude, longitude: locationCoord.longitude)
-
+            
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                 self.checkNearPOI()
                 print("checked for nearby POIs")
@@ -88,7 +88,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             
         }
     }
-
+    
     
     func saveUserLocation(completion: @escaping (_ result: Bool)->()) {
         
@@ -109,7 +109,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     completion(true)
                 }
             })
-
+            
         } else {
             completion(true)
         }
@@ -118,7 +118,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     func findPOIs(completion: @escaping (_ result: Bool)->()) {
         // find all POIs
-
         let query = PFQuery(className: "POI")
         query.whereKey("area", equalTo: "Kensington and Chelsea")
         query.findObjectsInBackground(block: { (objects, error) in
@@ -129,7 +128,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     self.annotationTitle.removeAll()
                     self.annotationAddress.removeAll()
                     self.annotationLocation.removeAll()
-                    self.MKPinColorArray.removeAll()
+                    self.pinCompletedArray.removeAll()
                     var completedArray: [String]?
                     var i = 0
                     for poiLocation in poiLocations {
@@ -152,15 +151,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         }
                         completedArray = poiLocation["completed"] as? [String]
                         if completedArray != nil {
-                        if (completedArray?.contains(self.email))! {
-                            self.MKPinColorArray.append(MKPinAnnotationColor.green)
-                            
-                        }
-                        else {
-                            self.MKPinColorArray.append(MKPinAnnotationColor.red)
+                            if (completedArray?.contains(self.email))! {
+                                if let tempTitle = poiLocation["name"] as? String {
+                                    self.pinCompletedArray.append(tempTitle)
+                                }
+                                
                             }
-                        } else {
-                            self.MKPinColorArray.append(MKPinAnnotationColor.red)
                         }
                         
                         i += 1
@@ -181,7 +177,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         })
     }
     
-
+    func addAnnotationToMap() {
+        if annotationTitle.count > 0 {
+            for item in annotationTitle {
+                let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), imagePOI: UIImage(named: "Cross")!)
+                print("annotate \(annotate)")
+                mapView.addAnnotation(annotate)
+                mapView.reloadInputViews()
+            }
+        }
+    }
+    
     func checkNearPOI() {
         
         // if current location is near POI, then check off list
@@ -216,31 +222,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
         
     }
-
+    
     // load view
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.title = "Home"
-
+        
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
-        
-        //annotations
-        /*
-        pointAnnotation = CustomPointAnnotation()
-        pointAnnotation.pinCustomImageName = "Favourites"
-        pointAnnotation.coordinate = CLLocationCoordinate2D(latitude: 51.4885005, longitude: -0.1880466)
-        pointAnnotation.title = "POKéSTOP"
-        pointAnnotation.subtitle = "Pick up some Poké Balls"
-        
-        pinAnnotationView = MKPinAnnotationView(annotation: pointAnnotation, reuseIdentifier: "pin")
-        mapView.addAnnotation(pinAnnotationView.annotation!)
-        */
-        //
         
         if let emailTemp = (PFUser.current()?.username!) {
             email = emailTemp
@@ -251,10 +243,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             self.findPOIs(completion: { (Bool) in
                 let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
                 self.mapView.setRegion(region, animated: false)
-
+                
             })
         }
-
+        
         
         if let items = (self.navigationController?.toolbarItems) {
             for item: UIBarButtonItem in items {
@@ -265,33 +257,32 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         let trackingButton = MKUserTrackingBarButtonItem(mapView: mapView)
         
         self.navigationItem.rightBarButtonItem = trackingButton
-
+        
         if #available(iOS 9.0, *) {
             mapView.showsCompass = true
             mapView.showsScale = true
         } else {
             // Fallback on earlier versions
         }
-      
+        
     }
-
-
+    
+    
     override func viewDidAppear(_ animated: Bool) {
         
-
+        
         mapView.delegate = self
         mapView.showsUserLocation = true
         
-        navigationController?.navigationBar.barTintColor = UIColor(red: 246/255, green: 246/255, blue: 246/255, alpha: 1.0)
-        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 1.0)]
-        navigationController?.navigationBar.tintColor =  UIColor(red: 46/255, green: 150/255, blue: 149/255, alpha: 1.0)
-
+        
+        
         updateTimer()
         
         findPOIs { (Bool) in
-           self.addAnnotationToMap()
+            self.addAnnotationToMap()
         }
-
+        
+        
         // arrow if signup
         animateArrow()
         
@@ -303,12 +294,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 let region = MKCoordinateRegion(center: ratedPOILocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                 self.mapView.setRegion(region, animated: false)
             }
-
+            
         }
         
- 
+        
     }
- 
+    
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         print("authorisation changed")
@@ -316,70 +307,44 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
             self.mapView.setRegion(region, animated: false)
         }
-
+        
     }
     
     func animateArrow() {
-            if helpClicked == false {
-                arrowImage.image = UIImage(named: "redarrow.png")
-                arrowImage.alpha = 0
-                UIView.animate(withDuration: 0.5, delay: 0, options: [.curveEaseIn, .repeat, .autoreverse], animations: {
-                    self.arrowImage.alpha = 1.0
-                    })
-            } else {
-                arrowImage.alpha = 0
-            }
-    }
-    
-    /*
-    var pointAnnotation:CustomPointAnnotation!
-    var pinAnnotationView:MKPinAnnotationView!
-    */
-    func addAnnotationToMap() {
-        if annotationTitle.count > 0 {
-            for item in annotationTitle {
-                let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
-                
-                
-                print("annotate \(annotate)")
-                mapView.addAnnotation(annotate)
-                mapView.reloadInputViews()
-            }
-        }
-    }
-    
-   
-
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        
-        /*
-        let reuseIdentifier = "pin"
-        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseIdentifier)
-        
-        if annotationView == nil {
-            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
-            annotationView?.canShowCallout = true
+        if helpClicked == false {
+            arrowImage.image = UIImage(named: "redarrow.png")
+            arrowImage.alpha = 0
+            UIView.animate(withDuration: 0.5, delay: 0, options: [.curveEaseIn, .repeat, .autoreverse], animations: {
+                self.arrowImage.alpha = 1.0
+            })
         } else {
-            annotationView?.annotation = annotation
+            arrowImage.alpha = 0
         }
-        
-        let customPointAnnotation = annotation as! CustomPointAnnotation
-        annotationView?.image = UIImage(named: customPointAnnotation.pinCustomImageName)
-        
-        return annotationView
-    */
+    }
     
-        
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? Annotate {
             let identifier = "pin"
-            var view: MKPinAnnotationView
-            if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
-                as? MKPinAnnotationView {
+            var view: MKAnnotationView
+            
+            if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) {
                 dequeuedView.annotation = annotation
                 view = dequeuedView
+
+
             } else {
-                view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-                view.pinColor = annotation.color
+                view = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                
+                if let tempTitle = view.annotation?.title {
+                    if pinCompletedArray.contains(tempTitle!) {
+                        view.image = UIImage(named: "CrossGrey")
+                    } else {
+                        view.image = UIImage(named: "Cross")
+                    }
+                }
+                
+                view.canShowCallout = true
                 view.calloutOffset = CGPoint(x: -5, y: 5)
                 view.rightCalloutAccessoryView = UIButton.init(type: .detailDisclosure) as UIView
                 
@@ -387,12 +352,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             return view
         }
         return nil
- 
     }
  
     
-
-
+    
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         print("tapped")
         
@@ -442,26 +405,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             AreaVC.email = self.email
         }
         
-        if (segue.identifier == "toFavs") {
-            
-        }
-        
         if (segue.identifier == "toProfile") {
             let profVC = segue.destination as! ProfileViewController
             profVC.email = self.email
         }
         
-       
+        
         
         
     }
     
- 
-}
-
-class CustomPointAnnotation: MKPointAnnotation {
     
-    var pinCustomImageName:String!
 }
 
 // annotations
@@ -470,13 +424,13 @@ class Annotate: NSObject, MKAnnotation {
     let title: String?
     let locationName: String
     let coordinate: CLLocationCoordinate2D
-    var color: MKPinAnnotationColor
+    var imagePOI: UIImage
     
-    init(title: String, locationName: String, coordinate: CLLocationCoordinate2D, color: MKPinAnnotationColor) {
+    init(title: String, locationName: String, coordinate: CLLocationCoordinate2D, imagePOI: UIImage) {
         self.title = title
         self.locationName = locationName
         self.coordinate = coordinate
-        self.color = color
+        self.imagePOI = imagePOI
         
         super.init()
     }
@@ -485,4 +439,3 @@ class Annotate: NSObject, MKAnnotation {
         return locationName
     }
 }
-    
