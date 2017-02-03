@@ -181,19 +181,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         })
     }
     
-    func addAnnotationToMap() {
-        if annotationTitle.count > 0 {
-            for item in annotationTitle {
-                let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
-                
-                let fdaskl = Annotate(title: <#T##String#>, locationName: <#T##String#>, coordinate: <#T##CLLocationCoordinate2D#>, color: <#T##MKPinAnnotationColor#>)
-                print("annotate \(annotate)")
-                mapView.addAnnotation(annotate)
-                mapView.reloadInputViews()
-            }
-        }
-    }
-    
+
     func checkNearPOI() {
         
         // if current location is near POI, then check off list
@@ -241,6 +229,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
         
+        //annotations
+        /*
+        pointAnnotation = CustomPointAnnotation()
+        pointAnnotation.pinCustomImageName = "Favourites"
+        pointAnnotation.coordinate = CLLocationCoordinate2D(latitude: 51.4885005, longitude: -0.1880466)
+        pointAnnotation.title = "POKéSTOP"
+        pointAnnotation.subtitle = "Pick up some Poké Balls"
+        
+        pinAnnotationView = MKPinAnnotationView(annotation: pointAnnotation, reuseIdentifier: "pin")
+        mapView.addAnnotation(pinAnnotationView.annotation!)
+        */
+        //
+        
         if let emailTemp = (PFUser.current()?.username!) {
             email = emailTemp
             print("email \(email)")
@@ -285,16 +286,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 1.0)]
         navigationController?.navigationBar.tintColor =  UIColor(red: 46/255, green: 150/255, blue: 149/255, alpha: 1.0)
 
-        
-        
-        
         updateTimer()
         
         findPOIs { (Bool) in
-            self.addAnnotationToMap()
+           self.addAnnotationToMap()
         }
 
-        
         // arrow if signup
         animateArrow()
         
@@ -333,9 +330,46 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 arrowImage.alpha = 0
             }
     }
+    
+    /*
+    var pointAnnotation:CustomPointAnnotation!
+    var pinAnnotationView:MKPinAnnotationView!
+    */
+    func addAnnotationToMap() {
+        if annotationTitle.count > 0 {
+            for item in annotationTitle {
+                let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), color: MKPinColorArray[annotationTitle.index(of: item)!])
+                
+                
+                print("annotate \(annotate)")
+                mapView.addAnnotation(annotate)
+                mapView.reloadInputViews()
+            }
+        }
+    }
+    
    
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        
+        /*
+        let reuseIdentifier = "pin"
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseIdentifier)
+        
+        if annotationView == nil {
+            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
+            annotationView?.canShowCallout = true
+        } else {
+            annotationView?.annotation = annotation
+        }
+        
+        let customPointAnnotation = annotation as! CustomPointAnnotation
+        annotationView?.image = UIImage(named: customPointAnnotation.pinCustomImageName)
+        
+        return annotationView
+    */
+    
+        
         if let annotation = annotation as? Annotate {
             let identifier = "pin"
             var view: MKPinAnnotationView
@@ -353,6 +387,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             return view
         }
         return nil
+ 
     }
  
     
@@ -422,6 +457,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
     
  
+}
+
+class CustomPointAnnotation: MKPointAnnotation {
+    
+    var pinCustomImageName:String!
 }
 
 // annotations
