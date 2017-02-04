@@ -21,6 +21,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var imageData = [PFFile]()
     var poiDescription = String()
     var rating = Int()
+    
 
     var audio = AVAudioPlayer()
     var trackPlaying = AVAudioPlayer()
@@ -28,7 +29,6 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var timer = Timer()
     var time = Double()
     var poiCoord = CLLocationCoordinate2D()
-    
     
     @IBOutlet weak var checkOffLabel: UIButton!
     @IBAction func checkOffButton(_ sender: Any) {
@@ -121,6 +121,9 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         mapView.delegate = self
         mapView.showsUserLocation = true
         
+        checkOffLabel.layer.cornerRadius = 5
+        checkOffLabel.layer.masksToBounds = true
+        navigationController?.setToolbarHidden(true, animated: true)
 
         
         fetchData { (Bool) in
@@ -140,6 +143,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                     }
                 }
             }
+            
             if self.completed == "yes" {
                 self.completedImage.image = UIImage(named: "tick.png")
                 self.checkOffLabel.setTitle("Not yet seen?", for: .normal)
@@ -184,6 +188,32 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
 
 
     }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if let annotation = annotation as? Annotate {
+            let identifier = "pin"
+            var view: MKAnnotationView
+            
+            if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) {
+                dequeuedView.annotation = annotation
+                view = dequeuedView
+                
+                
+            } else {
+                view = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                
+                view.image = UIImage(named: "Cross")
+                
+                view.canShowCallout = true
+                view.calloutOffset = CGPoint(x: -5, y: 5)
+                view.rightCalloutAccessoryView = UIButton.init(type: .detailDisclosure) as UIView
+                
+            }
+            return view
+        }
+        return nil
+    }
+    
     
     func fetchData(completion: @escaping (_ result: Bool)->()) {
         let query = PFQuery(className: "POI")
@@ -258,6 +288,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                         } else {
                             self.poiDescription = "Description Coming Soon."
                         }
+
                         
                         i += 1
                         if i == objects.count {

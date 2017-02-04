@@ -54,6 +54,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         print("User email \(email)")
         
         self.title = chosenAreaPOI
+        
+        
  
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
@@ -528,7 +530,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
             if completedArray[indexValue!] == "yes" {
-                cell.backgroundColor = UIColor(red: 241/255, green: 255/255, blue: 251/255, alpha: 1.0)
+                cell.backgroundColor = UIColor(red: 246/255, green: 246/255, blue: 246/255, alpha: 1.0)
                 cell.locationName.textColor = UIColor.black
                 cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
@@ -569,7 +571,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
             if completedArray[indexPath.row] == "yes" {
-                cell.backgroundColor = UIColor(red: 241/255, green: 255/255, blue: 251/255, alpha: 1.0)
+                cell.backgroundColor = UIColor(red: 246/255, green: 246/255, blue: 246/255, alpha: 1.0)
                 cell.locationName.textColor = UIColor.black
                 cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
@@ -607,6 +609,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         if (segue.identifier == "toSinglePOI") {
             let singlePOI = segue.destination as! SinglePOIViewController
             singlePOI.name = chosenPOI
+            singlePOI.hidesBottomBarWhenPushed = true
             
         }
     }

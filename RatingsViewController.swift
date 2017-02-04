@@ -35,6 +35,8 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     var starArray = [UIImageView]()
     
+    var completedArray = [String]()
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var areaLabel: UILabel!
     
@@ -122,7 +124,6 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         print("all in one")
         print(data)
         
-       
         tableView.reloadData()
     }
     
@@ -163,7 +164,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
         view.backgroundColor = UIColor(red: 121/255, green: 251/255, blue: 214/255, alpha: 1.0)
-        //view.backgroundColor = UIColor.groupTableViewBackground
+
 
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 4, width: UIScreen.main.bounds.width, height: 20))
         titleLabel.text = self.rankings[section]
