@@ -21,7 +21,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var nameArray = [String]()
     var coreDataNameArray = [String]()
     var nameArrayOutdated = [String]()
-    var addressArray = [String]()
     var distanceArray = [String]()
     var coordinatesArray = [CLLocationCoordinate2D]()
     var completedArray = [String]()
@@ -121,7 +120,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.distanceArray.removeAll()
         self.sortingWithDistanceArray.removeAll()
         self.completedArray.removeAll()
-        self.addressArray.removeAll()
         self.imageDataArray.removeAll()
         
         print("removed arrays")
@@ -200,9 +198,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 if let nameTemp = object["name"] as? String {
                                     self.nameArray.append(nameTemp)
                                     entity.setValue(nameTemp, forKey: "name")
-                                }
-                                if let addressTemp = object["address"] as? String {
-                                    entity.setValue(addressTemp, forKey: "address")
                                 }
                                 if let areaTemp = object["area"] as? String {
                                     entity.setValue(areaTemp, forKey: "area")
@@ -346,7 +341,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         // prepare for other information in getData function
-        self.addressArray.removeAll()
         self.completedArray.removeAll()
         self.imageDataArray.removeAll()
         
@@ -354,7 +348,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let imageFillerData = UIImageJPEGRepresentation(imageFiller!, 1.0)
         
         for _ in self.nameArray {
-            self.addressArray.append("address")
             self.completedArray.append("no")
             self.imageDataArray.append(PFFile(data: imageFillerData!)!)
             if self.imageDataArray.count == self.nameArray.count {
@@ -371,8 +364,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func coreDataFetch2(completion: (_ result: Bool)->()) {
         // Get all address and completed in right order
         let poiFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "POI")
-        if self.addressArray.count == self.nameArray.count && self.completedArray.count == self.nameArray.count {
-            print("address and completed array ARE ready")
+        if self.completedArray.count == self.nameArray.count {
+            print("completed array ARE ready")
             var i = 0
             for name in self.nameArray {
                 poiFetch.predicate = NSPredicate(format: "name = %@", name)
@@ -381,13 +374,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                     let results = try self.moc.fetch(poiFetch)
                     if results.count > 0 {
                         for result in results {
-                            if let tempAddress = (result as AnyObject).value(forKey: "address") {
                                 if let indexNumber = self.nameArray.index(of: name) {
-                                    self.addressArray[indexNumber] = (tempAddress as? String)!
                                     if let tempCompleted = (result as AnyObject).value(forKey: "completed") {
                                         self.completedArray[indexNumber] = (tempCompleted as? String)!
                                     }
-                                }
                             }
                             i += 1
                             if i == nameArray.count {
@@ -401,7 +391,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
             }
         } else {
-            print("address and completed array were not ready")
+            print("completed array were not ready")
         }
     }
     
@@ -509,11 +499,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if searchController.isActive && searchController.searchBar.text != "" {
             let indexValue = nameArray.index(of: filteredNameArray[indexPath.row])
-            // name and address
+            // name
             if nameArray != [] {
                 cell.locationName.text = filteredNameArray[indexPath.row] }
-            if addressArray != [] {
-                cell.locationAddress.text = addressArray[indexValue!] }
             if distanceArray != [] {
                 cell.locationDistance.text = "\(distanceArray[indexValue!]) km" }
             
@@ -532,7 +520,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if completedArray[indexValue!] == "yes" {
                 cell.backgroundColor = UIColor(red: 246/255, green: 246/255, blue: 246/255, alpha: 1.0)
                 cell.locationName.textColor = UIColor.black
-                cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
                 cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage(named: "tick.png")
@@ -540,7 +527,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
 
                 cell.backgroundColor = UIColor.clear
                 cell.locationName.textColor = UIColor.black
-                cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
                 cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage()
@@ -550,11 +536,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             // no filter
             
-            // name and address
+            // name
             if nameArray != [] {
                 cell.locationName.text = nameArray[indexPath.row] }
-            if addressArray != [] {
-                cell.locationAddress.text = addressArray[indexPath.row] }
             if distanceArray != [] {
                 cell.locationDistance.text = "\(distanceArray[indexPath.row]) km" }
             
@@ -573,7 +557,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if completedArray[indexPath.row] == "yes" {
                 cell.backgroundColor = UIColor(red: 246/255, green: 246/255, blue: 246/255, alpha: 1.0)
                 cell.locationName.textColor = UIColor.black
-                cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
                 cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage(named: "tick.png")
@@ -581,7 +564,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
 
                 cell.backgroundColor = UIColor.clear
                 cell.locationName.textColor = UIColor.black
-                cell.locationAddress.textColor = UIColor.black
                 cell.locationDistance.textColor = UIColor.black
                 cell.locationImage.alpha = 1
                 cell.tickImage.image = UIImage()

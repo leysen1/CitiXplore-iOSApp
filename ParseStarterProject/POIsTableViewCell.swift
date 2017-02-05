@@ -11,7 +11,6 @@ import UIKit
 class POIsTableViewCell: UITableViewCell {
 
     @IBOutlet var locationName: UILabel!
-    @IBOutlet var locationAddress: UILabel!
     @IBOutlet var locationDistance: UILabel!
     @IBOutlet var locationImage: UIImageView!
 
