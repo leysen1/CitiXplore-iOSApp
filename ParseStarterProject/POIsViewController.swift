@@ -50,7 +50,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.title = chosenAreaPOI
         
-        
  
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
@@ -222,7 +221,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! POIsTableViewCell
-        
         
         if searchController.isActive && searchController.searchBar.text != "" {
             let indexValue = nameArray.index(of: filteredNameArray[indexPath.row])

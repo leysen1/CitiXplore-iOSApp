@@ -23,6 +23,16 @@ class POIsTableViewCell: UITableViewCell {
         locationImage.layer.cornerRadius = 10
         locationImage.layer.masksToBounds = true
         
+        
+        let tickShape = CAShapeLayer()
+        tickShape.bounds = tickImage.frame
+        tickShape.position = tickImage.center
+        tickShape.path = UIBezierPath(roundedRect: tickImage.bounds, byRoundingCorners: .topRight, cornerRadii: CGSize(width: 5, height: 5)).cgPath
+        tickImage.layer.addSublayer(tickShape)
+        tickImage.layer.backgroundColor = UIColor.clear.cgColor
+        tickImage.layer.mask = tickShape
+        
+        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

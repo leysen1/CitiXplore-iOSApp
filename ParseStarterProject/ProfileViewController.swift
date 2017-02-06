@@ -12,13 +12,26 @@ import FBSDKLoginKit
 
 class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UIScrollViewDelegate {
 
-    var totalPOIs = Double()
-    var completedPOIs = Double()
+    var totalLondonPOIs = Double()
+    var completedLondonPOIs = Double()
+    var totalarea1POIs = Double()
+    var completedarea1POIs = Double()
+    var totalarea2POIs = Double()
+    var completedarea2POIs = Double()
     var percentage = Int()
     var email = String()
     @IBOutlet var emailLabel: UILabel!
-    @IBOutlet var completedLabel: UILabel!
+    @IBOutlet var LondonCompletedLabel: UILabel!
+    @IBOutlet weak var areaCompletedLabel1: UILabel!
+    @IBOutlet weak var areaCompletedLabel2: UILabel!
     @IBOutlet var commentEntry: UITextView!
+    
+    @IBOutlet weak var recent1: UILabel!
+    @IBOutlet weak var recent2: UILabel!
+    @IBOutlet weak var recent3: UILabel!
+    @IBOutlet weak var recent4: UILabel!
+    
+    @IBOutlet weak var submitCommentLabel: UIButton!
     
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
@@ -60,18 +73,26 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)
         
+        recentVisits()
+        
         fetchPOIInfo { (Bool) in
             
-            if self.totalPOIs != 0 {
-                var percentageTemp = self.completedPOIs / self.totalPOIs
+            if self.totalLondonPOIs != 0 {
+                var percentageTemp = self.completedLondonPOIs / self.totalLondonPOIs
                 percentageTemp = round(percentageTemp * 100)
                 self.percentage = Int(percentageTemp)
             } else {
                 self.percentage = 0
             }
             
-            self.completedLabel.text = "You have completed \(self.percentage)% of our London POIs."
+            self.LondonCompletedLabel.text = "You have completed \(self.percentage)% of our London POIs."
         }
+        
+        commentEntry.layer.cornerRadius = 5
+        commentEntry.layer.masksToBounds = true
+        submitCommentLabel.layer.cornerRadius = 5
+        submitCommentLabel.layer.masksToBounds = true
+        
     }
     
 
@@ -79,14 +100,16 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     func fetchPOIInfo(completion: @escaping (_ result: Bool)->()) {
         
         var i = 0
-        let query = PFQuery(className: "POI")
         
+        // total number
+        let query = PFQuery(className: "POI")
+        query.whereKey("city", equalTo: "London")
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print("error")
             } else {
                 if let objects = objects {
-                    self.totalPOIs = Double(objects.count)
+                    self.totalLondonPOIs = Double(objects.count)
                     i += 1
                     if i == 2 {
                         completion(true)
@@ -97,20 +120,52 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
             }
         }
         
+        // completed number
         let query2 = PFQuery(className: "POI")
+        query2.whereKey("city", equalTo: "London")
         query2.whereKey("completed", contains: email)
         query2.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print("error")
             } else {
                 if let objects = objects {
-                    self.completedPOIs = Double(objects.count)
+                    self.completedLondonPOIs = Double(objects.count)
                     i += 1
                     if i == 2 {
                         completion(true)
                     }
                 } else {
                     completion(true)
+                }
+            }
+        }
+    }
+    
+    func recentVisits() {
+        let query = PFQuery(className: "_User")
+        query.whereKey("username", equalTo: email)
+        query.findObjectsInBackground { (objects, error) in
+            if error != nil {
+                print("Error")
+            } else {
+                if let objects = objects {
+                    for object in objects {
+                        if let tempCompleted = object["completed"] as? [String] {
+                            let i: Int = tempCompleted.count - 1
+                            if i > -1 {
+                                self.recent1.text = tempCompleted[i]
+                            }
+                            if i > 0 {
+                                self.recent2.text = tempCompleted[i-1]
+                            }
+                            if i > 1 {
+                                self.recent3.text = tempCompleted[i-2]
+                            }
+                            if i > 2 {
+                                self.recent4.text = tempCompleted[i-3]
+                            }
+                        }
+                    }
                 }
             }
         }

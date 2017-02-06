@@ -8,9 +8,11 @@
 
 import UIKit
 import Parse
+import CoreData
 
 class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPopoverPresentationControllerDelegate, DataSentDelegate {
     
+    let moc = DataController().managedObjectContext
     let rankings = ["Must See","When in the City","When in the Area","Worth a detour","Interesting POI"]
     
     var rating1 = [String]()
@@ -43,12 +45,14 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        fetchSavedRatingsArea()
+        
         starone.image = staroneImage
         startwo.image = startwoImage
         starthree.image = starthreeImage
         starfour.image = starfourImage
         
-        starArray = [starone, startwo, starthree, starfour]
+        starArray = [starfour, starthree, startwo, starone]
         
         areaLabel.text = chosenArea
         self.tableView.tableFooterView = UIView()
@@ -56,12 +60,32 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         fetchData { (Bool) in
             self.orderData()
         }
+        
+        
 
     }
     
-    
-    
+    func fetchSavedRatingsArea() {
+        let areaFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
+        
+        do {
+            let fetchedAreas = try moc.fetch(areaFetch) as! [Shortcuts]
+            if fetchedAreas.count > 0 {
+                // change previously saved location
+                for area in fetchedAreas {
+                    if let tempArea = area.value(forKey: "area") as? String {
+                        print(tempArea)
+                        self.chosenArea = tempArea
+                    }
+                    
+                }
+            }
+        } catch {
+            
+        }
 
+    }
+    
     func fetchData(completion: @escaping (_ result: Bool)->()) {
         
         rating1.removeAll()
@@ -163,24 +187,21 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 121/255, green: 251/255, blue: 214/255, alpha: 1.0)
-
+        view.backgroundColor = UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 1.0)
 
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 4, width: UIScreen.main.bounds.width, height: 20))
         titleLabel.text = self.rankings[section]
-        titleLabel.font = UIFont(name: "Avenir Next Bold", size: 17)
+        titleLabel.font = UIFont(name: "Avenir Next", size: 20)
+        
+        titleLabel.textColor = UIColor.white
         titleLabel.textAlignment = .center
         
-
-
         view.addSubview(titleLabel)
         view.addSubview(starArray[section])
 
-    
         return view
     }
     
-
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
          let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
@@ -194,7 +215,6 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         
         ratedPOI = data[indexPath.section][indexPath.row]
         self.navigationController?.popToRootViewController(animated: true)
-        
         
     }
     

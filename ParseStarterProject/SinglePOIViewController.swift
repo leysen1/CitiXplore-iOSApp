@@ -417,6 +417,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             
         }))
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
+            self.updateRecentPOIs()
             if self.checkOffLabel.title(for: .normal) == "Seen it already?" {
                 // checking POI
                 self.checkOffLabel.setTitle("Not yet seen?", for: .normal)
@@ -473,7 +474,49 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
         self.present(alert, animated: true, completion: nil)
     }
-
+    
+    
+    func updateRecentPOIs() {
+        if self.checkOffLabel.title(for: .normal) == "Seen it already?" {
+            // check POI
+            let query = PFQuery(className: "_User")
+            query.whereKey("username", equalTo: (PFUser.current()?.username!)!)
+            query.findObjectsInBackground { (objects, error) in
+                if error != nil {
+                    print("error")
+                } else {
+                    if let objects = objects {
+                        for object in objects {
+                            object.addUniqueObject(self.name, forKey: "completed")
+                            object.saveInBackground()
+                            print("recent POI saved")
+                        }
+                    }
+                }
+            }
+        } else {
+            // uncheck POI
+            let query = PFQuery(className: "_User")
+            query.whereKey("username", equalTo: (PFUser.current()?.username!)!)
+            query.findObjectsInBackground { (objects, error) in
+                if error != nil {
+                    print("error")
+                } else {
+                    if let objects = objects {
+                        for object in objects {
+                            object.remove(self.name, forKey: "completed")
+                            object.saveInBackground()
+                            print("removed POI")
+                        }
+                    }
+                }
+            }
+            
+        }
+        
+        
+        
+    }
     
 
     override func viewWillDisappear(_ animated: Bool) {

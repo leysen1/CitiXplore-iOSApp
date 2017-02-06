@@ -26,6 +26,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var annotationLocation = [CLLocationCoordinate2D]()
     var pinCompletedArray = [String]()
     var chosenPOI = String()
+    var recentPOI = String()
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var arrowImage: UIImageView!
     
@@ -207,6 +208,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                             object.saveInBackground()
                             print("object saved")
                             if let tempName = object["name"] as? String {
+                                self.recentPOI = tempName
+                                self.updateRecentPOIs()
                                 if let tempArea = object["area"] as? String {
                                     self.createAlert(title: "\(tempName), \(tempArea) Completed", message: "Make you sure listen to the audio!")
                                     AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
@@ -221,6 +224,26 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             print("could not reach Parse")
         }
         
+    }
+    
+    func updateRecentPOIs() {
+        let query = PFQuery(className: "_User")
+        query.whereKey("username", equalTo: email)
+        query.findObjectsInBackground { (objects, error) in
+            if error != nil {
+                print("error")
+            } else {
+                if let objects = objects {
+                    for object in objects {
+                        if self.recentPOI != "" {
+                            object.addUniqueObject(self.recentPOI, forKey: "completed")
+                            object.saveInBackground()
+                            print("recent POI saved")
+                        }
+                    }
+                }
+            }
+        }
     }
     
     // load view
