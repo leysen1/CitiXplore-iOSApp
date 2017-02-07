@@ -27,8 +27,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var pinCompletedArray = [String]()
     var chosenPOI = String()
     var recentPOI = String()
+
+    
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var arrowImage: UIImageView!
+    
     
     var activityIndicator = UIActivityIndicatorView()
     
@@ -134,16 +137,43 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     var i = 0
                     for poiLocation in poiLocations {
                         completedArray?.removeAll()
+                        
                         if let tempTitle = poiLocation["name"] as? String {
                             self.annotationTitle.append(tempTitle)
                         } else {
                             self.annotationTitle.append(" ")
                         }
+                        
+                        
+                        
+                            if let tempAddress = poiLocation["shortAddress"] as? String {
+                                 if let tempRating = poiLocation["ratings"] as? Int {
+                                    switch tempRating {
+                                    case 1:
+                                        self.annotationAddress.append(String("★ \(tempAddress)"))
+                                    case 2:
+                                        self.annotationAddress.append(String("★★ \(tempAddress)"))
+                                    case 3:
+                                        self.annotationAddress.append(String("★★★ \(tempAddress)"))
+                                    case 4:
+                                        self.annotationAddress.append(String("★★★★ \(tempAddress)"))
+                                    default:
+                                        self.annotationAddress.append(" ")
+                                        break
+                                    }
+                                }
+                            } else {
+                                self.annotationAddress.append(" ")
+                            }
+                        
+                        /*
+                        
                         if let tempAddress = poiLocation["address"] as? String {
                             self.annotationAddress.append(tempAddress)
                         } else {
                             self.annotationAddress.append(" ")
                         }
+                        */
                         
                         if let tempLocation = poiLocation["coordinates"] as? PFGeoPoint {
                             self.annotationLocation.append(CLLocationCoordinate2D(latitude: tempLocation.latitude, longitude: tempLocation.longitude))
@@ -163,7 +193,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         i += 1
                         if i == poiLocations.count {
                             completion(true)
-                            print("compeleted findPOIs")
+                            print("completed findPOIs")
                         }
                         
                     }

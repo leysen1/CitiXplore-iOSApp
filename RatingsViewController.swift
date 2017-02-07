@@ -75,7 +75,9 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
                 for area in fetchedAreas {
                     if let tempArea = area.value(forKey: "area") as? String {
                         print(tempArea)
-                        self.chosenArea = tempArea
+                        if tempArea != "none" {
+                             self.chosenArea = tempArea
+                        }
                     }
                     
                 }

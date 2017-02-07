@@ -69,6 +69,8 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
 
         print("profile email \(email)")
         self.emailLabel.text = email
+        
+        
 
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)

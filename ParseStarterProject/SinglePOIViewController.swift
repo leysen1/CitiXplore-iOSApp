@@ -87,6 +87,13 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     
     func updateSlider() {
         scrubber.value = Float(trackPlaying.currentTime)
+        if scrubber.value == 0 {
+            // pausing audio
+            playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
+            trackPlaying.pause()
+            timer.invalidate()
+            playMode = false
+        }
     }
     
     func decreaseTimer() {
@@ -124,7 +131,12 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         checkOffLabel.layer.cornerRadius = 5
         checkOffLabel.layer.masksToBounds = true
         navigationController?.setToolbarHidden(true, animated: true)
-
+        poiImage.layer.cornerRadius = 20
+        poiImage.layer.masksToBounds = true
+        mapView.layer.cornerRadius = 20
+        mapView.layer.masksToBounds = true
+        descriptionLabel.layer.cornerRadius = 10
+        descriptionLabel.layer.masksToBounds = true
         
         fetchData { (Bool) in
             print("data fetched")
@@ -156,16 +168,16 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             switch self.rating {
             case 1:
                 self.starImage.image = UIImage(named: "star.png")
-                self.starImage.frame = CGRect(x: 15, y: 60, width: 25, height: 25)
+                self.starImage.frame = CGRect(x: 15, y: 60, width: 20, height: 20)
             case 2:
                 self.starImage.image = UIImage(named: "2star.png")
-                self.starImage.frame = CGRect(x: 15, y: 60, width: 50, height: 25)
+                self.starImage.frame = CGRect(x: 15, y: 60, width: 40, height: 20)
             case 3:
                 self.starImage.image = UIImage(named: "3star.png")
-                self.starImage.frame = CGRect(x: 15, y: 60, width: 75, height: 25)
+                self.starImage.frame = CGRect(x: 15, y: 60, width: 60, height: 20)
             case 4:
                 self.starImage.image = UIImage(named: "4star.png")
-                self.starImage.frame = CGRect(x: 15, y: 60, width: 100, height: 25)
+                self.starImage.frame = CGRect(x: 15, y: 60, width: 80, height: 20)
             default:
                 break
             }
@@ -359,11 +371,11 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     }
 
     func prepareAudio() {
-        self.time = self.trackPlaying.duration
+        self.time = self.trackPlaying.duration / 1.37
         self.trackPlaying.volume = 0.9
         self.playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
         self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
-        self.scrubber.maximumValue = Float(self.trackPlaying.duration)
+        self.scrubber.maximumValue = Float(self.trackPlaying.duration / 1.37)
         self.scrubber.value = 0
         self.playMode = false
         
