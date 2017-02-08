@@ -67,10 +67,9 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        print("profile email \(email)")
-        self.emailLabel.text = email
-        
-        
+        if let tempEmail = PFUser.current()?.username! {
+            self.emailLabel.text = tempEmail
+        }
 
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)
@@ -97,7 +96,11 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         
     }
     
-
+    override func viewDidAppear(_ animated: Bool) {
+        
+        self.navigationController?.navigationBar.topItem?.title = "Profile"
+        
+    }
     
     func fetchPOIInfo(completion: @escaping (_ result: Bool)->()) {
         

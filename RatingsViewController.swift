@@ -39,13 +39,15 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     var completedArray = [String]()
     
+    @IBOutlet weak var RatingsTitle: UINavigationItem!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var areaLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         fetchSavedRatingsArea()
+        
+        self.navigationController?.title = "Ratings"
         
         starone.image = staroneImage
         startwo.image = startwoImage
@@ -54,15 +56,17 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         
         starArray = [starfour, starthree, startwo, starone]
         
-        areaLabel.text = chosenArea
         self.tableView.tableFooterView = UIView()
         
         fetchData { (Bool) in
             self.orderData()
         }
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         
-
+        RatingsTitle.title = chosenArea
     }
     
     func fetchSavedRatingsArea() {
@@ -161,7 +165,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func userSelectedData(data: String) {
         chosenArea = data
-        areaLabel.text = data
+        RatingsTitle.title = chosenArea
         print(chosenArea)
         fetchData { (Bool) in
             self.orderData()

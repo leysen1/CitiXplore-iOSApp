@@ -318,11 +318,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             // Fallback on earlier versions
         }
         
+
+        
     }
     
     
     override func viewDidAppear(_ animated: Bool) {
         
+        self.navigationController?.navigationBar.topItem?.title = "Map"
         
         mapView.delegate = self
         mapView.showsUserLocation = true

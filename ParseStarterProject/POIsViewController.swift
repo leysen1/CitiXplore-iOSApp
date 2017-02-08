@@ -13,7 +13,7 @@ import Parse
 
 // create alert message if data doesn't load
 
-class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
+class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, UIPopoverPresentationControllerDelegate, DataSentDelegate {
     
     
     var nameArray = [String]()
@@ -24,7 +24,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var sortingWithDistanceArray = [Double]()
     let searchController = UISearchController(searchResultsController: nil)
     var filteredNameArray = [String]()
-    var chosenAreaPOI = ""
+    var chosenAreaPOI = "Kensington and Chelsea"
     var activityIndicator = UIActivityIndicatorView()
     var userLocation = CLLocationCoordinate2D()
     var email: String?
@@ -36,40 +36,68 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         filteredNameArray = nameArray.filter({ (skill) -> Bool in
             return skill.lowercased().contains(searchText.lowercased())
         })
+
         
         tableView.reloadData()
     }
     
+    
+    @IBOutlet weak var areaLabel: UILabel!
+    @IBOutlet weak var ExploreTitle: UINavigationItem!
     @IBOutlet var tableView: UITableView!
    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("User email \(email)")
-        
-        self.title = chosenAreaPOI
-        
- 
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
 
-
-        fetchData { (Bool) in
-            self.distanceOrder(completion: { (Bool) in
-                self.parseFetchImages()
-            })
+        getStarterVariables { (Bool) in
+            self.fetchData { (Bool) in
+                self.distanceOrder(completion: { (Bool) in
+                    self.parseFetchImages()
+                })
+            }
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
         
-        
+        ExploreTitle.title = "Explore An Area"
+        areaLabel.text = chosenAreaPOI
     }
     
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.searchController.searchBar.endEditing(true)
         return true
+    }
+    
+    func getStarterVariables(completion: @escaping (_ result: Bool)->()) {
+        if let tempEmail = PFUser.current()?.username! {
+            self.email = tempEmail
+        }
+        
+        nameArray.removeAll()
+        distanceArray.removeAll()
+        coordinatesArray.removeAll()
+        completedArray.removeAll()
+        imageDataArray.removeAll()
+        sortingWithDistanceArray.removeAll()
+        filteredNameArray.removeAll()
+
+        if let tempGeoPoint = PFUser.current()?["location"] as? PFGeoPoint {
+            self.userLocation = CLLocationCoordinate2D(latitude: tempGeoPoint.latitude, longitude: tempGeoPoint.longitude)
+            print(self.userLocation)
+            completion(true)
+            
+        }
+        print("loading POISVC")
+        print(email)
+        print(userLocation)
+        print(chosenAreaPOI)
     }
 
     
@@ -307,19 +335,57 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
              chosenPOI = nameArray[indexPath.row]
         }
         
+        print("name \(nameArray[indexPath.row])")
             
         performSegue(withIdentifier: "toSinglePOI", sender: self)
         
     }
     
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+    
+    func userSelectedData(data: String) {
+        chosenAreaPOI = data
+        print(chosenAreaPOI)
+        areaLabel.text = chosenAreaPOI
+        // reload table function:
+        getStarterVariables { (Bool) in
+            self.fetchData { (Bool) in
+                self.distanceOrder(completion: { (Bool) in
+                    self.parseFetchImages()
+                })
+            }
+        }
+        
+    }
+
+    
+    
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+
         if (segue.identifier == "toSinglePOI") {
-            let singlePOI = segue.destination as! SinglePOIViewController
-            singlePOI.name = chosenPOI
-            singlePOI.hidesBottomBarWhenPushed = true
+            let singlePOI = segue.destination as? SinglePOIViewController
+            singlePOI?.name = chosenPOI
+            
+        }
+        
+        if segue.identifier == "cityPopover" {
+            
+            let popoverVC: CityPopOverViewController = segue.destination as! CityPopOverViewController
+            popoverVC.baseView = "POIView"
+            popoverVC.delegate = self
+            
+            popoverVC.modalPresentationStyle = UIModalPresentationStyle.popover
+            popoverVC.popoverPresentationController!.delegate = self
+            popoverVC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 150)
+            
+            
             
         }
     }
+    
 
 }
 

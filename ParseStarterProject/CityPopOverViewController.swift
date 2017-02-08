@@ -78,8 +78,8 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if baseView == "AreaView" {
-            return cities.count
+        if baseView == "POIView" {
+            return areas.count
         }
         if baseView == "RatingsView" {
             return areas.count
@@ -92,8 +92,8 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
         
-        if baseView == "AreaView" {
-            cell.textLabel?.text  = cities[indexPath.row]
+        if baseView == "POIView" {
+            cell.textLabel?.text  = areas[indexPath.row]
         }
         if baseView == "RatingsView" {
             cell.textLabel?.text = areas[indexPath.row]
@@ -106,7 +106,7 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
 
-        chosenCity = cities[indexPath.row]
+        chosenCity = areas[indexPath.row]
 
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
         
@@ -116,13 +116,19 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
                 if shortcutData.count > 0 {
                     // change previously saved location
                     for log in shortcutData {
-                         if baseView == "AreaView" {
-                            if (log.value(forKey: "city") as? String) != nil {
-                                let cityTemp = self.cities[indexPath.row]
-                                log.setValue(cityTemp, forKey: "city")
+                         if baseView == "POIView" {
+                            if (log.value(forKey: "area") as? String) != nil {
+                                let areaTemp = self.areas[indexPath.row]
+                                log.setValue(areaTemp, forKey: "area")
                                 do {
                                     try moc.save()
                                     print("updated location")
+                                    
+                                    if delegate != nil {
+                                        delegate?.userSelectedData(data: areaTemp)
+                                        self.dismiss(animated: true, completion: nil)
+                                    }
+                                    
                                 } catch { print("catch - save error") }
                             }
                         }

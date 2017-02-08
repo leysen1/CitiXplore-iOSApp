@@ -113,13 +113,9 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
     }
 
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Listen"
-
         print("hello")
         print(name)
         playButtonImage.isEnabled = false
@@ -131,9 +127,9 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         checkOffLabel.layer.cornerRadius = 5
         checkOffLabel.layer.masksToBounds = true
         navigationController?.setToolbarHidden(true, animated: true)
-        poiImage.layer.cornerRadius = 20
+        poiImage.layer.cornerRadius = 10
         poiImage.layer.masksToBounds = true
-        mapView.layer.cornerRadius = 20
+        mapView.layer.cornerRadius = 10
         mapView.layer.masksToBounds = true
         descriptionLabel.layer.cornerRadius = 10
         descriptionLabel.layer.masksToBounds = true
@@ -529,6 +525,14 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
         
     }
+    
+    @IBAction func back(_ sender: Any) {
+        
+        self.dismiss(animated: true) {
+            print("dismissed")
+        }
+    }
+
     
 
     override func viewWillDisappear(_ animated: Bool) {
