@@ -31,6 +31,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var arrowImage: UIImageView!
+    @IBOutlet weak var navBarBox: UINavigationBar!
     
     
     var activityIndicator = UIActivityIndicatorView()
@@ -280,7 +281,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Home"
+        UIApplication.shared.statusBarStyle = .lightContent
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -321,11 +322,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
 
         
     }
-    
-    
+
     override func viewDidAppear(_ animated: Bool) {
         
-        self.navigationController?.navigationBar.topItem?.title = "Map"
+        navigationController?.navigationBar.topItem?.title = "Map"
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
+        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         
         mapView.delegate = self
         mapView.showsUserLocation = true
@@ -350,9 +353,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 let ratedPOILocation = self.annotationLocation[indexNo]
                 let region = MKCoordinateRegion(center: ratedPOILocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                 self.mapView.setRegion(region, animated: false)
+                let searchResults = mapView.annotations.filter { annotation in
+                    return (annotation.title??.localizedCaseInsensitiveContains(ratedPOI) ?? false)
+                }
+                self.mapView.selectAnnotation((searchResults[0] as? MKAnnotation)!, animated: true)
             }
             
         }
+        
+       
+        
+        
         
         
     }

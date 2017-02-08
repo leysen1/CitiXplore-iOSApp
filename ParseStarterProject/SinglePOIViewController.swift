@@ -11,6 +11,11 @@ import Parse
 import AVFoundation
 import MapKit
 
+protocol MapClickedDelegate {
+    func mapClicked(data: Bool)
+}
+
+
 class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     
     var name = String()
@@ -21,7 +26,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var imageData = [PFFile]()
     var poiDescription = String()
     var rating = Int()
-    
+    var delegate: MapClickedDelegate? = nil
 
     var audio = AVAudioPlayer()
     var trackPlaying = AVAudioPlayer()
@@ -30,6 +35,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var time = Double()
     var poiCoord = CLLocationCoordinate2D()
     
+    @IBOutlet weak var navBarBox: UINavigationBar!
     @IBOutlet weak var checkOffLabel: UIButton!
     @IBAction func checkOffButton(_ sender: Any) {
         
@@ -42,14 +48,18 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         }
         
     }
-    
+    @IBOutlet weak var nameBackground: UILabel!
     @IBOutlet weak var starImage: UIImageView!
     @IBOutlet weak var mapView: MKMapView!
     @IBAction func segueToMap(_ sender: Any) {
         
         print("map pressed")
         ratedPOI = name
-        self.navigationController?.popToRootViewController(animated: true)
+        if delegate != nil {
+            delegate?.mapClicked(data: true)
+            self.dismiss(animated: true, completion: nil)
+        }
+
     }
     @IBOutlet weak var descriptionLabel: UITextView!
     
@@ -164,16 +174,16 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             switch self.rating {
             case 1:
                 self.starImage.image = UIImage(named: "star.png")
-                self.starImage.frame = CGRect(x: 15, y: 60, width: 20, height: 20)
+                self.starImage.frame = CGRect(x: 15, y: 65, width: 20, height: 20)
             case 2:
                 self.starImage.image = UIImage(named: "2star.png")
-                self.starImage.frame = CGRect(x: 15, y: 60, width: 40, height: 20)
+                self.starImage.frame = CGRect(x: 15, y: 65, width: 40, height: 20)
             case 3:
                 self.starImage.image = UIImage(named: "3star.png")
-                self.starImage.frame = CGRect(x: 15, y: 60, width: 60, height: 20)
+                self.starImage.frame = CGRect(x: 15, y: 65, width: 60, height: 20)
             case 4:
                 self.starImage.image = UIImage(named: "4star.png")
-                self.starImage.frame = CGRect(x: 15, y: 60, width: 80, height: 20)
+                self.starImage.frame = CGRect(x: 15, y: 65, width: 80, height: 20)
             default:
                 break
             }
@@ -195,6 +205,21 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         }
 
 
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        nameBackground.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        checkOffLabel.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
+        navBarBox.shadowImage = UIImage()
+        navBarBox.setBackgroundImage(UIImage(), for: .default)
+        
+        //self.navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
+        //self.navigationController?.navigationBar.shadowImage = UIImage()
+        
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -537,6 +562,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
 
     override func viewWillDisappear(_ animated: Bool) {
         
+
         if playMode {
             self.trackPlaying.stop()
         }

@@ -38,7 +38,9 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     var starArray = [UIImageView]()
     
     var completedArray = [String]()
-    
+
+    @IBOutlet weak var navBarBox: UINavigationBar!
+    @IBOutlet weak var areaLabel: UILabel!
     @IBOutlet weak var RatingsTitle: UINavigationItem!
     @IBOutlet weak var tableView: UITableView!
     
@@ -63,10 +65,17 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         }
         
     }
+
     
     override func viewDidAppear(_ animated: Bool) {
         
-        RatingsTitle.title = chosenArea
+        RatingsTitle.title = "Ratings"
+        areaLabel.text = chosenArea
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
+        areaLabel.backgroundColor =  UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+
     }
     
     func fetchSavedRatingsArea() {
@@ -165,7 +174,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func userSelectedData(data: String) {
         chosenArea = data
-        RatingsTitle.title = chosenArea
+        areaLabel.text = chosenArea
         print(chosenArea)
         fetchData { (Bool) in
             self.orderData()
@@ -193,7 +202,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 1.0)
+        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
 
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 4, width: UIScreen.main.bounds.width, height: 20))
         titleLabel.text = self.rankings[section]
@@ -220,7 +229,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         ratedPOI = data[indexPath.section][indexPath.row]
-        self.navigationController?.popToRootViewController(animated: true)
+        tabBarController?.selectedIndex = 0
         
     }
     

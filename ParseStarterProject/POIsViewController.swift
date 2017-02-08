@@ -13,7 +13,7 @@ import Parse
 
 // create alert message if data doesn't load
 
-class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, UIPopoverPresentationControllerDelegate, DataSentDelegate {
+class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, UIPopoverPresentationControllerDelegate, DataSentDelegate, MapClickedDelegate {
     
     
     var nameArray = [String]()
@@ -42,6 +42,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     
+    
     @IBOutlet weak var areaLabel: UILabel!
     @IBOutlet weak var ExploreTitle: UINavigationItem!
     @IBOutlet var tableView: UITableView!
@@ -63,10 +64,15 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
 
+    @IBOutlet weak var navBarBox: UINavigationBar!
     override func viewDidAppear(_ animated: Bool) {
         
-        ExploreTitle.title = "Explore An Area"
+        ExploreTitle.title = "London"
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
         areaLabel.text = chosenAreaPOI
+        areaLabel.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
     }
     
 
@@ -359,6 +365,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
     }
+    
+    func mapClicked(data: Bool) {
+        if data == true {
+            tabBarController?.selectedIndex = 0
+        }
+        
+    }
 
     
     
@@ -368,6 +381,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         if (segue.identifier == "toSinglePOI") {
             let singlePOI = segue.destination as? SinglePOIViewController
             singlePOI?.name = chosenPOI
+            singlePOI?.delegate = self
             
         }
         
