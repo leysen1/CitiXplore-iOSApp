@@ -148,8 +148,6 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                         } catch {
                             fatalError("Failure to save context: \(error)")
                         }
-
-                        
                     }
                 })
                 }
@@ -161,7 +159,6 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
             UIApplication.shared.endIgnoringInteractionEvents()
         }
     }
-    
     
     @IBAction func changeSignupOrLogin(sender: AnyObject) {
         if loginMode == true {
@@ -418,8 +415,6 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
         print("Logged out")
     }
     
-    
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "toMapView") {
             if loginMode == false {
@@ -429,7 +424,6 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
     }
     
     func tap(gesture: UITapGestureRecognizer) {
-        
         UIView.animate(withDuration: 0, delay: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
             self.view.layoutIfNeeded()
             }, completion: { (completed) in

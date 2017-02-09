@@ -20,27 +20,20 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     var completedarea2POIs = Double()
     var percentage = Int()
     var email = String()
+    
     @IBOutlet var emailLabel: UILabel!
     @IBOutlet var LondonCompletedLabel: UILabel!
     @IBOutlet weak var areaCompletedLabel1: UILabel!
     @IBOutlet weak var areaCompletedLabel2: UILabel!
     @IBOutlet var commentEntry: UITextView!
-    
     @IBOutlet weak var recent1: UILabel!
     @IBOutlet weak var recent2: UILabel!
     @IBOutlet weak var recent3: UILabel!
     @IBOutlet weak var recent4: UILabel!
-    
     @IBOutlet weak var submitCommentLabel: UIButton!
     
-    func createAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
-        }))
-        self.present(alert, animated: true, completion: nil)
-    }
+    // Buttons 
 
-    
     @IBAction func submitComment(_ sender: AnyObject) {
         
         if commentEntry.text != "" {
@@ -63,10 +56,30 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         }
     }
     
+    @IBAction func logout(_ sender: AnyObject) {
+        
+        Parse.cancelPreviousPerformRequests(withTarget: self)
+        PFUser.logOut()
+        print("logged out")
+        dismiss(animated: true, completion: nil)
+        
+        let loginManager = FBSDKLoginManager()
+        loginManager.logOut()
+
+    }
+    
+    // Loading 
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Aesthetics
+        self.navigationController?.navigationBar.topItem?.title = "Profile"
+        commentEntry.layer.cornerRadius = 5
+        commentEntry.layer.masksToBounds = true
+        submitCommentLabel.layer.cornerRadius = 5
+        submitCommentLabel.layer.masksToBounds = true
+        
         if let tempEmail = PFUser.current()?.username! {
             self.emailLabel.text = tempEmail
         }
@@ -75,37 +88,21 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         view.addGestureRecognizer(dismissKeyboard)
         
         recentVisits()
-        
         fetchPOIInfo { (Bool) in
-            
-            if self.totalLondonPOIs != 0 {
-                var percentageTemp = self.completedLondonPOIs / self.totalLondonPOIs
-                percentageTemp = round(percentageTemp * 100)
-                self.percentage = Int(percentageTemp)
-            } else {
-                self.percentage = 0
-            }
-            
-            self.LondonCompletedLabel.text = "You have completed \(self.percentage)% of our London POIs."
+            self.populateLabels()
         }
-        
-        commentEntry.layer.cornerRadius = 5
-        commentEntry.layer.masksToBounds = true
-        submitCommentLabel.layer.cornerRadius = 5
-        submitCommentLabel.layer.masksToBounds = true
-        
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
         
-        self.navigationController?.navigationBar.topItem?.title = "Profile"
-        
     }
+    
+    // Functions
     
     func fetchPOIInfo(completion: @escaping (_ result: Bool)->()) {
         
         var i = 0
-        
         // total number
         let query = PFQuery(className: "POI")
         query.whereKey("city", equalTo: "London")
@@ -146,6 +143,17 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         }
     }
     
+    func populateLabels() {
+        if self.totalLondonPOIs != 0 {
+            var percentageTemp = self.completedLondonPOIs / self.totalLondonPOIs
+            percentageTemp = round(percentageTemp * 100)
+            self.percentage = Int(percentageTemp)
+        } else {
+            self.percentage = 0
+        }
+        self.LondonCompletedLabel.text = "You have completed \(self.percentage)% of our London POIs."
+    }
+    
     func recentVisits() {
         let query = PFQuery(className: "_User")
         query.whereKey("username", equalTo: email)
@@ -175,27 +183,16 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
             }
         }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
+    func createAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
+
     func keyboardWillShow(notification: NSNotification) {
         print("keyboard shown")
-    }
-    
-    
-    @IBAction func logout(_ sender: AnyObject) {
-        
-        Parse.cancelPreviousPerformRequests(withTarget: self)
-        PFUser.logOut()
-        print("logged out")
-        dismiss(animated: true, completion: nil)
-        
-        let loginManager = FBSDKLoginManager()
-        loginManager.logOut()
-    
     }
     
     func tap(gesture: UITapGestureRecognizer) {
@@ -207,8 +204,9 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         })
     }
     
-
-    
-
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
 
 }

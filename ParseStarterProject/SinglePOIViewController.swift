@@ -34,9 +34,37 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var timer = Timer()
     var time = Double()
     var poiCoord = CLLocationCoordinate2D()
+    var activityIndicator = UIActivityIndicatorView()
     
     @IBOutlet weak var navBarBox: UINavigationBar!
     @IBOutlet weak var checkOffLabel: UIButton!
+    @IBOutlet weak var nameBackground: UILabel!
+    @IBOutlet weak var starImage: UIImageView!
+    @IBOutlet weak var descriptionLabel: UITextView!
+    @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var poiName: UILabel!
+    @IBOutlet weak var poiDistance: UILabel!
+    @IBOutlet weak var poiImage: UIImageView!
+    @IBOutlet weak var poiAddress: UILabel!
+    @IBOutlet weak var completedImage: UIImageView!
+    @IBOutlet weak var ratingLabel: UILabel!
+    
+    @IBOutlet var scrubber: UISlider!
+    @IBOutlet var audioTimeLeft: UILabel!
+    @IBOutlet var playButtonImage: UIButton!
+    
+    // Buttons 
+    
+    @IBAction func segueToMap(_ sender: Any) {
+        print("map pressed")
+        ratedPOI = name
+        if delegate != nil {
+            delegate?.mapClicked(data: true)
+            self.dismiss(animated: true, completion: nil)
+        }
+
+    }
+    
     @IBAction func checkOffButton(_ sender: Any) {
         
         if checkOffLabel.title(for: .normal) == "Seen it already?" {
@@ -46,37 +74,12 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             print("not seen")
             createAlert(title: "Changed you mind?", message: "Are you sure you want to uncheck this POI?")
         }
-        
     }
-    @IBOutlet weak var nameBackground: UILabel!
-    @IBOutlet weak var starImage: UIImageView!
-    @IBOutlet weak var mapView: MKMapView!
-    @IBAction func segueToMap(_ sender: Any) {
-        
-        print("map pressed")
-        ratedPOI = name
-        if delegate != nil {
-            delegate?.mapClicked(data: true)
-            self.dismiss(animated: true, completion: nil)
-        }
-
-    }
-    @IBOutlet weak var descriptionLabel: UITextView!
     
-    var activityIndicator = UIActivityIndicatorView()
-    
-    @IBOutlet weak var poiName: UILabel!
-    @IBOutlet weak var poiDistance: UILabel!
-    @IBOutlet weak var poiImage: UIImageView!
-    @IBOutlet weak var poiAddress: UILabel!
-    @IBOutlet weak var completedImage: UIImageView!
-    @IBOutlet weak var ratingLabel: UILabel!
-    @IBOutlet var scrubber: UISlider!
     @IBAction func scrubberChanged(_ sender: AnyObject) {
         trackPlaying.currentTime = TimeInterval(scrubber.value)
     }
-    @IBOutlet var audioTimeLeft: UILabel!
-    @IBOutlet var playButtonImage: UIButton!
+
     @IBAction func playPauseButton(_ sender: AnyObject) {
         
         if playMode == true {
@@ -92,48 +95,23 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
             playMode = true
         }
-        
     }
     
-    func updateSlider() {
-        scrubber.value = Float(trackPlaying.currentTime)
-        if scrubber.value == 0 {
-            // pausing audio
-            playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
-            trackPlaying.pause()
-            timer.invalidate()
-            playMode = false
-        }
-    }
-    
-    func decreaseTimer() {
-        
-        if time > 0 {
-            time -= 1
-            let minutes = Int(time/60)
-            self.audioTimeLeft.text = "\(String(minutes)):\(String(Int((time) - Double(minutes*60))))"
-            
-        } else {
-            timer.invalidate()
-        }
-        func timerOn() {
-            updateSlider()
-            decreaseTimer()
-        }
-        
+    @IBAction func back(_ sender: Any) {
+        self.dismiss(animated: true) {
+            print("dismissed")  }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("hello")
-        print(name)
-        playButtonImage.isEnabled = false
-        scrubber.isEnabled = false
-        
         mapView.delegate = self
         mapView.showsUserLocation = true
         
+        // Aesthetics
+        
+        playButtonImage.isEnabled = false
+        scrubber.isEnabled = false
         checkOffLabel.layer.cornerRadius = 5
         checkOffLabel.layer.masksToBounds = true
         navigationController?.setToolbarHidden(true, animated: true)
@@ -144,51 +122,10 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         descriptionLabel.layer.cornerRadius = 10
         descriptionLabel.layer.masksToBounds = true
         
+        // Functions
+        
         fetchData { (Bool) in
-            print("data fetched")
-            print("completed \(self.completed)")
-            self.poiName.text = self.name
-            self.poiAddress.text = self.address
-            self.poiDistance.text = "\(self.distance) km"
-            self.descriptionLabel.text = self.poiDescription
-            
-            if self.imageData != [] {
-                self.imageData[0].getDataInBackground { (data, error) in
-                    if let tempImageData = data {
-                        if let downloadedImage = UIImage(data: tempImageData) {
-                            self.poiImage.image = downloadedImage
-                        }
-                    }
-                }
-            }
-            
-            if self.completed == "yes" {
-                self.completedImage.image = UIImage(named: "tick.png")
-                self.checkOffLabel.setTitle("Not yet seen?", for: .normal)
-            } else {
-                self.completedImage.image = UIImage()
-                self.checkOffLabel.setTitle("Seen it already?", for: .normal)
-            }
-            
-            // stars
-            switch self.rating {
-            case 1:
-                self.starImage.image = UIImage(named: "star.png")
-                self.starImage.frame = CGRect(x: 15, y: 65, width: 20, height: 20)
-            case 2:
-                self.starImage.image = UIImage(named: "2star.png")
-                self.starImage.frame = CGRect(x: 15, y: 65, width: 40, height: 20)
-            case 3:
-                self.starImage.image = UIImage(named: "3star.png")
-                self.starImage.frame = CGRect(x: 15, y: 65, width: 60, height: 20)
-            case 4:
-                self.starImage.image = UIImage(named: "4star.png")
-                self.starImage.frame = CGRect(x: 15, y: 65, width: 80, height: 20)
-            default:
-                break
-            }
-            
-            
+            self.populateLabels()
         }
         
         fetchAudio { (Bool) in
@@ -209,6 +146,8 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     
     override func viewDidAppear(_ animated: Bool) {
         
+        // Aesthetics 
+        
         self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         nameBackground.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         checkOffLabel.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
@@ -217,8 +156,45 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         navBarBox.shadowImage = UIImage()
         navBarBox.setBackgroundImage(UIImage(), for: .default)
         
-        //self.navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
-        //self.navigationController?.navigationBar.shadowImage = UIImage()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        if playMode {
+            self.trackPlaying.stop()  }
+        name = ""
+        coordinates = CLLocationCoordinate2D()
+        distance = ""
+        address = ""
+        completed = ""
+        imageData.removeAll()
+    }
+    
+    // Functions
+    
+    func updateSlider() {
+        scrubber.value = Float(trackPlaying.currentTime)
+        if scrubber.value == 0 {
+            // pausing audio
+            playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
+            trackPlaying.pause()
+            timer.invalidate()
+            playMode = false
+        }
+    }
+    
+    func decreaseTimer() {
+        
+        if time > 0 {
+            time -= 1
+            let minutes = Int(time/60)
+            self.audioTimeLeft.text = "\(String(minutes)):\(String(Int((time) - Double(minutes*60))))"
+        } else {
+            timer.invalidate()
+        }
+        func timerOn() {
+            updateSlider()
+            decreaseTimer()
+        }
         
     }
     
@@ -312,28 +288,64 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                                 break
                             }
                            
-                        } else {
-                            
                         }
-                        
                         if let tempDescription = object["description"] as? String {
                             self.poiDescription = tempDescription
-                        } else {
-                            self.poiDescription = "Description Coming Soon."
-                        }
-
-                        
+                        } else { self.poiDescription = "Description Coming Soon."   }
+   
                         i += 1
-                        if i == objects.count {
-                            completion(true)
-                        }
+                        if i == objects.count { completion(true)    }
                     }
-
-                } else {
-                    completion(true)
+                } else { completion(true)   }
+            }
+        }
+    }
+    
+    func populateLabels() {
+        
+        print("data fetched")
+        print("completed \(self.completed)")
+        self.poiName.text = self.name
+        self.poiAddress.text = self.address
+        self.poiDistance.text = "\(self.distance) km"
+        self.descriptionLabel.text = self.poiDescription
+        
+        if self.imageData != [] {
+            self.imageData[0].getDataInBackground { (data, error) in
+                if let tempImageData = data {
+                    if let downloadedImage = UIImage(data: tempImageData) {
+                        self.poiImage.image = downloadedImage
+                    }
                 }
             }
         }
+        
+        if self.completed == "yes" {
+            self.completedImage.image = UIImage(named: "tick.png")
+            self.checkOffLabel.setTitle("Not yet seen?", for: .normal)
+        } else {
+            self.completedImage.image = UIImage()
+            self.checkOffLabel.setTitle("Seen it already?", for: .normal)
+        }
+        
+        // stars
+        switch self.rating {
+        case 1:
+            self.starImage.image = UIImage(named: "star.png")
+            self.starImage.frame = CGRect(x: 15, y: 65, width: 20, height: 20)
+        case 2:
+            self.starImage.image = UIImage(named: "2star.png")
+            self.starImage.frame = CGRect(x: 15, y: 65, width: 40, height: 20)
+        case 3:
+            self.starImage.image = UIImage(named: "3star.png")
+            self.starImage.frame = CGRect(x: 15, y: 65, width: 60, height: 20)
+        case 4:
+            self.starImage.image = UIImage(named: "4star.png")
+            self.starImage.frame = CGRect(x: 15, y: 65, width: 80, height: 20)
+        default:
+            break
+        }
+        
     }
     
     func fetchAudio(completion: @escaping (_ result: Bool)->()) {
@@ -437,7 +449,6 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
 
     
     func addAnnotationToMap() {
-        
         let annotate = Annotate(title: name, locationName: address, coordinate: poiCoord, imagePOI: UIImage(named: "Cross")!)
         mapView.addAnnotation(annotate)
         mapView.reloadInputViews()
@@ -503,11 +514,8 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                 })
             }
         }))
-        
-        
         self.present(alert, animated: true, completion: nil)
     }
-    
     
     func updateRecentPOIs() {
         if self.checkOffLabel.title(for: .normal) == "Seen it already?" {
@@ -544,37 +552,6 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                     }
                 }
             }
-            
-        }
-        
-        
-        
-    }
-    
-    @IBAction func back(_ sender: Any) {
-        
-        self.dismiss(animated: true) {
-            print("dismissed")
         }
     }
-
-    
-
-    override func viewWillDisappear(_ animated: Bool) {
-        
-
-        if playMode {
-            self.trackPlaying.stop()
-        }
-        
-        name = ""
-        coordinates = CLLocationCoordinate2D()
-        distance = ""
-        address = ""
-        completed = ""
-        imageData.removeAll()
-        
-    }
-    
-
 }

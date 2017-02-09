@@ -20,8 +20,6 @@
 		51C48CF71E19338400A8B1F2 /* redarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 51C48CF61E19338400A8B1F2 /* redarrow.png */; };
 		51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */; };
 		51E9BD941E3FCBD80051A1D3 /* CityPopOverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E9BD931E3FCBD80051A1D3 /* CityPopOverViewController.swift */; };
-		51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */; };
-		51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA18571DC3AD30007591CC /* AreaTableViewController.swift */; };
 		51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EA185A1DC3AD30007591CC /* MapViewController.swift */; };
 		51EA18671DC3AD30007591CC /* pause.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 51EA185B1DC3AD30007591CC /* pause.jpg */; };
 		51EA18681DC3AD30007591CC /* play.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 51EA185C1DC3AD30007591CC /* play.jpg */; };
@@ -64,8 +62,6 @@
 		51C48CF61E19338400A8B1F2 /* redarrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redarrow.png; sourceTree = "<group>"; };
 		51CDCCB41DEC80180044A3B7 /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		51E9BD931E3FCBD80051A1D3 /* CityPopOverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CityPopOverViewController.swift; sourceTree = "<group>"; };
-		51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewCell.swift; sourceTree = "<group>"; };
-		51EA18571DC3AD30007591CC /* AreaTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaTableViewController.swift; sourceTree = "<group>"; };
 		51EA185A1DC3AD30007591CC /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		51EA185B1DC3AD30007591CC /* pause.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pause.jpg; sourceTree = "<group>"; };
 		51EA185C1DC3AD30007591CC /* play.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = play.jpg; sourceTree = "<group>"; };
@@ -169,8 +165,6 @@
 				51FC64A91E47B64D00B4145A /* 2star.png */,
 				51FC64AA1E47B64D00B4145A /* 3star.png */,
 				51FC64AB1E47B64D00B4145A /* 4star.png */,
-				51EA18571DC3AD30007591CC /* AreaTableViewController.swift */,
-				51EA18561DC3AD30007591CC /* AreaTableViewCell.swift */,
 				51F596451DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld */,
 				510CF6851DFEA6D70058B536 /* DataController.swift */,
 				51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */,
@@ -297,7 +291,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				51EA18691DC3AD30007591CC /* POIsTableViewCell.swift in Sources */,
-				51EA18631DC3AD30007591CC /* AreaTableViewController.swift in Sources */,
 				51FC641A1E4138A500B4145A /* Shortcuts+CoreDataClass.swift in Sources */,
 				51FC64131E3FF7D800B4145A /* RatingsViewController.swift in Sources */,
 				51C48CF41E17F88200A8B1F2 /* POI+CoreDataClass.swift in Sources */,
@@ -307,7 +300,6 @@
 				51E9BD941E3FCBD80051A1D3 /* CityPopOverViewController.swift in Sources */,
 				510CF6861DFEA6D70058B536 /* DataController.swift in Sources */,
 				51F596471DFB3FC900C26F23 /* myCoreDataModel.xcdatamodeld in Sources */,
-				51EA18621DC3AD30007591CC /* AreaTableViewCell.swift in Sources */,
 				51C48CF51E17F88200A8B1F2 /* POI+CoreDataProperties.swift in Sources */,
 				51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */,
 				51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */,

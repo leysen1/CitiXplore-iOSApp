@@ -27,14 +27,76 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var pinCompletedArray = [String]()
     var chosenPOI = String()
     var recentPOI = String()
-
+    var timer = Timer()
+    var activityIndicator = UIActivityIndicatorView()
     
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var arrowImage: UIImageView!
     @IBOutlet weak var navBarBox: UINavigationBar!
     
     
-    var activityIndicator = UIActivityIndicatorView()
+    // load view
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // aesthetics
+        navigationController?.navigationBar.topItem?.title = "Map"
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
+        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 2)]
+        navigationController?.navigationBar.tintColor = UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 2)
+        self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        UIApplication.shared.statusBarStyle = .lightContent
+        
+        // location
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+        
+        
+        if let emailTemp = (PFUser.current()?.username!) {
+            email = emailTemp
+            print("email \(email)")
+        }
+        
+        saveUserLocation { (Bool) in
+            self.findPOIs(completion: { (Bool) in
+                let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+                self.mapView.setRegion(region, animated: false)
+                
+            })
+        }
+
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        // map initialisation
+        mapView.delegate = self
+        mapView.showsUserLocation = true
+        if #available(iOS 9.0, *) {
+            mapView.showsCompass = true
+            mapView.showsScale = true
+        } else {
+            // Fallback on earlier versions
+        }
+        
+        let trackingButton = MKUserTrackingBarButtonItem(mapView: mapView)
+        trackingButton.customView?.tintColor = UIColor.white
+        navBarBox.topItem?.leftBarButtonItem = trackingButton
+        
+        // functions
+        updateTimer()
+        findPOIs { (Bool) in
+            self.addAnnotationToMap()
+        }
+        animateArrow()
+        centreMapToPOI()
+        
+    }
+    
+    // Functions
     
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
@@ -49,11 +111,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }))
         self.present(alert, animated: true, completion: nil)
     }
-    
-    var timer = Timer()
-    
-    
-    // functions
     
     func updateTimer() {
         // updates location every 10 seconds
@@ -81,6 +138,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         
     }
     
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        print("authorisation changed")
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.5) {
+            let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
+            self.mapView.setRegion(region, animated: false)
+        }
+        
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let locationCoord = manager.location?.coordinate {
             
@@ -98,25 +164,27 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     func saveUserLocation(completion: @escaping (_ result: Bool)->()) {
         
         // save user location
-        if let tempUserLocation = PFGeoPoint(latitude: userLocation.latitude, longitude: userLocation.longitude) as? PFGeoPoint {
-            
-            PFUser.current()?["location"] = tempUserLocation
-            PFUser.current()?.saveInBackground(block: { (success, error) in
-                if error != nil {
-                    print("error")
-                } else {
-                    print("saved user location")
-                    if let items = (self.navigationController?.toolbarItems) {
-                        for item: UIBarButtonItem in items {
-                            item.isEnabled = true
+        if userLocation.latitude != 0 {
+            if let tempUserLocation = PFGeoPoint(latitude: userLocation.latitude, longitude: userLocation.longitude) as? PFGeoPoint {
+                
+                PFUser.current()?["location"] = tempUserLocation
+                PFUser.current()?.saveInBackground(block: { (success, error) in
+                    if error != nil {
+                        print("error")
+                    } else {
+                        print("saved user location")
+                        if let items = (self.navigationController?.toolbarItems) {
+                            for item: UIBarButtonItem in items {
+                                item.isEnabled = true
+                            }
                         }
+                        completion(true)
                     }
-                    completion(true)
-                }
-            })
-            
-        } else {
-            completion(true)
+                })
+                
+            } else {
+                completion(true)
+            }
         }
         
     }
@@ -138,56 +206,45 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     var i = 0
                     for poiLocation in poiLocations {
                         completedArray?.removeAll()
-                        
+                        // TITLE
                         if let tempTitle = poiLocation["name"] as? String {
                             self.annotationTitle.append(tempTitle)
                         } else {
                             self.annotationTitle.append(" ")
                         }
-                        
-                        
-                        
-                            if let tempAddress = poiLocation["shortAddress"] as? String {
-                                 if let tempRating = poiLocation["ratings"] as? Int {
-                                    switch tempRating {
-                                    case 1:
-                                        self.annotationAddress.append(String("★ \(tempAddress)"))
-                                    case 2:
-                                        self.annotationAddress.append(String("★★ \(tempAddress)"))
-                                    case 3:
-                                        self.annotationAddress.append(String("★★★ \(tempAddress)"))
-                                    case 4:
-                                        self.annotationAddress.append(String("★★★★ \(tempAddress)"))
-                                    default:
-                                        self.annotationAddress.append(" ")
-                                        break
-                                    }
+                        // ADDRESS
+                        if let tempAddress = poiLocation["shortAddress"] as? String {
+                            if let tempRating = poiLocation["ratings"] as? Int {
+                                switch tempRating {
+                                case 1:
+                                    self.annotationAddress.append(String("★ \(tempAddress)"))
+                                case 2:
+                                    self.annotationAddress.append(String("★★ \(tempAddress)"))
+                                case 3:
+                                    self.annotationAddress.append(String("★★★ \(tempAddress)"))
+                                case 4:
+                                    self.annotationAddress.append(String("★★★★ \(tempAddress)"))
+                                default:
+                                    self.annotationAddress.append(" ")
+                                    break
                                 }
-                            } else {
-                                self.annotationAddress.append(" ")
                             }
-                        
-                        /*
-                        
-                        if let tempAddress = poiLocation["address"] as? String {
-                            self.annotationAddress.append(tempAddress)
                         } else {
                             self.annotationAddress.append(" ")
                         }
-                        */
-                        
+                        // LOCATION
                         if let tempLocation = poiLocation["coordinates"] as? PFGeoPoint {
                             self.annotationLocation.append(CLLocationCoordinate2D(latitude: tempLocation.latitude, longitude: tempLocation.longitude))
                         } else {
                             self.annotationLocation.append(CLLocationCoordinate2D(latitude: 0, longitude: 0))
                         }
+                        // COMPLETED
                         completedArray = poiLocation["completed"] as? [String]
                         if completedArray != nil {
                             if (completedArray?.contains(self.email))! {
                                 if let tempTitle = poiLocation["name"] as? String {
                                     self.pinCompletedArray.append(tempTitle)
                                 }
-                                
                             }
                         }
                         
@@ -198,7 +255,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         }
                         
                     }
-                    
                     self.activityIndicator.stopAnimating()
                     UIApplication.shared.endIgnoringInteractionEvents()
                 } else {
@@ -277,76 +333,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
     }
     
-    // load view
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        UIApplication.shared.statusBarStyle = .lightContent
-        
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
-        
-        if let emailTemp = (PFUser.current()?.username!) {
-            email = emailTemp
-            print("email \(email)")
-        }
-        
-        saveUserLocation { (Bool) in
-            self.findPOIs(completion: { (Bool) in
-                let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
-                self.mapView.setRegion(region, animated: false)
-                
-            })
-        }
-        
-        
-        if let items = (self.navigationController?.toolbarItems) {
-            for item: UIBarButtonItem in items {
-                item.isEnabled = false
-            }
-        }
-        
-        let trackingButton = MKUserTrackingBarButtonItem(mapView: mapView)
-        
-        self.navigationItem.rightBarButtonItem = trackingButton
-        
-        if #available(iOS 9.0, *) {
-            mapView.showsCompass = true
-            mapView.showsScale = true
-        } else {
-            // Fallback on earlier versions
-        }
-        
-
-        
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        
-        navigationController?.navigationBar.topItem?.title = "Map"
-        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
-        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        
-        mapView.delegate = self
-        mapView.showsUserLocation = true
-        
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 2)]
-        self.navigationController?.navigationBar.tintColor = UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 2)
-        
-        updateTimer()
-        
-        findPOIs { (Bool) in
-            self.addAnnotationToMap()
-        }
-        
-        
-        // arrow if signup
-        animateArrow()
-        
-        
+      func centreMapToPOI() {
         if ratedPOI != "" {
             print("rated POI \(ratedPOI)")
             if let indexNo = self.annotationTitle.index(of: ratedPOI) {
@@ -360,23 +347,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             }
             
         }
-        
-       
-        
-        
-        
-        
     }
     
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        print("authorisation changed")
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.5) {
-            let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
-            self.mapView.setRegion(region, animated: false)
-        }
-        
-    }
     
     func animateArrow() {
         if helpClicked == false {
@@ -422,8 +394,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         return nil
     }
  
-    
-    
+
+    // FIX THIS
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         print("tapped")
         
@@ -445,7 +417,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             animateArrow()
             
         }
-        
         let popupAbout = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "aboutPopupID") as! AboutViewController
         self.addChildViewController(popupAbout)
         popupAbout.view.frame = self.view.frame
@@ -459,28 +430,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         locationManager.stopUpdatingLocation()
         timer.invalidate()
         ratedPOI = ""
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "toSinglePOI") {
-            let singlePOI = segue.destination as! SinglePOIViewController
-            singlePOI.name = chosenPOI
-            
-        }
-        if (segue.identifier == "areaSegue") {
-            let AreaVC = segue.destination as! AreaTableViewController
-            AreaVC.userLocation = self.userLocation
-            AreaVC.email = self.email
-        }
-        
-        if (segue.identifier == "toProfile") {
-            let profVC = segue.destination as! ProfileViewController
-            profVC.email = self.email
-        }
-        
-        
-        
-        
     }
     
     

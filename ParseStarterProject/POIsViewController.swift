@@ -15,7 +15,6 @@ import Parse
 
 class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, UIPopoverPresentationControllerDelegate, DataSentDelegate, MapClickedDelegate {
     
-    
     var nameArray = [String]()
     var distanceArray = [String]()
     var coordinatesArray = [CLLocationCoordinate2D]()
@@ -31,20 +30,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var scrollView = UIScrollView()
     var chosenPOI = String()
     
-    
-    func filterContentForSearchText(searchText: String, scope: String = "All") {
-        filteredNameArray = nameArray.filter({ (skill) -> Bool in
-            return skill.lowercased().contains(searchText.lowercased())
-        })
-
-        
-        tableView.reloadData()
-    }
-    
-    
-    
     @IBOutlet weak var areaLabel: UILabel!
     @IBOutlet weak var ExploreTitle: UINavigationItem!
+    @IBOutlet weak var navBarBox: UINavigationBar!
     @IBOutlet var tableView: UITableView!
    
     override func viewDidLoad() {
@@ -64,9 +52,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
 
-    @IBOutlet weak var navBarBox: UINavigationBar!
     override func viewDidAppear(_ animated: Bool) {
         
+        // Aesthetics
         ExploreTitle.title = "London"
         navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
         areaLabel.text = chosenAreaPOI
@@ -75,6 +63,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
     }
     
+    // Functions
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.searchController.searchBar.endEditing(true)
@@ -101,7 +90,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             
         }
         print("loading POISVC")
-        print(email)
         print(userLocation)
         print(chosenAreaPOI)
     }
@@ -233,10 +221,14 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func filterContentForSearchText(searchText: String, scope: String = "All") {
+        filteredNameArray = nameArray.filter({ (skill) -> Bool in
+            return skill.lowercased().contains(searchText.lowercased())
+        })
+        tableView.reloadData()
     }
+    
+    // Table
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // add in search count
@@ -350,6 +342,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
     }
+ 
+    // Delegate Functions
     
     func userSelectedData(data: String) {
         chosenAreaPOI = data
@@ -372,9 +366,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
     }
-
     
-    
+    // Segue
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 
@@ -395,9 +388,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             popoverVC.popoverPresentationController!.delegate = self
             popoverVC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 150)
             
-            
-            
         }
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
     }
     
 

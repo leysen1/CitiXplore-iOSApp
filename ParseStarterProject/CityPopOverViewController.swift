@@ -19,7 +19,6 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     var delegate: DataSentDelegate? = nil
     let moc = DataController().managedObjectContext
     var baseView = ""
-    
     var cities = ["London", "New York"]
     var areas = [String]()
     var chosenCity = String()
@@ -27,28 +26,6 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
 
     @IBOutlet weak var tableViewPopOver: UITableView!
     
-    /*
-    @IBAction func retrieveCore(_ sender: Any) {
-        
-        let cityFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
-        
-        do {
-            let fetchedCities = try moc.fetch(cityFetch) as! [Shortcuts]
-            if fetchedCities.count > 0 {
-                // change previously saved location
-                for city in fetchedCities {
-                    if let tempCity = city.value(forKey: "city") as? String {
-                        print(tempCity)
-                    }
-
-                }
-            }
-        } catch {
-            
-        }
- 
-    }
- */
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -104,13 +81,11 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
 
         chosenCity = areas[indexPath.row]
 
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
         
-       
             do {
                 let shortcutData = try moc.fetch(request) as! [Shortcuts]
                 if shortcutData.count > 0 {

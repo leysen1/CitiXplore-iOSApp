@@ -14,30 +14,24 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     let moc = DataController().managedObjectContext
     let rankings = ["Must See","When in the City","When in the Area","Worth a detour","Interesting POI"]
-    
     var rating1 = [String]()
     var rating2 = [String]()
     var rating3 = [String]()
     var rating4 = [String]()
-    
     var data = [[String]]()
     var chosenArea = "Kensington and Chelsea"
+    var completedArray = [String]()
     
+    // Stars
     let starone = UIImageView(frame: CGRect(x: 10, y: 4, width: 20, height: 20))
     let staroneImage = UIImage(named: "star.png")!
-    
     let startwo = UIImageView(frame: CGRect(x: 10, y: 4, width: 45, height: 20))
     let startwoImage = UIImage(named: "2star.png")!
-    
     let starthree = UIImageView(frame: CGRect(x: 10, y: 4, width: 65, height: 20))
     let starthreeImage = UIImage(named: "3star.png")!
-    
     let starfour = UIImageView(frame: CGRect(x: 10, y: 4, width: 85, height: 20))
     let starfourImage = UIImage(named: "4star.png")!
-    
     var starArray = [UIImageView]()
-    
-    var completedArray = [String]()
 
     @IBOutlet weak var navBarBox: UINavigationBar!
     @IBOutlet weak var areaLabel: UILabel!
@@ -46,37 +40,34 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        fetchSavedRatingsArea()
-        
+   
         self.navigationController?.title = "Ratings"
+        self.tableView.tableFooterView = UIView()
         
         starone.image = staroneImage
         startwo.image = startwoImage
         starthree.image = starthreeImage
         starfour.image = starfourImage
-        
         starArray = [starfour, starthree, startwo, starone]
         
-        self.tableView.tableFooterView = UIView()
-        
+        fetchSavedRatingsArea()
         fetchData { (Bool) in
             self.orderData()
         }
-        
     }
 
-    
     override func viewDidAppear(_ animated: Bool) {
         
+        // Aesthetics
         RatingsTitle.title = "Ratings"
         areaLabel.text = chosenArea
-        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
         areaLabel.backgroundColor =  UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
     }
+    
+    // Functions 
     
     func fetchSavedRatingsArea() {
         let areaFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
@@ -92,12 +83,9 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
                              self.chosenArea = tempArea
                         }
                     }
-                    
                 }
             }
-        } catch {
-            
-        }
+        } catch { print("catch error")}
 
     }
     
@@ -139,11 +127,9 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
                             completion(true)
                         }
                     }
-            
                 }
             }
         }
-        
     }
     
     func orderData() {
@@ -166,8 +152,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         tableView.reloadData()
     }
     
-    
-    
+
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
     }
@@ -180,25 +165,17 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
             self.orderData()
         }
     }
-
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+    // Table
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return data.count
-    }
+        return data.count   }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data[section].count
-    }
+        return data[section].count  }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
-        return rankings[section]
-    }
+        return rankings[section]    }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
@@ -217,9 +194,8 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         return view
     }
     
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-         let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
+        let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
         cell.textLabel?.text = data[indexPath.section][indexPath.row]
         cell.textLabel?.font = UIFont(name: "Avenir Next", size: 17)
         return cell
@@ -227,16 +203,13 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         ratedPOI = data[indexPath.section][indexPath.row]
         tabBarController?.selectedIndex = 0
         
     }
     
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "cityPopover" {
-            
             let popoverVC: CityPopOverViewController = segue.destination as! CityPopOverViewController
             popoverVC.baseView = "RatingsView"
             popoverVC.delegate = self
@@ -245,9 +218,12 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
             popoverVC.popoverPresentationController!.delegate = self
             popoverVC.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 150)
             
-            
-            
         }
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
     }
 
 }

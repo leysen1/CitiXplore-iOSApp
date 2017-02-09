@@ -13,16 +13,14 @@ class POIsTableViewCell: UITableViewCell {
     @IBOutlet var locationName: UILabel!
     @IBOutlet var locationDistance: UILabel!
     @IBOutlet var locationImage: UIImageView!
-
     @IBOutlet var tickImage: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        
+
         locationImage.layer.cornerRadius = 10
         locationImage.layer.masksToBounds = true
-        
         
         let tickShape = CAShapeLayer()
         tickShape.bounds = tickImage.frame
