@@ -18,7 +18,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     // set up variable
     var locationManager = CLLocationManager()
     var userLocation: CLLocationCoordinate2D = CLLocationCoordinate2D()
-    
     var email = String()
     var userAnnotation = MKPointAnnotation()
     var annotationTitle = [String]()
@@ -33,6 +32,21 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var arrowImage: UIImageView!
     @IBOutlet weak var navBarBox: UINavigationBar!
+    
+    @IBAction func aboutPopup(_ sender: AnyObject) {
+        
+        if helpClicked == false {
+            helpClicked = true
+            animateArrow()
+        }
+        
+        let popupAbout = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "aboutPopupID") as! AboutViewController
+        self.addChildViewController(popupAbout)
+        popupAbout.view.frame = self.view.frame
+        self.view.addSubview(popupAbout.view)
+        popupAbout.didMove(toParentViewController: self)
+        self.navigationController?.isNavigationBarHidden = true
+    }
     
     
     // load view
@@ -94,6 +108,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         animateArrow()
         centreMapToPOI()
         
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        locationManager.stopUpdatingLocation()
+        timer.invalidate()
+        ratedPOI = ""
     }
     
     // Functions
@@ -349,7 +369,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
     }
     
-    
     func animateArrow() {
         if helpClicked == false {
             arrowImage.image = UIImage(named: "redarrow.png")
@@ -361,7 +380,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             arrowImage.alpha = 0
         }
     }
-    
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? Annotate {
@@ -393,7 +411,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
         return nil
     }
- 
 
     // FIX THIS
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -405,34 +422,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 chosenPOI = title
                 performSegue(withIdentifier: "toSinglePOI", sender: self)
             }
-            
         }
-        
     }
     
-    @IBAction func aboutPopup(_ sender: AnyObject) {
-        
-        if helpClicked == false {
-            helpClicked = true
-            animateArrow()
-            
+    // Segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "toSinglePOI") {
+            let singlePOI = segue.destination as? SinglePOIViewController
+            singlePOI?.name = chosenPOI
         }
-        let popupAbout = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "aboutPopupID") as! AboutViewController
-        self.addChildViewController(popupAbout)
-        popupAbout.view.frame = self.view.frame
-        self.view.addSubview(popupAbout.view)
-        popupAbout.didMove(toParentViewController: self)
-        self.navigationController?.isNavigationBarHidden = true
     }
     
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        locationManager.stopUpdatingLocation()
-        timer.invalidate()
-        ratedPOI = ""
-    }
-    
-    
+
 }
 
 // annotations

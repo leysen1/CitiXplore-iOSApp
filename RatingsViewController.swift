@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import CoreData
 
-class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPopoverPresentationControllerDelegate, DataSentDelegate {
+class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPopoverPresentationControllerDelegate, RatingDataSentDelegate {
     
     let moc = DataController().managedObjectContext
     let rankings = ["Must See","When in the City","When in the Area","Worth a detour","Interesting POI"]
@@ -212,7 +212,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         if segue.identifier == "cityPopover" {
             let popoverVC: CityPopOverViewController = segue.destination as! CityPopOverViewController
             popoverVC.baseView = "RatingsView"
-            popoverVC.delegate = self
+            popoverVC.delegateRating = self
             
             popoverVC.modalPresentationStyle = UIModalPresentationStyle.popover
             popoverVC.popoverPresentationController!.delegate = self

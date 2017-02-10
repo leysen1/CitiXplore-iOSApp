@@ -13,24 +13,27 @@ import Parse
 
 // create alert message if data doesn't load
 
-class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, UIPopoverPresentationControllerDelegate, DataSentDelegate, MapClickedDelegate {
+class POIsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, UIPopoverPresentationControllerDelegate, POIDataSentDelegate, MapClickedDelegate {
     
+    var unsortedNameArray = [String]()
     var nameArray = [String]()
     var distanceArray = [String]()
     var coordinatesArray = [CLLocationCoordinate2D]()
     var completedArray = [String]()
+    var unsortedCategoryArray = [String]()
+    var categoryArray = [String]()
     var imageDataArray = [PFFile]()
     var sortingWithDistanceArray = [Double]()
     let searchController = UISearchController(searchResultsController: nil)
     var filteredNameArray = [String]()
-    var chosenAreaPOI = "Kensington and Chelsea"
     var activityIndicator = UIActivityIndicatorView()
     var userLocation = CLLocationCoordinate2D()
     var email: String?
     var scrollView = UIScrollView()
     var chosenPOI = String()
+    var areasChosenMain = [String]()
+    var categoriesChosenMain = [String]()
     
-    @IBOutlet weak var areaLabel: UILabel!
     @IBOutlet weak var ExploreTitle: UINavigationItem!
     @IBOutlet weak var navBarBox: UINavigationBar!
     @IBOutlet var tableView: UITableView!
@@ -55,10 +58,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidAppear(_ animated: Bool) {
         
         // Aesthetics
-        ExploreTitle.title = "London"
+        ExploreTitle.title = "Explore"
         navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
-        areaLabel.text = chosenAreaPOI
-        areaLabel.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
     }
@@ -76,9 +77,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         nameArray.removeAll()
+        unsortedNameArray.removeAll()
         distanceArray.removeAll()
         coordinatesArray.removeAll()
         completedArray.removeAll()
+        unsortedCategoryArray.removeAll()
+        categoryArray.removeAll()
         imageDataArray.removeAll()
         sortingWithDistanceArray.removeAll()
         filteredNameArray.removeAll()
@@ -91,13 +95,20 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         print("loading POISVC")
         print(userLocation)
-        print(chosenAreaPOI)
     }
 
     
     func fetchData(completion: @escaping (_ result: Bool)->()) {
         let query = PFQuery(className: "POI")
-        query.whereKey("area", equalTo: chosenAreaPOI)
+        if areasChosenMain != [] {
+            query.whereKey("area", containedIn: areasChosenMain)
+        } else {
+            query.whereKey("area", notEqualTo: "")
+        }
+        if categoriesChosenMain != [] {
+            query.whereKey("Category", containedIn: categoriesChosenMain)
+        }
+        
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print("error")
@@ -121,9 +132,14 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             self.sortingWithDistanceArray.append(0)
                         }
                         if let tempName = object["name"] as? String {
-                            self.nameArray.append(tempName)
+                            self.unsortedNameArray.append(tempName)
                         } else {
-                            self.nameArray.append("not found")
+                            self.unsortedNameArray.append("not found")
+                        }
+                        if let tempCategory = object["Category"] as? String {
+                            self.unsortedCategoryArray.append(tempCategory)
+                        } else {
+                            self.unsortedCategoryArray.append("Other")
                         }
                         i += 1
                         if i == objects.count {
@@ -139,26 +155,28 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         // create dictionary out of name array and distance
         print("distance array \(self.distanceArray.count)")
         print("sorting distance array \(self.sortingWithDistanceArray.count)")
-        print("name array \(self.nameArray.count)")
+        print("name array \(self.unsortedNameArray.count)")
         var i = 0
-        if sortingWithDistanceArray.count == distanceArray.count && nameArray.count == sortingWithDistanceArray.count {
+        if sortingWithDistanceArray.count == distanceArray.count && unsortedNameArray.count == sortingWithDistanceArray.count {
             
+
             var dictName: [String: Double] = [:]
             var dictDist: [String: Double] = [:]
             
-            for (name, number) in self.nameArray.enumerated() {
+            for (name, number) in self.unsortedNameArray.enumerated() {
                 dictName[number] = self.sortingWithDistanceArray[name]
             }
             for (distance, number) in self.distanceArray.enumerated() {
                 dictDist[number] = self.sortingWithDistanceArray[distance]
             }
+
             
             let sortedName = (dictName as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
             let sortedDist = (dictDist as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
-            
+
             self.nameArray = sortedName as! [String]
             self.distanceArray = sortedDist as! [String]
-            
+
             var tempDistanceArray = [String]()
             tempDistanceArray.removeAll()
             for item in self.distanceArray {
@@ -176,6 +194,21 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.completedArray.removeAll()
         self.imageDataArray.removeAll()
         
+        // category
+        categoryArray = unsortedCategoryArray
+        var j = 0
+        for name in unsortedNameArray {
+            let indexNo = nameArray.index(of: name)
+            categoryArray[indexNo!] = unsortedCategoryArray[unsortedNameArray.index(of: name)!]
+            j += 1
+            if j == unsortedNameArray.count {
+                i += 1
+            }
+        }
+        
+        
+        // image and completed
+        
         let imageFiller = UIImage(named: "NA.png")
         let imageFillerData = UIImageJPEGRepresentation(imageFiller!, 1.0)
         
@@ -186,7 +219,8 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 i += 1
             }
         }
-        if i == 2 {
+
+        if i == 3 {
             completion(true)
             print("distance done")
         }
@@ -196,7 +230,14 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func parseFetchImages() {
         // Get Parse images and completed
         let queryRest = PFQuery(className: "POI")
-        queryRest.whereKey("area", equalTo: self.chosenAreaPOI)
+        if areasChosenMain != [] {
+            queryRest.whereKey("area", containedIn: areasChosenMain)
+        } else {
+            queryRest.whereKey("area", notEqualTo: "")
+        }
+        if categoriesChosenMain != [] {
+            queryRest.whereKey("Category", containedIn: categoriesChosenMain)
+        }
         queryRest.findObjectsInBackground { (objects, error) in
             if let objects = objects {
                 for object in objects {
@@ -255,7 +296,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 cell.locationName.text = filteredNameArray[indexPath.row] }
             if distanceArray != [] {
                 cell.locationDistance.text = "\(distanceArray[indexValue!]) km" }
-            
+            if categoryArray != [] {
+                cell.locationCategory.text = categoryArray[indexValue!]  }
+
             // picture
             if imageDataArray != [] {
                 imageDataArray[indexValue!].getDataInBackground { (data, error) in
@@ -292,7 +335,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 cell.locationName.text = nameArray[indexPath.row] }
             if distanceArray != [] {
                 cell.locationDistance.text = "\(distanceArray[indexPath.row]) km" }
-            
+            if categoryArray != [] {
+                cell.locationCategory.text = categoryArray[indexPath.row]
+            }
+
             // picture
             if imageDataArray != [] {
                 imageDataArray[indexPath.row].getDataInBackground { (data, error) in
@@ -345,10 +391,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
  
     // Delegate Functions
     
-    func userSelectedData(data: String) {
-        chosenAreaPOI = data
-        print(chosenAreaPOI)
-        areaLabel.text = chosenAreaPOI
+    func userSelectedData(areasChosen: [String], categoriesChosen: [String]) {
+        areasChosenMain = areasChosen
+        categoriesChosenMain = categoriesChosen
+        print(areasChosenMain)
+        print(categoriesChosenMain)
+        
         // reload table function:
         getStarterVariables { (Bool) in
             self.fetchData { (Bool) in
@@ -382,7 +430,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             let popoverVC: CityPopOverViewController = segue.destination as! CityPopOverViewController
             popoverVC.baseView = "POIView"
-            popoverVC.delegate = self
+            popoverVC.delegatePOI = self
+            popoverVC.categoriesChosen = categoriesChosenMain
+            popoverVC.areasChosen = areasChosenMain
             
             popoverVC.modalPresentationStyle = UIModalPresentationStyle.popover
             popoverVC.popoverPresentationController!.delegate = self

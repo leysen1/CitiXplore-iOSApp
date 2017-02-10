@@ -13,6 +13,7 @@ class POIsTableViewCell: UITableViewCell {
     @IBOutlet var locationName: UILabel!
     @IBOutlet var locationDistance: UILabel!
     @IBOutlet var locationImage: UIImageView!
+    @IBOutlet weak var locationCategory: UILabel!
     @IBOutlet var tickImage: UIImageView!
 
     override func awakeFromNib() {
