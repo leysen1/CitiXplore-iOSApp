@@ -23,6 +23,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var annotationTitle = [String]()
     var annotationAddress = [String]()
     var annotationLocation = [CLLocationCoordinate2D]()
+    var annotationsOnMap = [MKAnnotation]()
     var pinCompletedArray = [String]()
     var chosenPOI = String()
     var recentPOI = String()
@@ -102,12 +103,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         
         // functions
         updateTimer()
-        findPOIs { (Bool) in
-            self.addAnnotationToMap()
+        if ratedPOI == "" {
+            findPOIs { (Bool) in
+                self.addAnnotationToMap()
+            }
         }
         animateArrow()
         centreMapToPOI()
-        
+        print("annotations here")
+        print(mapView.annotations)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -287,11 +291,21 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     func addAnnotationToMap() {
         if annotationTitle.count > 0 {
+            mapView.removeAnnotations(annotationsOnMap)
+            annotationsOnMap.removeAll()
             for item in annotationTitle {
-                let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), imagePOI: UIImage(named: "Cross")!)
-                print("annotate \(annotate)")
-                mapView.addAnnotation(annotate)
-                mapView.reloadInputViews()
+                if pinCompletedArray.contains(item) {
+                    let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), imagePOI: UIImage(named: "CrossGrey")!)
+                    annotationsOnMap.append(annotate)
+                    mapView.addAnnotation(annotate)
+                    mapView.reloadInputViews()
+                } else {
+                    let annotate = Annotate(title: item, locationName: annotationAddress[annotationTitle.index(of: item)!], coordinate: CLLocationCoordinate2D(latitude: annotationLocation[annotationTitle.index(of: item)!].latitude, longitude: annotationLocation[annotationTitle.index(of: item)!].longitude), imagePOI: UIImage(named: "Cross")!)
+                    annotationsOnMap.append(annotate)
+                    mapView.addAnnotation(annotate)
+                    mapView.reloadInputViews()
+                }
+   
             }
         }
     }
@@ -389,7 +403,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             if let dequeuedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) {
                 dequeuedView.annotation = annotation
                 view = dequeuedView
-
+                
+                if let tempTitle = view.annotation?.title {
+                    if pinCompletedArray.contains(tempTitle!) {
+                        view.image = UIImage(named: "CrossGrey")
+                    } else {
+                        view.image = UIImage(named: "Cross")
+                    }
+                }
 
             } else {
                 view = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
@@ -401,7 +422,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                         view.image = UIImage(named: "Cross")
                     }
                 }
-                
                 view.canShowCallout = true
                 view.calloutOffset = CGPoint(x: -5, y: 5)
                 view.rightCalloutAccessoryView = UIButton.init(type: .detailDisclosure) as UIView
@@ -412,7 +432,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         return nil
     }
 
-    // FIX THIS
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         print("tapped")
         

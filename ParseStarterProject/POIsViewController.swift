@@ -24,6 +24,9 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var categoryArray = [String]()
     var imageDataArray = [PFFile]()
     var sortingWithDistanceArray = [Double]()
+    var unsortedAreaArray = [String]()
+    var areaArray = [String]()
+    
     let searchController = UISearchController(searchResultsController: nil)
     var filteredNameArray = [String]()
     var activityIndicator = UIActivityIndicatorView()
@@ -141,6 +144,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         } else {
                             self.unsortedCategoryArray.append("Other")
                         }
+                        if let tempArea = object["area"] as? String {
+                            self.unsortedAreaArray.append(tempArea)
+                        } else {
+                            self.unsortedAreaArray.append("")
+                        }
                         i += 1
                         if i == objects.count {
                             completion(true)
@@ -194,17 +202,22 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.completedArray.removeAll()
         self.imageDataArray.removeAll()
         
-        // category
+        
+        // category and area - (better way of sorting)
         categoryArray = unsortedCategoryArray
+        areaArray = unsortedAreaArray
         var j = 0
         for name in unsortedNameArray {
             let indexNo = nameArray.index(of: name)
             categoryArray[indexNo!] = unsortedCategoryArray[unsortedNameArray.index(of: name)!]
+            areaArray[indexNo!] = unsortedAreaArray[unsortedNameArray.index(of: name)!]
             j += 1
             if j == unsortedNameArray.count {
                 i += 1
             }
         }
+        
+        
         
         
         // image and completed
@@ -297,7 +310,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if distanceArray != [] {
                 cell.locationDistance.text = "\(distanceArray[indexValue!]) km" }
             if categoryArray != [] {
-                cell.locationCategory.text = categoryArray[indexValue!]  }
+                cell.locationCategory.text = "\(areaArray[indexValue!]), \(categoryArray[indexValue!])"  }
 
             // picture
             if imageDataArray != [] {
@@ -336,7 +349,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             if distanceArray != [] {
                 cell.locationDistance.text = "\(distanceArray[indexPath.row]) km" }
             if categoryArray != [] {
-                cell.locationCategory.text = categoryArray[indexPath.row]
+                cell.locationCategory.text = "\(areaArray[indexPath.row]), \(categoryArray[indexPath.row])"
             }
 
             // picture

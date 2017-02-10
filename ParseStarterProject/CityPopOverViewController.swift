@@ -152,9 +152,28 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        let titleLabel = UILabel(frame: CGRect(x: 15, y: 4, width: UIScreen.main.bounds.width, height: 20))
+        titleLabel.font = UIFont(name: "Avenir Next", size: 15)
+        titleLabel.textAlignment = .left
+        titleLabel.textColor = .white
+        if baseView == "POIView" {
+            titleLabel.text = titles[section]
+        } else {
+            titleLabel.text = "xxx"
+        }
+        
+        view.addSubview(titleLabel)
+        return view
+    }
+    
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
+        
+        cell.textLabel?.font = UIFont(name: "Avenir Next", size: 15)
         
         if baseView == "POIView" {
             cell.textLabel?.text  = allArray[indexPath.section][indexPath.row]
@@ -177,6 +196,10 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
         
         return cell
         
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 35
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
