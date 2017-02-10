@@ -34,7 +34,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var email: String?
     var scrollView = UIScrollView()
     var chosenPOI = String()
-    var areasChosenMain = [String]()
+    var areasChosenMain = ["Kensington and Chelsea"]
     var categoriesChosenMain = [String]()
     
     @IBOutlet weak var ExploreTitle: UINavigationItem!
@@ -106,7 +106,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         if areasChosenMain != [] {
             query.whereKey("area", containedIn: areasChosenMain)
         } else {
-            query.whereKey("area", notEqualTo: "")
+            query.whereKey("area", equalTo: "Kensington and Chelsea")
         }
         if categoriesChosenMain != [] {
             query.whereKey("Category", containedIn: categoriesChosenMain)

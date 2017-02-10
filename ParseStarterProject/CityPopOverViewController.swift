@@ -15,7 +15,7 @@ protocol POIDataSentDelegate {
 }
 
 protocol RatingDataSentDelegate {
-    func userSelectedData(data: String)
+    func userSelectedData(areasChosen: [String])
 }
 
 
@@ -53,6 +53,15 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
                 createAlert(title: "Wait!", message: "Please choose at least one area before you search")
             }
            
+        } else if baseView == "RatingsView" {
+            if areasChosen != [] {
+                if delegateRating != nil {
+                    delegateRating?.userSelectedData(areasChosen: areasChosen)
+                    self.dismiss(animated: true, completion: nil)
+                }
+            } else {
+                createAlert(title: "Wait!", message: "Please choose at least one area before you search")
+            }
         }
         
     }
@@ -61,8 +70,12 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if baseView == "POIView" {
+            self.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 450)
+        } else if baseView == "RatingsView" {
+            self.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 250)
+        }
         
-        self.preferredContentSize = CGSize(width: UIScreen.main.bounds.width / 1.5, height: 450)
         print(baseView)
         
         fetchData { (Bool) in
@@ -126,7 +139,15 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     }
  
     func numberOfSections(in tableView: UITableView) -> Int {
-        return allArray.count
+        if baseView == "POIView" {
+            return allArray.count
+        }
+        else if baseView == "RatingsView" {
+            return 1
+        } else {
+            return 0
+        }
+       
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -135,7 +156,7 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
             return allArray[section].count
         }
         if baseView == "RatingsView" {
-            return 0
+            return areasArray.count
         } else {
             return 0
         }
@@ -146,7 +167,7 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
             return titles[section]
         }
         if baseView == "RatingsView" {
-            return ""
+            return "Areas"
         } else {
             return ""
         }
@@ -161,8 +182,8 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
         titleLabel.textColor = .white
         if baseView == "POIView" {
             titleLabel.text = titles[section]
-        } else {
-            titleLabel.text = "xxx"
+        } else if baseView == "RatingsView" {
+            titleLabel.text = "Area"
         }
         
         view.addSubview(titleLabel)
@@ -190,8 +211,11 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
             }
             
         }
-        if baseView == "RatingsView" {
-          
+        else if baseView == "RatingsView" {
+            cell.textLabel?.text = areasArray[indexPath.row]
+            if areasChosen.contains((cell.textLabel?.text)!) {
+                cell.accessoryType = UITableViewCellAccessoryType.checkmark
+            }
         }
         
         return cell
@@ -208,15 +232,12 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
         if baseView == "POIView" {
             if indexPath.section == 0 {
                 // Categories
-                
-                
                 if categoriesChosen.contains(allArray[indexPath.section][indexPath.row]) {
                     cell?.accessoryType = UITableViewCellAccessoryType.none
                     categoriesChosen.remove(at: categoriesChosen.index(of: allArray[indexPath.section][indexPath.row])!)
                 } else {
                     cell?.accessoryType = UITableViewCellAccessoryType.checkmark
                     categoriesChosen.append(allArray[indexPath.section][indexPath.row])
-                    
                 }
             } else {
                 // Areas
@@ -228,8 +249,16 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
                     areasChosen.append(allArray[indexPath.section][indexPath.row])
                 }
             }
+        } else if baseView == "RatingsView" {
+            if areasChosen.contains(areasArray[indexPath.row]) {
+                cell?.accessoryType = UITableViewCellAccessoryType.none
+                areasChosen.remove(at: areasChosen.index(of: areasArray[indexPath.row])!)
+            } else {
+                cell?.accessoryType = UITableViewCellAccessoryType.checkmark
+                areasChosen.append(areasArray[indexPath.row])
+            }
         }
-
+ 
     }
 }
 

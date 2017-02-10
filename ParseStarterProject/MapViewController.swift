@@ -148,6 +148,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             self.locationManager.stopUpdatingLocation()
         })
         
+        // if POI upload failed
         if annotationTitle.count > 0 {
             // do nothing
         } else {
@@ -216,7 +217,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     func findPOIs(completion: @escaping (_ result: Bool)->()) {
         // find all POIs
         let query = PFQuery(className: "POI")
-        query.whereKey("area", equalTo: "Kensington and Chelsea")
+        query.whereKey("city", equalTo: "London")
         query.findObjectsInBackground(block: { (objects, error) in
             if error != nil {
                 print("could not get objects")

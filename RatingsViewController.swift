@@ -19,7 +19,8 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     var rating3 = [String]()
     var rating4 = [String]()
     var data = [[String]]()
-    var chosenArea = "Kensington and Chelsea"
+    var city = "London"
+    var chosenArea = [String]()
     var completedArray = [String]()
     
     // Stars
@@ -34,7 +35,6 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     var starArray = [UIImageView]()
 
     @IBOutlet weak var navBarBox: UINavigationBar!
-    @IBOutlet weak var areaLabel: UILabel!
     @IBOutlet weak var RatingsTitle: UINavigationItem!
     @IBOutlet weak var tableView: UITableView!
     
@@ -50,9 +50,10 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         starfour.image = starfourImage
         starArray = [starfour, starthree, startwo, starone]
         
-        fetchSavedRatingsArea()
-        fetchData { (Bool) in
-            self.orderData()
+        fetchAreaData { (Bool) in
+            self.fetchData { (Bool) in
+                self.orderData()
+            }
         }
     }
 
@@ -60,35 +61,36 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         
         // Aesthetics
         RatingsTitle.title = "Ratings"
-        areaLabel.text = chosenArea
-        areaLabel.backgroundColor =  UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
+        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
     }
     
     // Functions 
     
-    func fetchSavedRatingsArea() {
-        let areaFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
-        
-        do {
-            let fetchedAreas = try moc.fetch(areaFetch) as! [Shortcuts]
-            if fetchedAreas.count > 0 {
-                // change previously saved location
-                for area in fetchedAreas {
-                    if let tempArea = area.value(forKey: "area") as? String {
-                        print(tempArea)
-                        if tempArea != "none" {
-                             self.chosenArea = tempArea
+    func fetchAreaData(completion: @escaping (_ result: Bool)->()) {
+        let query = PFQuery(className: "POI")
+        query.whereKey("city", equalTo: city)
+        query.findObjectsInBackground { (objects, error) in
+            if let objects = objects {
+                var i = 0
+                for object in objects {
+                    if let tempArea = object["area"] as? String {
+                        if tempArea != "" {
+                            if self.chosenArea.contains(tempArea) == false {
+                                self.chosenArea.append(tempArea)
+                            }
                         }
+                    }
+                    i += 1
+                    if i == objects.count {
+                        completion(true)
                     }
                 }
             }
-        } catch { print("catch error")}
-
+        }
     }
-    
+
     func fetchData(completion: @escaping (_ result: Bool)->()) {
         
         rating1.removeAll()
@@ -97,7 +99,10 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         rating4.removeAll()
         
         let query = PFQuery(className: "POI")
-        query.whereKey("area", equalTo: chosenArea)
+        query.whereKey("city", equalTo: city)
+        if chosenArea != [] {
+            query.whereKey("area", containedIn: chosenArea)
+        }
         query.findObjectsInBackground { (objects, error) in
             if error != nil {
                 print("error")
@@ -157,14 +162,14 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         return .none
     }
     
-    func userSelectedData(data: String) {
-        chosenArea = data
-        areaLabel.text = chosenArea
+    func userSelectedData(areasChosen: [String]) {
+        chosenArea = areasChosen
         print(chosenArea)
         fetchData { (Bool) in
             self.orderData()
         }
     }
+
     
     // Table
 
@@ -213,6 +218,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
             let popoverVC: CityPopOverViewController = segue.destination as! CityPopOverViewController
             popoverVC.baseView = "RatingsView"
             popoverVC.delegateRating = self
+            popoverVC.areasChosen = chosenArea
             
             popoverVC.modalPresentationStyle = UIModalPresentationStyle.popover
             popoverVC.popoverPresentationController!.delegate = self

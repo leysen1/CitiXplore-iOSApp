@@ -19,6 +19,8 @@ protocol MapClickedDelegate {
 class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     
     var name = String()
+    var area = String()
+    var category = String()
     var address = String()
     var distance = String()
     var coordinates = CLLocationCoordinate2D()
@@ -37,12 +39,13 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var activityIndicator = UIActivityIndicatorView()
     
     @IBOutlet weak var navBarBox: UINavigationBar!
+    
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var areaAndCategoryLabel: UILabel!
     @IBOutlet weak var checkOffLabel: UIButton!
-    @IBOutlet weak var nameBackground: UILabel!
     @IBOutlet weak var starImage: UIImageView!
     @IBOutlet weak var descriptionLabel: UITextView!
     @IBOutlet weak var mapView: MKMapView!
-    @IBOutlet weak var poiName: UILabel!
     @IBOutlet weak var poiDistance: UILabel!
     @IBOutlet weak var poiImage: UIImageView!
     @IBOutlet weak var poiAddress: UILabel!
@@ -149,10 +152,12 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         // Aesthetics 
         
         self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        nameBackground.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         checkOffLabel.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        
+        titleLabel.text = name
+        titleLabel.adjustsFontSizeToFitWidth = true
+        
         navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
         navBarBox.shadowImage = UIImage()
         navBarBox.setBackgroundImage(UIImage(), for: .default)
         
@@ -239,6 +244,12 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                         } else {
                             self.address = "none found"
                         }
+                        if let tempArea = object["area"] as? String {
+                            self.area = tempArea
+                        }
+                        if let tempCategory = object["Category"] as? String {
+                            self.category = tempCategory
+                        }
                         if let tempPOILocation = object["coordinates"] as? PFGeoPoint {
                             let POILocation = CLLocation(latitude: tempPOILocation.latitude, longitude: tempPOILocation.longitude)
                             if let userLocTemp = PFUser.current()?["location"] as? PFGeoPoint {
@@ -305,10 +316,10 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
         print("data fetched")
         print("completed \(self.completed)")
-        self.poiName.text = self.name
         self.poiAddress.text = self.address
         self.poiDistance.text = "\(self.distance) km"
         self.descriptionLabel.text = self.poiDescription
+        self.areaAndCategoryLabel.text = "\(self.area), \(self.category)"
         
         if self.imageData != [] {
             self.imageData[0].getDataInBackground { (data, error) in
@@ -332,16 +343,16 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         switch self.rating {
         case 1:
             self.starImage.image = UIImage(named: "star.png")
-            self.starImage.frame = CGRect(x: 15, y: 65, width: 20, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 50, width: 20, height: 20)
         case 2:
             self.starImage.image = UIImage(named: "2star.png")
-            self.starImage.frame = CGRect(x: 15, y: 65, width: 40, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 50, width: 40, height: 20)
         case 3:
             self.starImage.image = UIImage(named: "3star.png")
-            self.starImage.frame = CGRect(x: 15, y: 65, width: 60, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 50, width: 60, height: 20)
         case 4:
             self.starImage.image = UIImage(named: "4star.png")
-            self.starImage.frame = CGRect(x: 15, y: 65, width: 80, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 50, width: 80, height: 20)
         default:
             break
         }
