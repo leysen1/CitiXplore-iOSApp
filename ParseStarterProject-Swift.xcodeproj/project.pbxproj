@@ -15,6 +15,8 @@
 		515B157E1DEDC07A0008BAFE /* no audio.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 515B157D1DEDC07A0008BAFE /* no audio.mp3 */; };
 		5168E7051E20019000CF93B5 /* notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5168E7041E20019000CF93B5 /* notes.txt */; };
 		518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */; };
+		518F0E611E50F819006B835D /* ExploreFilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518F0E601E50F819006B835D /* ExploreFilterViewController.swift */; };
+		518F0E631E5100F0006B835D /* ExploreFilterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518F0E621E5100F0006B835D /* ExploreFilterTableViewCell.swift */; };
 		51C48CF41E17F88200A8B1F2 /* POI+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */; };
 		51C48CF51E17F88200A8B1F2 /* POI+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */; };
 		51C48CF71E19338400A8B1F2 /* redarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 51C48CF61E19338400A8B1F2 /* redarrow.png */; };
@@ -57,6 +59,8 @@
 		515B157D1DEDC07A0008BAFE /* no audio.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "no audio.mp3"; sourceTree = "<group>"; };
 		5168E7041E20019000CF93B5 /* notes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = notes.txt; sourceTree = "<group>"; };
 		518B181F1DE2D42800FAD4EE /* SinglePOIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePOIViewController.swift; sourceTree = "<group>"; };
+		518F0E601E50F819006B835D /* ExploreFilterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExploreFilterViewController.swift; sourceTree = "<group>"; };
+		518F0E621E5100F0006B835D /* ExploreFilterTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExploreFilterTableViewCell.swift; sourceTree = "<group>"; };
 		51C48CF21E17F88200A8B1F2 /* POI+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "POI+CoreDataClass.swift"; path = "../POI+CoreDataClass.swift"; sourceTree = "<group>"; };
 		51C48CF31E17F88200A8B1F2 /* POI+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "POI+CoreDataProperties.swift"; path = "../POI+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		51C48CF61E19338400A8B1F2 /* redarrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redarrow.png; sourceTree = "<group>"; };
@@ -149,6 +153,8 @@
 				81BA814C1A49DA1800E65899 /* ViewController.swift */,
 				51EA185A1DC3AD30007591CC /* MapViewController.swift */,
 				51E9BD931E3FCBD80051A1D3 /* CityPopOverViewController.swift */,
+				518F0E601E50F819006B835D /* ExploreFilterViewController.swift */,
+				518F0E621E5100F0006B835D /* ExploreFilterTableViewCell.swift */,
 				51EA185E1DC3AD30007591CC /* POIsViewController.swift */,
 				51EA185D1DC3AD30007591CC /* POIsTableViewCell.swift */,
 				51FC64121E3FF7D800B4145A /* RatingsViewController.swift */,
@@ -296,6 +302,7 @@
 				51C48CF41E17F88200A8B1F2 /* POI+CoreDataClass.swift in Sources */,
 				51CDCCB51DEC80180044A3B7 /* AboutViewController.swift in Sources */,
 				81BA814D1A49DA1800E65899 /* ViewController.swift in Sources */,
+				518F0E611E50F819006B835D /* ExploreFilterViewController.swift in Sources */,
 				51EA186A1DC3AD30007591CC /* POIsViewController.swift in Sources */,
 				51E9BD941E3FCBD80051A1D3 /* CityPopOverViewController.swift in Sources */,
 				510CF6861DFEA6D70058B536 /* DataController.swift in Sources */,
@@ -303,6 +310,7 @@
 				51C48CF51E17F88200A8B1F2 /* POI+CoreDataProperties.swift in Sources */,
 				51EA18661DC3AD30007591CC /* MapViewController.swift in Sources */,
 				51EA186C1DC3AD30007591CC /* ProfileViewController.swift in Sources */,
+				518F0E631E5100F0006B835D /* ExploreFilterTableViewCell.swift in Sources */,
 				518B18201DE2D42800FAD4EE /* SinglePOIViewController.swift in Sources */,
 				81BA814B1A49DA1800E65899 /* AppDelegate.swift in Sources */,
 				51FC641B1E4138A500B4145A /* Shortcuts+CoreDataProperties.swift in Sources */,

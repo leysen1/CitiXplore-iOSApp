@@ -14,26 +14,33 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
 
     var totalLondonPOIs = Double()
     var completedLondonPOIs = Double()
-    var totalarea1POIs = Double()
-    var completedarea1POIs = Double()
-    var totalarea2POIs = Double()
-    var completedarea2POIs = Double()
     var percentage = Int()
     var email = String()
+    var areasArray = [String]()
+    var poiNoInEachArray = [Double]()
+    var poiNoCompletedInEachArray = [Double]()
+    
+    @IBOutlet weak var summary1: UILabel!
+    @IBOutlet weak var summary2: UILabel!
+    @IBOutlet weak var summary3: UILabel!
+    
     
     @IBOutlet var emailLabel: UILabel!
-    @IBOutlet var LondonCompletedLabel: UILabel!
-    @IBOutlet weak var areaCompletedLabel1: UILabel!
-    @IBOutlet weak var areaCompletedLabel2: UILabel!
     @IBOutlet var commentEntry: UITextView!
     @IBOutlet weak var recent1: UILabel!
     @IBOutlet weak var recent2: UILabel!
     @IBOutlet weak var recent3: UILabel!
     @IBOutlet weak var recent4: UILabel!
     @IBOutlet weak var submitCommentLabel: UIButton!
+    @IBOutlet weak var navBarBox: UINavigationBar!
     
+    @IBOutlet weak var summaryHeader: UILabel!
+    @IBOutlet weak var recentVisitsHeader: UILabel!
+    @IBOutlet weak var feedbackHeader: UILabel!
     // Buttons 
 
+    @IBAction func seeMore(_ sender: Any) {
+    }
     @IBAction func submitComment(_ sender: AnyObject) {
         
         if commentEntry.text != "" {
@@ -80,25 +87,70 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         submitCommentLabel.layer.cornerRadius = 5
         submitCommentLabel.layer.masksToBounds = true
         
-        if let tempEmail = PFUser.current()?.username! {
-            self.emailLabel.text = tempEmail
-        }
-
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)
         
-        recentVisits()
-        fetchPOIInfo { (Bool) in
-            self.populateLabels()
+        getEmail { (Bool) in
+            self.fetchAreas(completion: { (Bool) in
+                self.recentVisits()
+                self.fetchPOIInfo { (Bool) in
+                    self.populateLabels()
+                }
+            })
+        
         }
-
     }
     
     override func viewDidAppear(_ animated: Bool) {
         
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
+        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navBarBox.shadowImage = UIImage()
+        navBarBox.setBackgroundImage(UIImage(), for: .default)
+        summaryHeader.backgroundColor =  UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        recentVisitsHeader.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        feedbackHeader.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        
     }
     
     // Functions
+    
+    func getEmail(completion: @escaping (_ result: Bool)->()) {
+        if let tempEmail = PFUser.current()?.username! {
+            self.emailLabel.text = tempEmail
+            email = tempEmail
+            completion(true)
+        }
+
+    }
+    
+    func fetchAreas(completion: @escaping (_ result: Bool)->()) {
+        let query = PFQuery(className: "POI")
+        query.whereKey("city", equalTo: "London")
+        query.findObjectsInBackground { (objects, error) in
+            if error != nil {
+                print("error")
+            } else {
+                if let objects = objects {
+                    var i = 0
+                    for object in objects {
+                        if let tempArea = object["area"] as? String {
+                            if self.areasArray.contains(tempArea) == false {
+                                self.areasArray.append(tempArea)
+                                self.poiNoInEachArray.append(0)
+                                self.poiNoCompletedInEachArray.append(0)
+                            }
+                        }
+                        i += 1
+                        if i == objects.count {
+                            completion(true)
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     func fetchPOIInfo(completion: @escaping (_ result: Bool)->()) {
         
@@ -112,6 +164,12 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
             } else {
                 if let objects = objects {
                     self.totalLondonPOIs = Double(objects.count)
+                    for object in objects {
+                        if let tempArea = object["area"] as? String {
+                            self.poiNoInEachArray[self.areasArray.index(of: tempArea)!] += 1
+                        }
+                        
+                    }
                     i += 1
                     if i == 2 {
                         completion(true)
@@ -132,9 +190,16 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
             } else {
                 if let objects = objects {
                     self.completedLondonPOIs = Double(objects.count)
+                    for object in objects {
+                        if let tempArea = object["area"] as? String {
+                            self.poiNoCompletedInEachArray[self.areasArray.index(of: tempArea)!] += 1
+                        }
+                        
+                    }
                     i += 1
                     if i == 2 {
                         completion(true)
+                        
                     }
                 } else {
                     completion(true)
@@ -144,6 +209,9 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     }
     
     func populateLabels() {
+        print("completed in London")
+        print(self.completedLondonPOIs)
+        
         if self.totalLondonPOIs != 0 {
             var percentageTemp = self.completedLondonPOIs / self.totalLondonPOIs
             percentageTemp = round(percentageTemp * 100)
@@ -151,7 +219,41 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         } else {
             self.percentage = 0
         }
-        self.LondonCompletedLabel.text = "You have completed \(self.percentage)% of our London POIs."
+        let tempCompletedArray = poiNoCompletedInEachArray.sorted()
+        print(tempCompletedArray)
+        let tempAreasArray = areasArray
+        let tempPoiNoArray = poiNoInEachArray
+        
+        var j = 0
+        for item in poiNoCompletedInEachArray {
+            let indexNo = tempCompletedArray.index(of: item)
+            areasArray[indexNo!] = tempAreasArray[poiNoCompletedInEachArray.index(of: item)!]
+            poiNoInEachArray[indexNo!] = tempPoiNoArray[poiNoCompletedInEachArray.index(of: item)!]
+            j += 1
+            if j == poiNoCompletedInEachArray.count {
+                // finish orangising data
+                poiNoCompletedInEachArray = tempCompletedArray
+                let k = areasArray.count - 1
+                
+                if poiNoCompletedInEachArray[k] == 0 {
+                    self.summary1.text = "You haven't visited any POIs yet"
+                } else {
+                    let summary1Percentage = round((poiNoCompletedInEachArray[k] / poiNoInEachArray[k]) * 100)
+                    self.summary1.text = "\(Int(summary1Percentage))% in \(areasArray[k])   (\(Int(self.poiNoCompletedInEachArray[k]))/\(Int(self.poiNoInEachArray[k])))"
+                    
+                    if k-1 >= 0 {
+                        let summary2Percentage = round((poiNoCompletedInEachArray[k-1] / poiNoInEachArray[k-1]) * 100)
+                        self.summary2.text = "\(Int(summary2Percentage))% in \(areasArray[k-1])   (\(Int(self.poiNoCompletedInEachArray[k-1]))/\(Int(self.poiNoInEachArray[k-1])))"
+                    }
+                    
+                    if k-2 >= 0 {
+                        let summary3Percentage = round((poiNoCompletedInEachArray[k-2] / poiNoInEachArray[k-2]) * 100)
+                        self.summary3.text = "\(Int(summary3Percentage))% in \(areasArray[k-2])   (\(Int(self.poiNoCompletedInEachArray[k-2]))/\(Int(self.poiNoInEachArray[k-2])))"
+                    }
+                    
+                }
+            }
+        }
     }
     
     func recentVisits() {
@@ -162,9 +264,12 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
                 print("Error")
             } else {
                 if let objects = objects {
+                    print("number of objects \(objects.count)")
                     for object in objects {
                         if let tempCompleted = object["completed"] as? [String] {
+                            print("tempcompleted \(tempCompleted)")
                             let i: Int = tempCompleted.count - 1
+                            print("i \(i)")
                             if i > -1 {
                                 self.recent1.text = tempCompleted[i]
                             }
@@ -177,6 +282,8 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
                             if i > 2 {
                                 self.recent4.text = tempCompleted[i-3]
                             }
+                        } else {
+                            self.recent1.text = "Please visit a POI soon!"
                         }
                     }
                 }
@@ -203,7 +310,8 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
             self.commentEntry.resignFirstResponder()
         })
     }
-    
+
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

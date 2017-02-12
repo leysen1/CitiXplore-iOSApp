@@ -10,10 +10,16 @@ import UIKit
 import Parse
 import CoreData
 
+
+protocol ratedPOIDelegate {
+    func getChosenPOI(ratedPOI: String)
+}
+
+
 class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPopoverPresentationControllerDelegate, RatingDataSentDelegate {
     
     let moc = DataController().managedObjectContext
-    let rankings = ["Must See","When in the City","When in the Area","Worth a detour","Interesting POI"]
+    let rankings = ["When in the City","When in the Area","Worth a detour","Point of Interest"]
     var rating1 = [String]()
     var rating2 = [String]()
     var rating3 = [String]()
@@ -64,6 +70,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
         view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        tableView.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
     }
     
     // Functions 

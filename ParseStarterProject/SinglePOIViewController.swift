@@ -288,7 +288,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                             self.rating = tempRating
                             switch tempRating {
                             case 1:
-                                self.ratingLabel.text = "Interesting POI"
+                                self.ratingLabel.text = "Point of Interest"
                             case 2:
                                 self.ratingLabel.text = "Worth a detour"
                             case 3:
