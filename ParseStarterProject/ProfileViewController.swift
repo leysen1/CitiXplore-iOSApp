@@ -10,8 +10,14 @@ import UIKit
 import Parse
 import FBSDKLoginKit
 
+protocol logoutDelegate {
+    func logoutClicked(loggingOut: Bool)
+}
+
+
 class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UIScrollViewDelegate {
 
+    var delegate: logoutDelegate? = nil
     var totalLondonPOIs = Double()
     var completedLondonPOIs = Double()
     var percentage = Int()
@@ -20,17 +26,21 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     var poiNoInEachArray = [Double]()
     var poiNoCompletedInEachArray = [Double]()
     
+    @IBOutlet var profile: UIImageView!
+    @IBAction func profileImageButton(_ sender: Any) {
+        print("button pressed")
+        
+    }
     @IBOutlet weak var summary1: UILabel!
     @IBOutlet weak var summary2: UILabel!
     @IBOutlet weak var summary3: UILabel!
-    
+    @IBOutlet var summary4: UILabel!
     
     @IBOutlet var emailLabel: UILabel!
     @IBOutlet var commentEntry: UITextView!
     @IBOutlet weak var recent1: UILabel!
     @IBOutlet weak var recent2: UILabel!
     @IBOutlet weak var recent3: UILabel!
-    @IBOutlet weak var recent4: UILabel!
     @IBOutlet weak var submitCommentLabel: UIButton!
     @IBOutlet weak var navBarBox: UINavigationBar!
     
@@ -39,8 +49,6 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     @IBOutlet weak var feedbackHeader: UILabel!
     // Buttons 
 
-    @IBAction func seeMore(_ sender: Any) {
-    }
     @IBAction func submitComment(_ sender: AnyObject) {
         
         if commentEntry.text != "" {
@@ -68,10 +76,15 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         Parse.cancelPreviousPerformRequests(withTarget: self)
         PFUser.logOut()
         print("logged out")
+        
+        if delegate != nil {
+            delegate?.logoutClicked(loggingOut: true)
+        }
         dismiss(animated: true, completion: nil)
         
         let loginManager = FBSDKLoginManager()
         loginManager.logOut()
+
 
     }
     
@@ -86,6 +99,8 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         commentEntry.layer.masksToBounds = true
         submitCommentLabel.layer.cornerRadius = 5
         submitCommentLabel.layer.masksToBounds = true
+        
+        delegate = ViewController()
         
         let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(tap))
         view.addGestureRecognizer(dismissKeyboard)
@@ -103,14 +118,14 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     
     override func viewDidAppear(_ animated: Bool) {
         
-        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
-        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        profile.layer.masksToBounds = true
+        profile.layer.cornerRadius = 5
+        
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor(red: 23, green: 31, blue: 149, alpha: 1)]
+        view.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        navBarBox.barTintColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
         navBarBox.shadowImage = UIImage()
         navBarBox.setBackgroundImage(UIImage(), for: .default)
-        summaryHeader.backgroundColor =  UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        recentVisitsHeader.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        feedbackHeader.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
         
     }
     
@@ -250,6 +265,10 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
                         let summary3Percentage = round((poiNoCompletedInEachArray[k-2] / poiNoInEachArray[k-2]) * 100)
                         self.summary3.text = "\(Int(summary3Percentage))% in \(areasArray[k-2])   (\(Int(self.poiNoCompletedInEachArray[k-2]))/\(Int(self.poiNoInEachArray[k-2])))"
                     }
+                    if k-3 >= 0 {
+                        let summary4Percentage = round((poiNoCompletedInEachArray[k-3] / poiNoInEachArray[k-3]) * 100)
+                        self.summary4.text = "\(Int(summary4Percentage))% in \(areasArray[k-3])   (\(Int(self.poiNoCompletedInEachArray[k-3]))/\(Int(self.poiNoInEachArray[k-3])))"
+                    }
                     
                 }
             }
@@ -278,9 +297,6 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
                             }
                             if i > 1 {
                                 self.recent3.text = tempCompleted[i-2]
-                            }
-                            if i > 2 {
-                                self.recent4.text = tempCompleted[i-3]
                             }
                         } else {
                             self.recent1.text = "Please visit a POI soon!"

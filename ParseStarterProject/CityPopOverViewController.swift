@@ -175,7 +175,7 @@ class CityPopOverViewController: UIViewController, UITableViewDelegate, UITableV
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        view.backgroundColor = UIColor(red: 23/255,  green: 31/255, blue: 149/255, alpha: 1.0)
         let titleLabel = UILabel(frame: CGRect(x: 15, y: 4, width: UIScreen.main.bounds.width, height: 20))
         titleLabel.font = UIFont(name: "Avenir Next", size: 15)
         titleLabel.textAlignment = .left

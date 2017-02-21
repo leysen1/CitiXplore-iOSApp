@@ -54,14 +54,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // aesthetics
-        navigationController?.navigationBar.topItem?.title = "Map"
-        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
-        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 2)]
-        navigationController?.navigationBar.tintColor = UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 2)
-        self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        UIApplication.shared.statusBarStyle = .lightContent
+
         
         // location
         locationManager.delegate = self
@@ -87,6 +80,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     override func viewDidAppear(_ animated: Bool) {
         
+        // aesthetics
+        navigationController?.navigationBar.topItem?.title = "Map"
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor(red: 23, green: 31, blue: 149, alpha: 1)]
+        navBarBox.barTintColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        self.view.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        UIApplication.shared.statusBarStyle = .lightContent
+        
         // map initialisation
         mapView.delegate = self
         mapView.showsUserLocation = true
@@ -98,7 +98,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
         
         let trackingButton = MKUserTrackingBarButtonItem(mapView: mapView)
-        trackingButton.customView?.tintColor = UIColor.white
+        trackingButton.customView?.tintColor = UIColor(red: 23, green: 31, blue: 149, alpha: 1)
         navBarBox.topItem?.leftBarButtonItem = trackingButton
         
         // functions

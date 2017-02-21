@@ -40,6 +40,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     
     @IBOutlet weak var navBarBox: UINavigationBar!
     
+    @IBOutlet var historyLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var areaAndCategoryLabel: UILabel!
     @IBOutlet weak var checkOffLabel: UIButton!
@@ -124,6 +125,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         mapView.layer.masksToBounds = true
         descriptionLabel.layer.cornerRadius = 10
         descriptionLabel.layer.masksToBounds = true
+        historyLabel.text = "Loading..."
         
         // Functions
         
@@ -133,6 +135,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
         fetchAudio { (Bool) in
             self.playButtonImage.isEnabled = true
+            self.historyLabel.text = "History"
             self.scrubber.isEnabled = true
             self.prepareAudio()
         }
@@ -151,13 +154,13 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
         // Aesthetics 
         
-        self.view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        checkOffLabel.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        self.view.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        checkOffLabel.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
         
         titleLabel.text = name
         titleLabel.adjustsFontSizeToFitWidth = true
         
-        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navBarBox.barTintColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
         navBarBox.shadowImage = UIImage()
         navBarBox.setBackgroundImage(UIImage(), for: .default)
         
@@ -294,7 +297,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                             case 3:
                                 self.ratingLabel.text = "Worth a visit when in the area"
                             case 4:
-                                self.ratingLabel.text = "Worth a visit when in the city"
+                                self.ratingLabel.text = "Must See"
                             default:
                                 break
                             }
@@ -333,6 +336,8 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         
         if self.completed == "yes" {
             self.completedImage.image = UIImage(named: "tick.png")
+            self.completedImage.layer.masksToBounds = true
+            self.completedImage.layer.cornerRadius = 5
             self.checkOffLabel.setTitle("Not yet seen?", for: .normal)
         } else {
             self.completedImage.image = UIImage()
@@ -343,16 +348,16 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         switch self.rating {
         case 1:
             self.starImage.image = UIImage(named: "star.png")
-            self.starImage.frame = CGRect(x: 15, y: 50, width: 20, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 73, width: 20, height: 20)
         case 2:
             self.starImage.image = UIImage(named: "2star.png")
-            self.starImage.frame = CGRect(x: 15, y: 50, width: 40, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 73, width: 40, height: 20)
         case 3:
             self.starImage.image = UIImage(named: "3star.png")
-            self.starImage.frame = CGRect(x: 15, y: 50, width: 60, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 73, width: 60, height: 20)
         case 4:
             self.starImage.image = UIImage(named: "4star.png")
-            self.starImage.frame = CGRect(x: 15, y: 50, width: 80, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 73, width: 80, height: 20)
         default:
             break
         }

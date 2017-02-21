@@ -19,7 +19,7 @@ protocol ratedPOIDelegate {
 class RatingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPopoverPresentationControllerDelegate, RatingDataSentDelegate {
     
     let moc = DataController().managedObjectContext
-    let rankings = ["When in the City","When in the Area","Worth a detour","Point of Interest"]
+    let rankings = ["Must See","When in the Area","Worth a detour","Point of Interest"]
     var rating1 = [String]()
     var rating2 = [String]()
     var rating3 = [String]()
@@ -67,10 +67,9 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
         
         // Aesthetics
         RatingsTitle.title = "Ratings"
-        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
-        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        tableView.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor(red: 23, green: 31, blue: 149, alpha: 1)]
+        view.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        navBarBox.barTintColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
     }
     
     // Functions 
@@ -191,7 +190,7 @@ class RatingsViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        view.backgroundColor = UIColor(red: 80/255,  green: 148/255, blue: 230/255, alpha: 1.0)
 
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 4, width: UIScreen.main.bounds.width, height: 20))
         titleLabel.text = self.rankings[section]

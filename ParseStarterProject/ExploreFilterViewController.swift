@@ -14,11 +14,20 @@ class ExploreFilterViewController: UIViewController, UITableViewDataSource, UITa
     var city = "London"
     var areasArray = [String]()
     var imagesArray = [PFFile]()
+    var chosenArea = String()
     
     @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.view.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        navigationController?.navigationBar.barTintColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName: UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20)]
+        navigationController?.navigationBar.isTranslucent = false
+        
+        
+        
+        
         fetchData { (Bool) in
             self.tableView.reloadData()
             self.tableView.tableFooterView = UIView()
@@ -79,6 +88,24 @@ class ExploreFilterViewController: UIViewController, UITableViewDataSource, UITa
         }
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        chosenArea = areasArray[indexPath.row]
+        performSegue(withIdentifier: "exploreSegue", sender: self)
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "exploreSegue") {
+            let POISVC = segue.destination as? POIsViewController
+            POISVC?.areasChosenMain = [chosenArea]
+            
+            let backItem = UIBarButtonItem()
+            backItem.title = "Back"
+            navigationItem.backBarButtonItem = backItem
+            
+        }
     }
     
 }

@@ -14,7 +14,10 @@ import CoreData
 
 var helpClicked = true
 
-class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate, logoutDelegate {
+    
+    
+    @IBOutlet var titleLabel: UILabel!
 
     @IBOutlet var emailInput: UITextField!
     @IBOutlet var passwordInput: UITextField!
@@ -27,6 +30,7 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
     var loginMode = true
     var activityIndicator = UIActivityIndicatorView()
     var fbLoginPressed = Bool()
+    var manualLogout = false
     
     let moc = DataController().managedObjectContext
     
@@ -76,10 +80,20 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                         // check if shortcut created
                         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
                         do {
-                            let fetch = try self.moc.fetch(request) as! [Shortcuts]
-                            if fetch.count > 0 {
-                                // already have a shortcut
+                            let results = try self.moc.fetch(request)
+                            if results.count > 0 {
+                                // already have a shortcut so update it
                                 print("already have shortcut")
+                                for result in results as! [NSManagedObject] {
+                                    result.setValue(self.emailInput.text, forKey: "username")
+                                    result.setValue(self.passwordInput.text, forKey: "password")
+                                    do {
+                                        try self.moc.save()
+                                        print("new login details saved to core")
+                                        } catch { print("error")
+                                    }
+                                }
+                                
                             } else {
                                 let entity = NSEntityDescription.insertNewObject(forEntityName: "Shortcuts", into: self.moc) as! Shortcuts
                                 entity.setValue(self.emailInput.text, forKey: "username")
@@ -160,6 +174,11 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
         }
     }
     
+    func logoutClicked(loggingOut: Bool) {
+        manualLogout = loggingOut
+        print("manual logout is now \(manualLogout)")
+    }
+    
     @IBAction func changeSignupOrLogin(sender: AnyObject) {
         if loginMode == true {
             // change to sign up mode
@@ -182,16 +201,19 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
         heading.layer.cornerRadius = 10
         heading.layer.masksToBounds = true
         loginOrSignupButtonLabel.layer.cornerRadius = 5
         loginOrSignupButtonLabel.layer.masksToBounds = true
         
+        // check if username and password are saved and then auto login
         
-      
+        logoutClicked(loggingOut: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
+
         
         if (FBSDKAccessToken.current() != nil) {
             if fbLoginPressed == false {
@@ -208,6 +230,10 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                     
                 } else {
                     print("none logged in")
+                    if manualLogout == false {
+                        print("manual Logout \(manualLogout)")
+                        checkForAutoLogin()
+                    }
                     
                     loginMode = true
                     // rid keyboard
@@ -243,6 +269,37 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
             } else {
                 print("could not reach parse")
             }
+        }
+
+    }
+    
+    func checkForAutoLogin() {
+        
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Shortcuts")
+        request.returnsObjectsAsFaults = false
+        do {
+            let results = try moc.fetch(request)
+            
+            if results.count > 0 {
+                for result in results as! [NSManagedObject] {
+                    if let username = result.value(forKey: "username") as? String {
+                        self.emailInput.text = username
+                        print(username)
+                        if let password = result.value(forKey: "password") as? String {
+                            self.passwordInput.text = password
+                            print(password)
+                            loginOrSignup(sender: self)
+                            print("auto logging in")
+                        }
+                    }
+                }
+                
+            } else {
+                print("No results")
+            }
+            
+        } catch {
+            print("Couldn't fetch results")
         }
 
     }

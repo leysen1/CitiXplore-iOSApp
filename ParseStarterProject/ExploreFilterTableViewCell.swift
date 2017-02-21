@@ -11,7 +11,6 @@ import UIKit
 class ExploreFilterTableViewCell: UITableViewCell {
 
 
-    
     @IBOutlet weak var backgroundImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     
@@ -27,6 +26,8 @@ class ExploreFilterTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+        nameLabel.backgroundColor = UIColor(red: 80/255,  green: 148/255, blue: 230/255, alpha: 1.0)
+        nameLabel.textColor = UIColor.white
     }
 
 }

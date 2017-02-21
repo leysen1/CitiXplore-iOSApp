@@ -37,13 +37,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var areasChosenMain = ["Kensington and Chelsea"]
     var categoriesChosenMain = [String]()
     
-    @IBOutlet weak var ExploreTitle: UINavigationItem!
-    @IBOutlet weak var navBarBox: UINavigationBar!
     @IBOutlet var tableView: UITableView!
    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationController?.navigationBar.isHidden = true
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
@@ -61,10 +60,12 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidAppear(_ animated: Bool) {
         
         // Aesthetics
-        ExploreTitle.title = "Explore"
-        navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
-        view.backgroundColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
-        navBarBox.barTintColor = UIColor(red: 0/255,  green: 128/255, blue: 128/255, alpha: 1.0)
+        navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor.white]
+        view.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        navigationController?.navigationBar.barTintColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        navigationController?.navigationBar.tintColor = UIColor.white
+        navigationController?.navigationBar.isHidden = false
+      
     }
     
     // Functions
