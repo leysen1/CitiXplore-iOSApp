@@ -17,6 +17,7 @@ class ExploreFilterViewController: UIViewController, UITableViewDataSource, UITa
     var chosenArea = String()
     
     @IBOutlet weak var tableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -24,10 +25,7 @@ class ExploreFilterViewController: UIViewController, UITableViewDataSource, UITa
         navigationController?.navigationBar.barTintColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
         navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName: UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20)]
         navigationController?.navigationBar.isTranslucent = false
-        
-        
-        
-        
+
         fetchData { (Bool) in
             self.tableView.reloadData()
             self.tableView.tableFooterView = UIView()
@@ -66,7 +64,11 @@ class ExploreFilterViewController: UIViewController, UITableViewDataSource, UITa
         
     }
 
-
+    var name = [String]()
+    var address = [String]()
+    var area = [String]()
+    var category = [String]()
+ 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return areasArray.count
     }

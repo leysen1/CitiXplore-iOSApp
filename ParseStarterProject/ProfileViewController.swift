@@ -15,8 +15,9 @@ protocol logoutDelegate {
 }
 
 
-class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UIScrollViewDelegate {
+class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UIScrollViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
 
+    var activityIndicator = UIActivityIndicatorView()
     var delegate: logoutDelegate? = nil
     var totalLondonPOIs = Double()
     var completedLondonPOIs = Double()
@@ -25,10 +26,18 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     var areasArray = [String]()
     var poiNoInEachArray = [Double]()
     var poiNoCompletedInEachArray = [Double]()
-    
+
     @IBOutlet var profile: UIImageView!
+    @IBOutlet var cityLabel: UILabel!
     @IBAction func profileImageButton(_ sender: Any) {
         print("button pressed")
+        
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = UIImagePickerControllerSourceType.photoLibrary
+        imagePicker.allowsEditing = false
+        
+        self.present(imagePicker, animated: true, completion: nil)
         
     }
     @IBOutlet weak var summary1: UILabel!
@@ -93,12 +102,14 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        summaryHeader.text = "Loading..."
         // Aesthetics
         self.navigationController?.navigationBar.topItem?.title = "Profile"
         commentEntry.layer.cornerRadius = 5
         commentEntry.layer.masksToBounds = true
         submitCommentLabel.layer.cornerRadius = 5
         submitCommentLabel.layer.masksToBounds = true
+        profile.image = UIImage(named: "star.png")
         
         delegate = ViewController()
         
@@ -107,6 +118,7 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
         
         getEmail { (Bool) in
             self.fetchAreas(completion: { (Bool) in
+                self.getPhoto()
                 self.recentVisits()
                 self.fetchPOIInfo { (Bool) in
                     self.populateLabels()
@@ -119,7 +131,7 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     override func viewDidAppear(_ animated: Bool) {
         
         profile.layer.masksToBounds = true
-        profile.layer.cornerRadius = 5
+        profile.layer.cornerRadius = 50
         
         navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor(red: 23, green: 31, blue: 149, alpha: 1)]
         view.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
@@ -130,6 +142,43 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     }
     
     // Functions
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            
+            /* how big the image size (for Parse has to be under 10MB)
+             var imageSize = Double(NSData(data: UIImagePNGRepresentation(image)!).length)
+             print("PNG size of image in MB: ", imageSize/(1024*1024),"MB")
+             print("PNG size of image in MB: \(imageSize / (1024*1024))")
+             imageSize = Double(NSData(data: UIImageJPEGRepresentation((image), 1)!).length)
+             print("JPG size at 1.0 of image in MB: ", imageSize / (1024*1024))
+             imageSize = Double(NSData(data: UIImageJPEGRepresentation(image, 0.5)!).length)
+             print("JPG size at .5 of image in KB: ", imageSize / (1024))
+             */
+            
+            profile.image = image
+            
+            let query = PFQuery(className: "_User")
+            query.whereKey("username", equalTo: email)
+            query.findObjectsInBackground { (objects, error) in
+                if error != nil {
+                    print("error")
+                } else {
+                    if let objects = objects {
+                        for object in objects {
+                            let imageData = UIImageJPEGRepresentation(self.profile.image!, 0.8)
+                            let imageFile = PFFile(name: "profile.png", data: imageData!)
+                            object.setObject(imageFile!, forKey: "photo")
+                            object.saveInBackground()
+                            print("saved photo")
+                        }
+                    }
+                }
+            }
+        }
+        
+        self.dismiss(animated: true, completion: nil)
+    }
     
     func getEmail(completion: @escaping (_ result: Bool)->()) {
         if let tempEmail = PFUser.current()?.username! {
@@ -138,6 +187,30 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
             completion(true)
         }
 
+    }
+    
+    func getPhoto() {
+        let query = PFQuery(className: "_User")
+        query.whereKey("username", equalTo: email)
+        query.findObjectsInBackground { (objects, error) in
+            if error != nil {
+                print("error")
+            } else {
+                if let objects = objects {
+                    for object in objects {
+                        if let imageFile = object["photo"] as? PFFile {
+                            imageFile.getDataInBackground(block: { (data, error) in
+                                if let imageData = data {
+                                    if let downloadedImage = UIImage(data: imageData) {
+                                        self.profile.image = downloadedImage
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func fetchAreas(completion: @escaping (_ result: Bool)->()) {
@@ -224,6 +297,7 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
     }
     
     func populateLabels() {
+        summaryHeader.text = "COMPLETED"
         print("completed in London")
         print(self.completedLondonPOIs)
         
@@ -254,20 +328,20 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
                     self.summary1.text = "You haven't visited any POIs yet"
                 } else {
                     let summary1Percentage = round((poiNoCompletedInEachArray[k] / poiNoInEachArray[k]) * 100)
-                    self.summary1.text = "\(Int(summary1Percentage))% in \(areasArray[k])   (\(Int(self.poiNoCompletedInEachArray[k]))/\(Int(self.poiNoInEachArray[k])))"
+                    self.summary1.text = "\(Int(summary1Percentage))% of \(areasArray[k])   (\(Int(self.poiNoCompletedInEachArray[k]))/\(Int(self.poiNoInEachArray[k])))"
                     
                     if k-1 >= 0 {
                         let summary2Percentage = round((poiNoCompletedInEachArray[k-1] / poiNoInEachArray[k-1]) * 100)
-                        self.summary2.text = "\(Int(summary2Percentage))% in \(areasArray[k-1])   (\(Int(self.poiNoCompletedInEachArray[k-1]))/\(Int(self.poiNoInEachArray[k-1])))"
+                        self.summary2.text = "\(Int(summary2Percentage))% of \(areasArray[k-1])   (\(Int(self.poiNoCompletedInEachArray[k-1]))/\(Int(self.poiNoInEachArray[k-1])))"
                     }
                     
                     if k-2 >= 0 {
                         let summary3Percentage = round((poiNoCompletedInEachArray[k-2] / poiNoInEachArray[k-2]) * 100)
-                        self.summary3.text = "\(Int(summary3Percentage))% in \(areasArray[k-2])   (\(Int(self.poiNoCompletedInEachArray[k-2]))/\(Int(self.poiNoInEachArray[k-2])))"
+                        self.summary3.text = "\(Int(summary3Percentage))% of \(areasArray[k-2])   (\(Int(self.poiNoCompletedInEachArray[k-2]))/\(Int(self.poiNoInEachArray[k-2])))"
                     }
                     if k-3 >= 0 {
                         let summary4Percentage = round((poiNoCompletedInEachArray[k-3] / poiNoInEachArray[k-3]) * 100)
-                        self.summary4.text = "\(Int(summary4Percentage))% in \(areasArray[k-3])   (\(Int(self.poiNoCompletedInEachArray[k-3]))/\(Int(self.poiNoInEachArray[k-3])))"
+                        self.summary4.text = "\(Int(summary4Percentage))% of \(areasArray[k-3])   (\(Int(self.poiNoCompletedInEachArray[k-3]))/\(Int(self.poiNoInEachArray[k-3])))"
                     }
                     
                 }
@@ -306,7 +380,7 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate, UISc
             }
         }
     }
-    
+
     func createAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in

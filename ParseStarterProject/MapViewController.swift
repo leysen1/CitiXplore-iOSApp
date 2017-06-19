@@ -29,13 +29,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var recentPOI = String()
     var timer = Timer()
     var activityIndicator = UIActivityIndicatorView()
+    var helpClicked = true
+    
     
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var arrowImage: UIImageView!
     @IBOutlet weak var navBarBox: UINavigationBar!
-    
     @IBAction func aboutPopup(_ sender: AnyObject) {
-        
         if helpClicked == false {
             helpClicked = true
             animateArrow()
@@ -54,14 +54,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
-        
         // location
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
-        
         
         if let emailTemp = (PFUser.current()?.username!) {
             email = emailTemp
@@ -72,20 +69,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             self.findPOIs(completion: { (Bool) in
                 let region = MKCoordinateRegion(center: self.userLocation, span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03))
                 self.mapView.setRegion(region, animated: false)
-                
             })
         }
-
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
+
         // aesthetics
-        navigationController?.navigationBar.topItem?.title = "Map"
         navBarBox.titleTextAttributes = [NSFontAttributeName : UIFont(name: "AvenirNext-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20), NSForegroundColorAttributeName: UIColor(red: 23, green: 31, blue: 149, alpha: 1)]
         navBarBox.barTintColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
+        navBarBox.topItem?.title = "Map"
         self.view.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
         UIApplication.shared.statusBarStyle = .lightContent
+
         
         // map initialisation
         mapView.delegate = self
@@ -108,16 +104,21 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                 self.addAnnotationToMap()
             }
         }
+        
+        print("helpClicked \(helpClicked)")
         animateArrow()
         centreMapToPOI()
         print("annotations here")
         print(mapView.annotations)
+
+
     }
     
+    
     override func viewDidDisappear(_ animated: Bool) {
-        locationManager.stopUpdatingLocation()
-        timer.invalidate()
-        ratedPOI = ""
+            self.locationManager.stopUpdatingLocation()
+            self.timer.invalidate()
+            ratedPOI = ""
     }
     
     // Functions
@@ -384,8 +385,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
     }
     
+    
     func animateArrow() {
         if helpClicked == false {
+            print("showing arrow")
             arrowImage.image = UIImage(named: "redarrow.png")
             arrowImage.alpha = 0
             UIView.animate(withDuration: 0.5, delay: 0, options: [.curveEaseIn, .repeat, .autoreverse], animations: {
@@ -395,6 +398,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             arrowImage.alpha = 0
         }
     }
+
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? Annotate {
@@ -435,7 +439,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
 
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         print("tapped")
-        
         if let annotation = view.annotation as? Annotate {
             print("Your annotation title: \(annotation.title)")
             if let title = annotation.title {

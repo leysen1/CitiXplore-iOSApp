@@ -18,11 +18,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var unsortedNameArray = [String]()
     var nameArray = [String]()
     var distanceArray = [String]()
+    var unsortedDistanceArray = [String]()
     var coordinatesArray = [CLLocationCoordinate2D]()
     var completedArray = [String]()
     var unsortedCategoryArray = [String]()
     var categoryArray = [String]()
     var imageDataArray = [PFFile]()
+    var unsortedImageDataArray = [PFFile]()
     var sortingWithDistanceArray = [Double]()
     var unsortedAreaArray = [String]()
     var areaArray = [String]()
@@ -80,13 +82,13 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.email = tempEmail
         }
         
-        nameArray.removeAll()
         unsortedNameArray.removeAll()
         distanceArray.removeAll()
         coordinatesArray.removeAll()
         completedArray.removeAll()
         unsortedCategoryArray.removeAll()
         categoryArray.removeAll()
+        unsortedImageDataArray.removeAll()
         imageDataArray.removeAll()
         sortingWithDistanceArray.removeAll()
         filteredNameArray.removeAll()
@@ -106,8 +108,6 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
         let query = PFQuery(className: "POI")
         if areasChosenMain != [] {
             query.whereKey("area", containedIn: areasChosenMain)
-        } else {
-            query.whereKey("area", equalTo: "Kensington and Chelsea")
         }
         if categoriesChosenMain != [] {
             query.whereKey("Category", containedIn: categoriesChosenMain)
@@ -125,14 +125,14 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                             if self.userLocation.latitude > 0 {
                                 let tempUserLocation = CLLocation(latitude: self.userLocation.latitude, longitude: self.userLocation.longitude)
                                 let tempPOILocation = CLLocation(latitude: tempCoordinates.latitude, longitude: tempCoordinates.longitude)
-                                let tempDistance = Double(tempUserLocation.distance(from: tempPOILocation) / 1000)
-                                self.distanceArray.append(String(tempDistance))
+                                let tempDistance = round(Double(tempUserLocation.distance(from: tempPOILocation) / 1000) * 100) / 100
+                                self.unsortedDistanceArray.append(String(tempDistance))
                                 self.sortingWithDistanceArray.append(tempDistance)
                             }
                             
                         } else {
                             self.coordinatesArray.append(CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0))
-                            self.distanceArray.append("0")
+                            self.unsortedDistanceArray.append("0")
                             self.sortingWithDistanceArray.append(0)
                         }
                         if let tempName = object["name"] as? String {
@@ -150,6 +150,11 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         } else {
                             self.unsortedAreaArray.append("")
                         }
+                        if let tempPic = object["smallPicture"] as? PFFile {
+                            self.unsortedImageDataArray.append(tempPic)
+                        } else {
+                            self.unsortedImageDataArray.append(PFFile(data: UIImageJPEGRepresentation(UIImage(named: "NA.png")!, 0.1)!)!)
+                        }
                         i += 1
                         if i == objects.count {
                             completion(true)
@@ -161,80 +166,46 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func distanceOrder(completion: (_ result: Bool)->()) {
-        // create dictionary out of name array and distance
-        print("distance array \(self.distanceArray.count)")
-        print("sorting distance array \(self.sortingWithDistanceArray.count)")
-        print("name array \(self.unsortedNameArray.count)")
+
         var i = 0
-        if sortingWithDistanceArray.count == distanceArray.count && unsortedNameArray.count == sortingWithDistanceArray.count {
-            
-
-            var dictName: [String: Double] = [:]
-            var dictDist: [String: Double] = [:]
-            
-            for (name, number) in self.unsortedNameArray.enumerated() {
-                dictName[number] = self.sortingWithDistanceArray[name]
-            }
-            for (distance, number) in self.distanceArray.enumerated() {
-                dictDist[number] = self.sortingWithDistanceArray[distance]
-            }
-
-            
-            let sortedName = (dictName as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
-            let sortedDist = (dictDist as NSDictionary).keysSortedByValue(using: #selector(NSNumber.compare(_:)))
-
-            self.nameArray = sortedName as! [String]
-            self.distanceArray = sortedDist as! [String]
-
-            var tempDistanceArray = [String]()
-            tempDistanceArray.removeAll()
-            for item in self.distanceArray {
-                let number: Double = round(Double(item)! * 100) / 100
-                tempDistanceArray.append(String(number))
-                if tempDistanceArray.count == distanceArray.count {
-                    i += 1
-                }
-            }
-            self.distanceArray = tempDistanceArray
-            
-        }
-        
-        // prepare for other information in getData function
         self.completedArray.removeAll()
-        self.imageDataArray.removeAll()
+        // category and area
         
-        
-        // category and area - (better way of sorting)
+        let sortedDistanceArray = sortingWithDistanceArray.sorted()
         categoryArray = unsortedCategoryArray
         areaArray = unsortedAreaArray
+        nameArray = unsortedNameArray
+        distanceArray = unsortedDistanceArray
+        imageDataArray = unsortedImageDataArray
         var j = 0
-        for name in unsortedNameArray {
-            let indexNo = nameArray.index(of: name)
-            categoryArray[indexNo!] = unsortedCategoryArray[unsortedNameArray.index(of: name)!]
-            areaArray[indexNo!] = unsortedAreaArray[unsortedNameArray.index(of: name)!]
+        for distanceItem in sortingWithDistanceArray {
+            let indexNo = sortedDistanceArray.index(of: distanceItem)
+            categoryArray[indexNo!] = unsortedCategoryArray[sortingWithDistanceArray.index(of: distanceItem)!]
+            areaArray[indexNo!] = unsortedAreaArray[sortingWithDistanceArray.index(of: distanceItem)!]
+            nameArray[indexNo!] = unsortedNameArray[sortingWithDistanceArray.index(of: distanceItem)!]
+            distanceArray[indexNo!] = unsortedDistanceArray[sortingWithDistanceArray.index(of: distanceItem)!]
+            imageDataArray[indexNo!] = unsortedImageDataArray[sortingWithDistanceArray.index(of: distanceItem)!]
             j += 1
-            if j == unsortedNameArray.count {
+            if j == sortingWithDistanceArray.count {
+                print("sorting finished")
                 i += 1
             }
         }
-        
-        
-        
         
         // image and completed
         
         let imageFiller = UIImage(named: "NA.png")
-        let imageFillerData = UIImageJPEGRepresentation(imageFiller!, 1.0)
-        
+        let imageFillerData = UIImageJPEGRepresentation(imageFiller!, 0.1)
+
         for _ in self.nameArray {
             self.completedArray.append("no")
-            self.imageDataArray.append(PFFile(data: imageFillerData!)!)
+           // self.imageDataArray.append(PFFile(data: imageFillerData!)!)
             if self.imageDataArray.count == self.nameArray.count {
-                i += 1
+               /// i += 1
             }
         }
 
-        if i == 3 {
+        if i == 1 {
             completion(true)
             print("distance done")
         }
@@ -259,7 +230,7 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                         if let indexCheck = self.nameArray.index(of: tempName) {
                             // add photo to all POIs
                             if let photo = object["smallPicture"] as? PFFile {
-                                self.imageDataArray[indexCheck] = photo
+                               // self.imageDataArray[indexCheck] = photo
                             }
                             if let tempCompletedArray = object["completed"] as? [String] {
                                 if tempCompletedArray.contains(self.email!) {
@@ -274,6 +245,10 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.tableView.tableFooterView = UIView()
             }
         }
+    }
+    
+    func localData() {
+        
     }
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
@@ -354,12 +329,19 @@ class POIsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
 
             // picture
+            cell.tag = indexPath.row
             if imageDataArray != [] {
                 imageDataArray[indexPath.row].getDataInBackground { (data, error) in
                     
                     if let imageData = data {
                         if let downloadedImage = UIImage(data: imageData) {
-                            cell.locationImage.image = downloadedImage
+                            DispatchQueue.main.async {
+                                if cell.tag == indexPath.row {
+                                    cell.locationImage.image = downloadedImage
+                                } else {
+                                    cell.locationImage.image = UIImage()
+                                }
+                            }
                         }
                     }
                 }

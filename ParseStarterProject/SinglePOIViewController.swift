@@ -30,32 +30,51 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     var rating = Int()
     var delegate: MapClickedDelegate? = nil
 
-    var audio = AVAudioPlayer()
     var trackPlaying = AVAudioPlayer()
+    var trackPlaying2 = AVAudioPlayer()
     var playMode = false
+    var playMode2 = false
     var timer = Timer()
+    var timer2 = Timer()
     var time = Double()
+    var time2 = Double()
+    var audio2Exists = false
     var poiCoord = CLLocationCoordinate2D()
     var activityIndicator = UIActivityIndicatorView()
     
     @IBOutlet weak var navBarBox: UINavigationBar!
     
-    @IBOutlet var historyLabel: UILabel!
+    // top section
+    @IBOutlet var backgroundLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var areaAndCategoryLabel: UILabel!
-    @IBOutlet weak var checkOffLabel: UIButton!
-    @IBOutlet weak var starImage: UIImageView!
-    @IBOutlet weak var descriptionLabel: UITextView!
-    @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var poiDistance: UILabel!
-    @IBOutlet weak var poiImage: UIImageView!
     @IBOutlet weak var poiAddress: UILabel!
     @IBOutlet weak var completedImage: UIImageView!
     @IBOutlet weak var ratingLabel: UILabel!
+    @IBOutlet weak var starImage: UIImageView!
     
+    // lower section
+    @IBOutlet weak var poiImage: UIImageView!
+    @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var descriptionLabel: UITextView!
+    @IBOutlet var openingTimesLabel: UILabel!
+    @IBOutlet var websiteLink: UILabel!
+    @IBOutlet weak var checkOffLabel: UIButton!
+
+    
+    // first audio
+    @IBOutlet var historyLabel: UILabel!
     @IBOutlet var scrubber: UISlider!
     @IBOutlet var audioTimeLeft: UILabel!
     @IBOutlet var playButtonImage: UIButton!
+    
+    // second audio
+    @IBOutlet var scrubber2: UISlider!
+    @IBOutlet var playButtonImage2: UIButton!
+    @IBOutlet var audioLabel2: UILabel!
+    @IBOutlet var audioTimeLeft2: UILabel!
+    
     
     // Buttons 
     
@@ -84,22 +103,54 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         trackPlaying.currentTime = TimeInterval(scrubber.value)
     }
 
+    @IBAction func scrubber2Changed(_ sender: Any) {
+        trackPlaying2.currentTime = TimeInterval(scrubber2.value)
+    }
+    
     @IBAction func playPauseButton(_ sender: AnyObject) {
         
         if playMode == true {
             // pausing audio
-            playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
+            playButtonImage.setImage(UIImage(named: "play.png"), for: .normal)
             trackPlaying.pause()
             timer.invalidate()
             playMode = false
         } else {
             // playing audio
-            playButtonImage.setImage(UIImage(named: "pause.jpg"), for: .normal)
+            if audio2Exists {
+                playButtonImage2.setImage(UIImage(named: "play.png"), for: .normal)
+                trackPlaying2.pause()
+                timer2.invalidate()
+                playMode2 = false
+            }
+            playButtonImage.setImage(UIImage(named: "pause.png"), for: .normal)
             trackPlaying.play()
             timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
             playMode = true
         }
     }
+    
+    @IBAction func playPauseButton2(_ sender: Any) {
+        if playMode2 == true {
+            // pausing audio
+            playButtonImage2.setImage(UIImage(named: "play.png"), for: .normal)
+            trackPlaying2.pause()
+            timer2.invalidate()
+            playMode2 = false
+        } else {
+            // playing audio
+            playButtonImage.setImage(UIImage(named: "play.png"), for: .normal)
+            trackPlaying.pause()
+            timer.invalidate()
+            playMode = false
+            
+            playButtonImage2.setImage(UIImage(named: "pause.png"), for: .normal)
+            trackPlaying2.play()
+            timer2 = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateSlider2), userInfo: nil, repeats: true)
+            playMode2 = true
+        }
+    }
+    
     
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true) {
@@ -125,7 +176,14 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         mapView.layer.masksToBounds = true
         descriptionLabel.layer.cornerRadius = 10
         descriptionLabel.layer.masksToBounds = true
+        descriptionLabel.font = UIFont(name: "Avenir Next", size: 13)
         historyLabel.text = "Loading..."
+        
+        scrubber2.alpha = 0
+        audioTimeLeft2.alpha = 0
+        playButtonImage2.alpha = 0
+        audioLabel2.alpha = 0
+        playButtonImage2.isEnabled = false
         
         // Functions
         
@@ -134,9 +192,6 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         }
         
         fetchAudio { (Bool) in
-            self.playButtonImage.isEnabled = true
-            self.historyLabel.text = "History"
-            self.scrubber.isEnabled = true
             self.prepareAudio()
         }
         
@@ -163,12 +218,16 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         navBarBox.barTintColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
         navBarBox.shadowImage = UIImage()
         navBarBox.setBackgroundImage(UIImage(), for: .default)
+        backgroundLabel.backgroundColor = UIColor(red: 89/255,  green: 231/255, blue: 185/255, alpha: 1.0)
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         if playMode {
-            self.trackPlaying.stop()  }
+            self.trackPlaying.stop()
+        }
+        if playMode2 {
+            self.trackPlaying2.stop() }
         name = ""
         coordinates = CLLocationCoordinate2D()
         distance = ""
@@ -180,15 +239,29 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     // Functions
     
     func updateSlider() {
+        
         scrubber.value = Float(trackPlaying.currentTime)
         if scrubber.value == 0 {
             // pausing audio
-            playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
+            playButtonImage.setImage(UIImage(named: "play.png"), for: .normal)
             trackPlaying.pause()
             timer.invalidate()
             playMode = false
         }
     }
+    
+    func updateSlider2() {
+        
+        scrubber2.value = Float(trackPlaying2.currentTime)
+        if scrubber2.value == 0 {
+            // pausing audio
+            playButtonImage2.setImage(UIImage(named: "play.png"), for: .normal)
+            trackPlaying2.pause()
+            timer2.invalidate()
+            playMode2 = false
+        }
+    }
+    
     
     func decreaseTimer() {
         
@@ -202,6 +275,21 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         func timerOn() {
             updateSlider()
             decreaseTimer()
+        }
+        
+    }
+    func decreaseTimer2() {
+        
+        if time2 > 0 {
+            time2 -= 1
+            let minutes2 = Int(time2/60)
+            self.audioTimeLeft2.text = "\(String(minutes2)):\(String(Int((time2) - Double(minutes2*60))))"
+        } else {
+            timer2.invalidate()
+        }
+        func timerOn() {
+            updateSlider2()
+            decreaseTimer2()
         }
         
     }
@@ -306,6 +394,15 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                         if let tempDescription = object["description"] as? String {
                             self.poiDescription = tempDescription
                         } else { self.poiDescription = "Description Coming Soon."   }
+                        if let tempAudio2Name = object["audio2Name"] as? String {
+                            self.audioLabel2.text = tempAudio2Name
+                        }
+                        if let tempWebsite = object["websiteLink"] as? String {
+                            self.websiteLink.text = tempWebsite
+                        }
+                        if let tempOpeningTimes = object["openingTimes"] as? String {
+                            self.openingTimesLabel.text = tempOpeningTimes
+                        }
    
                         i += 1
                         if i == objects.count { completion(true)    }
@@ -348,16 +445,16 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
         switch self.rating {
         case 1:
             self.starImage.image = UIImage(named: "star.png")
-            self.starImage.frame = CGRect(x: 15, y: 73, width: 20, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 62, width: 20, height: 20)
         case 2:
             self.starImage.image = UIImage(named: "2star.png")
-            self.starImage.frame = CGRect(x: 15, y: 73, width: 40, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 62, width: 40, height: 20)
         case 3:
             self.starImage.image = UIImage(named: "3star.png")
-            self.starImage.frame = CGRect(x: 15, y: 73, width: 60, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 62, width: 60, height: 20)
         case 4:
             self.starImage.image = UIImage(named: "4star.png")
-            self.starImage.frame = CGRect(x: 15, y: 73, width: 80, height: 20)
+            self.starImage.frame = CGRect(x: 15, y: 62, width: 80, height: 20)
         default:
             break
         }
@@ -366,6 +463,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
     
     func fetchAudio(completion: @escaping (_ result: Bool)->()) {
         var tempPlayer = AVAudioPlayer()
+        var tempPlayer2 = AVAudioPlayer()
         let query = PFQuery(className: "POI")
         query.whereKey("name", equalTo: name)
         query.findObjectsInBackground(block: { (objects, error) in
@@ -373,7 +471,7 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                 print("error")
             } else {
                 if let objects = objects {
-                    tempPlayer = AVAudioPlayer()
+                    var i = 0
                     for object in objects {
                         if let audioClip = object["audio"] as? PFFile {
                             audioClip.getDataInBackground(block: { (data, error) in
@@ -382,6 +480,10 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                                 } else {
                                     do { tempPlayer = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
                                         self.trackPlaying = tempPlayer
+                                        i += 1
+                                        if i == 2 {
+                                            completion(true)
+                                        }
                                         // background playing
                                         do {
                                             try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
@@ -395,10 +497,9 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                                         } catch let error as NSError {
                                             print(error.localizedDescription)
                                         }
-                                        
-                                        completion(true)
                                     } catch {  print(error)
                                     }
+
                                 }
                             })
                         } else {
@@ -406,23 +507,52 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
                             let audioPath = Bundle.main.path(forResource: "no audio", ofType: "mp3")
                             do { let audioFiller = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
                                 self.trackPlaying = audioFiller
-                                completion(true)
+                                i += 1
+                                if i == 2 {
+                                    completion(true)
+                                }
                             } catch {
                                 // error
                             }
+
+                        }
+                        // second audio
+                        if let audioClip = object["audio2"] as? PFFile {
+                            audioClip.getDataInBackground(block: { (data, error) in
+                                if error != nil {
+                                    print("error")
+                                } else {
+                                    do { tempPlayer2 = try AVAudioPlayer(data: data!, fileTypeHint: AVFileTypeMPEGLayer3)
+                                        self.trackPlaying2 = tempPlayer2
+                                        self.audio2Exists = true
+                                        i += 1
+                                        if i == 2 {
+                                            completion(true)
+                                        }
+                                        // background playing
+                                    } catch {  print(error)
+                                    }
+                                }
+                            })
+  
+                        } else {
+                            i += 1
+                            if i == 2 {
+                                completion(true)
+                            }
                         }
                     }
-                } else {
-                    completion(true)
                 }
             }
         })
     }
 
     func prepareAudio() {
-        self.time = self.trackPlaying.duration / 1.37
+        
+        // first audio
         self.trackPlaying.volume = 0.9
-        self.playButtonImage.setImage(UIImage(named: "play.jpg"), for: .normal)
+        self.time = self.trackPlaying.duration / 1.37
+        self.playButtonImage.setImage(UIImage(named: "play.png"), for: .normal)
         self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
         self.scrubber.maximumValue = Float(self.trackPlaying.duration / 1.37)
         self.scrubber.value = 0
@@ -437,7 +567,39 @@ class SinglePOIViewController: UIViewController, CLLocationManagerDelegate, MKMa
             seconds = String(Int(self.time) - (minutes * 60))
         }
         
+        self.playButtonImage.isEnabled = true
+        self.historyLabel.text = "History"
+        self.scrubber.isEnabled = true
+        
         self.audioTimeLeft.text = "\(minutes):\(seconds)"
+        
+        // second audio
+        if self.audio2Exists == true {
+            self.trackPlaying2.volume = 0.9
+            self.time2 = self.trackPlaying2.duration / 1.37
+            self.playButtonImage2.setImage(UIImage(named: "play.png"), for: .normal)
+            self.timer2 = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.updateSlider2), userInfo: nil, repeats: true)
+            self.scrubber2.maximumValue = Float(self.trackPlaying2.duration / 1.37)
+            self.scrubber2.value = 0
+            self.playMode2 = false
+            
+            let minutes2 = Int(self.time2 / 60)
+            var seconds2 = ""
+            if Int(self.time2) - (minutes2 * 60) < 10 {
+                let tempSec2 = Int(self.time2) - (minutes2 * 60)
+                seconds2 = String("0\(tempSec2)")
+            } else {
+                seconds2 = String(Int(self.time2) - (minutes2 * 60))
+            }
+            
+            self.audioTimeLeft2.text = "\(minutes2):\(seconds2)"
+            scrubber2.alpha = 1
+            audioTimeLeft2.alpha = 1
+            playButtonImage2.alpha = 1
+            audioLabel2.alpha = 1
+            playButtonImage2.isEnabled = true
+            
+        }
         
     }
     

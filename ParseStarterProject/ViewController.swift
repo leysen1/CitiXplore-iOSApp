@@ -12,13 +12,10 @@ import Parse
 import FBSDKLoginKit
 import CoreData
 
-var helpClicked = true
-
 class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate, logoutDelegate {
     
     
     @IBOutlet var titleLabel: UILabel!
-
     @IBOutlet var emailInput: UITextField!
     @IBOutlet var passwordInput: UITextField!
     @IBOutlet var changeModeLabel: UILabel!
@@ -98,8 +95,6 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                                 let entity = NSEntityDescription.insertNewObject(forEntityName: "Shortcuts", into: self.moc) as! Shortcuts
                                 entity.setValue(self.emailInput.text, forKey: "username")
                                 entity.setValue(self.passwordInput.text, forKey: "password")
-                                entity.setValue("none", forKey: "area")
-                                entity.setValue("none", forKey: "city")
                                 
                                 do {
                                     try self.moc.save()
@@ -153,8 +148,6 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                         let entity = NSEntityDescription.insertNewObject(forEntityName: "Shortcuts", into: self.moc) as! Shortcuts
                         entity.setValue(self.emailInput.text, forKey: "username")
                         entity.setValue(self.passwordInput.text, forKey: "password")
-                        entity.setValue("none", forKey: "area")
-                        entity.setValue("none", forKey: "city")
 
                         do {
                             try self.moc.save()
@@ -255,9 +248,9 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
 
 
                     
-                    let centerXConstraint = NSLayoutConstraint(item: loginButton, attribute: .centerX, relatedBy: .equal, toItem: emailInput, attribute: .centerX, multiplier: 1, constant: 0)
+                    let centerXConstraint = NSLayoutConstraint(item: loginButton, attribute: .centerX, relatedBy: .equal, toItem: loginOrSignupButtonLabel, attribute: .centerX, multiplier: 1, constant: 0)
                     
-                    let centerYConstraint = NSLayoutConstraint(item: loginButton, attribute: .bottom, relatedBy: .equal, toItem: emailInput, attribute: .top, multiplier: 1, constant: -30)
+                    let centerYConstraint = NSLayoutConstraint(item: loginButton, attribute: .bottom, relatedBy: .equal, toItem: changeModeLabel, attribute: .top, multiplier: 1, constant: -60)
                         
                     self.view.addConstraints([centerXConstraint, centerYConstraint])
    
@@ -394,8 +387,6 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                                                         let entity = NSEntityDescription.insertNewObject(forEntityName: "Shortcuts", into: self.moc) as! Shortcuts
                                                         entity.setValue(self.emailInput.text, forKey: "username")
                                                         entity.setValue(self.passwordInput.text, forKey: "password")
-                                                        entity.setValue("none", forKey: "area")
-                                                        entity.setValue("none", forKey: "city")
                                                         
                                                         do {
                                                             try self.moc.save()
@@ -444,8 +435,6 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
                                                 let entity = NSEntityDescription.insertNewObject(forEntityName: "Shortcuts", into: self.moc) as! Shortcuts
                                                 entity.setValue(self.emailInput.text, forKey: "username")
                                                 entity.setValue(self.passwordInput.text, forKey: "password")
-                                                entity.setValue("none", forKey: "area")
-                                                entity.setValue("none", forKey: "city")
                                                 
                                                 do {
                                                     try self.moc.save()
@@ -475,7 +464,10 @@ class ViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDel
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "toMapView") {
             if loginMode == false {
-                helpClicked = false
+                let tabbarVC = segue.destination as? UITabBarController
+                let mapVC = tabbarVC?.viewControllers?[0] as! MapViewController
+                mapVC.helpClicked = false
+
             }
         }
     }
